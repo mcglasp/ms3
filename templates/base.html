@@ -16,10 +16,16 @@
             <a href="{{ url_for('get_terms') }}" class="brand-logo">MyHouse</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul class="right hide-on-med-and-down">
+                {% if session.user %}
                 <li><a href="">Search</a></li>
                 <li><a href="">Make a suggestion</a></li>
                 <li><a href="">Add term</a></li>
+                <li><a href="{{ url_for('manage_users') }}">Manage users</a></li>
+                <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                {% else %}
                 <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Log in</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -30,6 +36,15 @@
         <li><a href="">Add term</a></li>
         <li><a href="{{ url_for('register') }}">Register</a></li>
     </ul>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
     <main>
         {% block content %}
         {% endblock %}

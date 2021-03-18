@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Manage users</h2>
+
+<div class="container">
+    {% for user in users %}
+    <div class="row">
+    <div class="col s12 m6">
+      <div class="card">
+          <span class="card-title">{{ user.username }}</span>
+        
+        <div class="card-content">
+          <p>I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+  {% endblock %}
