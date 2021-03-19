@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css" type="text">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Style Guide</title>
 </head>
 
@@ -19,7 +19,7 @@
                 {% if session.user %}
                 <li><a href="">Search</a></li>
                 <li><a href="">Make a suggestion</a></li>
-                <li><a href="">Add term</a></li>
+                <li><a href="{{ url_for('add_term') }}">Add terms</a></li>
                 <li><a href="{{ url_for('manage_users') }}">Manage users</a></li>
                 <li><a href="{{ url_for('logout') }}">Log out</a></li>
                 {% else %}
@@ -33,7 +33,7 @@
     <ul class="sidenav" id="mobile-demo">
         <li><a href="">Search</a></li>
         <li><a href="">Make a suggestion</a></li>
-        <li><a href="">Add term</a></li>
+        <li><a href="{{ url_for('add_term') }}">Add term</a></li>
         <li><a href="{{ url_for('register') }}">Register</a></li>
     </ul>
     {% with messages = get_flashed_messages() %}
@@ -49,8 +49,9 @@
         {% block content %}
         {% endblock %}
     </main>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>

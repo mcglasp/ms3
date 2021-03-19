@@ -100,6 +100,33 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/add_term", methods=["GET", "POST"])
+def add_term():
+    if request.form.get("incorrect_terms"):
+        wrong_terms = request.form.get("incorrect_terms")
+        split_terms = wrong_terms.split(" ")
+
+    if request.method == "POST":
+        term = {
+            "term_name": request.form.get("term_name"),
+            "alt_terms": request.form.get("alt_terms"),
+            "incorrect_terms": split_terms,
+            "usage_notes": request.form.get("usage_notes"),
+            "type_name": request.form.get("type_name")
+            }
+
+        mongo.db.terms.insert_one(term)
+        print(term)
+        flash("Term added")
+        return redirect(url_for("add_term"))
+    
+    types = mongo.db.types.find().sort("types", 1)
+    return render_template("add_term.html", types=types)
+
+
+
+
+
 @app.route("/manage_users")
 def manage_users():
     users = list(mongo.db.users.find())
