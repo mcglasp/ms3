@@ -100,31 +100,39 @@ def logout():
     return redirect(url_for("login"))
 
 
+
+
+
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
+    # THESE IF STATEMENTS NEED DRYING!
     if request.form.get("incorrect_terms"):
-        wrong_terms = request.form.get("incorrect_terms")
-        split_terms = wrong_terms.split(" ")
+        to_split = request.form.get("incorrect_terms")
+        to_split.strip(",")
+        # ADD REGEX TO PROPERLY FORMAT INPUTS
+        split_inc_terms = to_split.split(" ")
 
+    if request.form.get("alt_terms"):
+        to_split = request.form.get("alt_terms")
+        to_split.strip(",")
+        # ADD REGEX TO PROPERLY FORMAT INPUTS
+        split_alt_terms = to_split.split(" ")
+        
     if request.method == "POST":
         term = {
             "term_name": request.form.get("term_name"),
-            "alt_terms": request.form.get("alt_terms"),
-            "incorrect_terms": split_terms,
+            "alt_terms": split_alt_terms,
+            "incorrect_terms": split_inc_terms,
             "usage_notes": request.form.get("usage_notes"),
             "type_name": request.form.get("type_name")
             }
 
         mongo.db.terms.insert_one(term)
-        print(term)
         flash("Term added")
         return redirect(url_for("add_term"))
     
     types = mongo.db.types.find().sort("types", 1)
     return render_template("add_term.html", types=types)
-
-
-
 
 
 @app.route("/manage_users")
