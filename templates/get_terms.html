@@ -9,7 +9,8 @@
                 <div class="card-content">
                     <span class="card-title activator grey-text text-darken-4">
                         {{ term.term_name }}
-                        <i class="material-icons right">more_vert</i></span>                      <span><a class="btn-floating waves-effect waves-light red"><i class="material-icons">add</i></a></span>
+                        <i class="material-icons right">more_vert</i></span>                      
+                        <span><a class="btn-floating waves-effect waves-light red"><i class="material-icons">add</i></a></span>
 
                     <p>{{ term.type_name }}</p>
                     {% if term.alt_terms|length > 0 %}
@@ -22,10 +23,23 @@
                     <span class="card-title grey-text text-darken-4">{{ term.term_name }}<i
                             class="material-icons right">close</i></span>
                     {% for incorrect_term in term.incorrect_terms %}
-                    <span><a href="#">{{ incorrect_term }}</a></span>
+                    <span>
+                        {% if loop.first %}
+                        <strong>not</strong> 
+                        {% endif %}<a href="#">{{ incorrect_term }}</a></span>
                     {% if not loop.last %}
                     <span> or </span>
                     {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card-side-reveal">
+                    
+                    <p class="comment-username">Comment as {{ user.username }}</p>
+                   <form method="POST">
+                    <textarea name="comments" id="comments" cols="30" rows="10" type="text"></textarea>
+                    </form>
+                    {% for comment in term.comments %}
+                    <p class="show-comments">{{ comment }}</p>
                     {% endfor %}
                 </div>
             </div>

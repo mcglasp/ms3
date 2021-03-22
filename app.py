@@ -19,12 +19,15 @@ mongo = PyMongo(app)
 
 
 @app.route("/")
-@app.route("/get_terms", methods=["GET"])
+@app.route("/get_terms", methods=["GET", "POST"])
 def get_terms():
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
+    user = mongo.db.users.find_one(
+        {"username": session["user"]})
+    comments = list(mongo.db.terms.comments.find())
 
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms)
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user, comments=comments)
 
 
 @app.route("/register", methods=["GET", "POST"])
