@@ -100,29 +100,30 @@ def logout():
     return redirect(url_for("login"))
 
 
-
-
-
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
-    # THESE IF STATEMENTS NEED DRYING!
-    if request.form.get("incorrect_terms"):
-        to_split = request.form.get("incorrect_terms")
-        to_split.strip(",")
-        # ADD REGEX TO PROPERLY FORMAT INPUTS
-        split_inc_terms = to_split.split(" ")
-
-    if request.form.get("alt_terms"):
-        to_split = request.form.get("alt_terms")
-        to_split.strip(",")
-        # ADD REGEX TO PROPERLY FORMAT INPUTS
-        split_alt_terms = to_split.split(" ")
-        
     if request.method == "POST":
+        alt = request.form.get("alt_terms")
+        inc = request.form.get("incorrect_terms")
+
+        class Term:
+
+            def __init__(self, to_split):
+                self.to_split = to_split
+
+            def split_terms(self):
+                request.form.get(self.to_split)
+                return self.to_split.split(" ")
+
+        alt_split = Term(alt)
+        alternatives = alt_split.split_terms()
+        inc_split = Term(inc)
+        incorrect = inc_split.split_terms()
+
         term = {
             "term_name": request.form.get("term_name"),
-            "alt_terms": split_alt_terms,
-            "incorrect_terms": split_inc_terms,
+            "alt_terms": alternatives,
+            "incorrect_terms": incorrect,
             "usage_notes": request.form.get("usage_notes"),
             "type_name": request.form.get("type_name")
             }
@@ -130,7 +131,7 @@ def add_term():
         mongo.db.terms.insert_one(term)
         flash("Term added")
         return redirect(url_for("add_term"))
-    
+
     types = mongo.db.types.find().sort("types", 1)
     return render_template("add_term.html", types=types)
 
@@ -141,7 +142,10 @@ def manage_users():
     
     return render_template("manage_users.html", users=users)
 
+
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
             debug=True)
+
+
