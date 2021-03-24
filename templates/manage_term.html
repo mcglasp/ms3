@@ -2,7 +2,6 @@
 {% block content %}
 
 <div class="container">
-    {% for term in terms %}
     <div class="row">
         <div class="col s5">
             <div class="card">
@@ -13,6 +12,7 @@
                         <span><a class="btn-floating waves-effect waves-light red"><i class="material-icons">add</i></a></span>
 
                     <p>{{ term.type_name }}</p>
+                    <p>{{ term._id }}</p>
                     {% if term.alt_terms|length > 0 %}
                     {% for alt_term in term.alt_terms %}
                     <span><a href="#">{{ alt_term }}</a></span>
@@ -33,12 +33,27 @@
                     {% endfor %}
                 </div>
                 <div>
-                    <p>{{ term._id }}</p>
-                    <a href="{{ url_for('manage_term', term_id=term._id) }}">View more</a>
+                    
+                    <div>
+                        {% for term_comment in term_comments %}
+                        <div class="container comment-width">
+                        <div class="card">
+                    <p class="show-comments">{{ term_comment.timestamp }}</p>
+                   <p class="show-comments">User {{ term_comment.commenter }} said:</p>
+                   <strong><p class="show-comments">{{ term_comment.comment }}</p></strong>
+                   </div>
+                   </div>
+               {% endfor %}
+                    
+                    </div>
+                    <p class="comment-username">Comment as {{ user }}</p>
+                   <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}">
+                    <textarea name="comment" id="comment" cols="30" rows="10" type="text"></textarea>
+                    <button type="submit">Add comment</button>
+                    </form>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}

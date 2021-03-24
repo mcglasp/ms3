@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
     redirect, request, session, url_for)
@@ -19,15 +20,42 @@ mongo = PyMongo(app)
 
 
 @app.route("/")
-@app.route("/get_terms", methods=["GET", "POST"])
+@app.route("/get_terms")
 def get_terms():
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
-    user = mongo.db.users.find_one(
-        {"username": session["user"]})
-    comments = list(mongo.db.terms.comments.find())
+    user = session["user"]
 
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user, comments=comments)
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user)
+
+
+@app.route("/manage_term/<term_id>", methods=["GET", "POST"])
+def manage_term(term_id):
+    user = session["user"]
+    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
+    comments = list(mongo.db.comments.find())
+    term_comments = mongo.db.comments.find({"rel_term_id": ObjectId(term_id)})
+
+    return render_template("manage_term.html", term=term, term_comments=term_comments, user=user, comments=comments)
+
+
+@app.route("/add_comment/<term_id>", methods=["GET", "POST"])
+def add_comment(term_id):
+    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
+
+    if request.method == "POST":
+        now = datetime.now()
+    
+        comment = {
+            "timestamp": now.strftime("%d/%m/%Y, %H:%M:%S"),
+            "comment": request.form.get("comment"),
+            "commenter": session['user'],
+            "rel_term_id": term["_id"]
+            }
+
+        mongo.db.comments.insert_one(comment)
+        flash("Hooray it worked!")
+        return redirect(url_for("get_terms"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -144,6 +172,9 @@ def manage_users():
     users = list(mongo.db.users.find())
     
     return render_template("manage_users.html", users=users)
+
+
+
 
 
 if __name__ == "__main__":

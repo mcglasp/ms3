@@ -22,6 +22,7 @@
                 <li><a href="{{ url_for('add_term') }}">Add terms</a></li>
                 <li><a href="{{ url_for('manage_users') }}">Manage users</a></li>
                 <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                <li><a href="{{ url_for('profile', username=session['user']) }}">Profile</a></li>
                 {% else %}
                 <li><a href="{{ url_for('register') }}">Register</a></li>
                 <li><a href="{{ url_for('login') }}">Log in</a></li>

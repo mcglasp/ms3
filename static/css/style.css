@@ -4,3 +4,7 @@
 .right-float {
     display: inline;
 }
+
+.comment-width {
+    width: 90%;
+}
