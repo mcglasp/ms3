@@ -24,9 +24,8 @@ mongo = PyMongo(app)
 def get_terms():
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
-    user = session["user"]
 
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user)
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms)
 
 
 @app.route("/manage_term/<term_id>", methods=["GET", "POST"])
