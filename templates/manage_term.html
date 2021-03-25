@@ -46,7 +46,11 @@
                                 {% if user == "admin" %}
                                 <a class="delete-btn" href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id)}}">delete comment</a>
                                 {% elif user == "notadmin" %}
-                                <a class="flag-btn" href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username)}}">flag comment</a>
+                                    {% if already_flagged %}
+                                    <p>Sorry you have already flagged this comment</p>
+                                    {% else %}
+                                    <a class="flag-btn" href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username)}}">flag comment</a>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>

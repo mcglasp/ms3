@@ -66,13 +66,25 @@ def delete_comment(comment_id, term_id):
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
 def flag_comment(comment_id, term_id):
-    # get username
-    username = mongo.db.users.find_one(
-        {"username": session["user"]})["username"]
-
+    username = mongo.db.users.find_one({"username": session["user"]})["username"]
+    users = mongo.db["users"]
+    flagger = {"username": username}
+    flagged_comment = {"$push": {"flagged_comments": comment_id}}
+    comments = mongo.db["comments"]
+    flag_query = {"_id": ObjectId(comment_id)}
+    flagged_by = {"$push": {"flagged_by": username}}
+    user_record_field = mongo.db.users.find({"$and": [{"username": username},{"flagged_comments": comment_id}]}).count()
     
-    flash(username)
-    return redirect(url_for("manage_term", term_id=term_id, username=username))
+    if user_record_field > 0:
+        flash("You have ALREADY flagged this comment")
+        return redirect(url_for("manage_term", term_id=term_id, username=username))
+    else:
+        # push id to comment's 'flagged_by' array
+        comments.update_one(flag_query, flagged_by)
+        # push comment_id to user's 'flagged_comments' array
+        users.update_one(flagger, flagged_comment)
+        flash("You have flagged this comment")
+        return redirect(url_for("manage_term", term_id=term_id, username=username))
 
 
 @app.route("/register", methods=["GET", "POST"])
