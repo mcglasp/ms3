@@ -57,6 +57,24 @@ def add_comment(term_id):
         return redirect(url_for("get_terms"))
 
 
+@app.route("/delete_comment/<comment_id>/<term_id>")
+def delete_comment(comment_id, term_id):
+    mongo.db.comments.remove({"_id": ObjectId(comment_id)})
+    flash("Comment successfully deleted")
+    return redirect(url_for("manage_term", term_id=term_id))
+
+
+@app.route("/flag_comment/<comment_id>/<term_id>")
+def flag_comment(comment_id, term_id):
+    # get username
+    username = mongo.db.users.find_one(
+        {"username": session["user"]})["username"]
+
+    
+    flash(username)
+    return redirect(url_for("manage_term", term_id=term_id, username=username))
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
