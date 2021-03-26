@@ -54,7 +54,7 @@ def add_comment(term_id):
 
         mongo.db.comments.insert_one(comment)
         flash("Hooray it worked!")
-        return redirect(url_for("get_terms"))
+        return redirect(url_for("manage_term", term_id=term_id))
 
 
 @app.route("/delete_comment/<comment_id>/<term_id>")
@@ -66,14 +66,14 @@ def delete_comment(comment_id, term_id):
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
 def flag_comment(comment_id, term_id):
-    username = mongo.db.users.find_one({"username": session["user"]})["username"]
     users = mongo.db["users"]
+    username = users.find_one({"username": session["user"]})["username"]
     flagger = {"username": username}
     flagged_comment = {"$push": {"flagged_comments": comment_id}}
     comments = mongo.db["comments"]
     flag_query = {"_id": ObjectId(comment_id)}
     flagged_by = {"$push": {"flagged_by": username}}
-    user_record_field = mongo.db.users.find({"$and": [{"username": username},{"flagged_comments": comment_id}]}).count()
+    user_record_field = users.find({"$and": [{"username": username}, {"flagged_comments": comment_id}]}).count()
     
     if user_record_field > 0:
         flash("You have ALREADY flagged this comment")
@@ -112,6 +112,35 @@ def register():
     return render_template("register.html")
 
 
+@app.route("/choose_new_password", methods=["GET", "POST"])
+def choose_new_password():
+    user = mongo.db.users.find_one({"username": session["user"]})
+
+    return render_template("choose_new_password.html", user=user)
+
+@app.route("/change_password", methods=["GET", "POST"])
+def change_password():
+    user = mongo.db.users.find_one({"username": session["user"]})
+    username = session["user"]
+    password_one = request.form.get("new_password")
+    password_two = request.form.get("confirm_password")
+
+    if password_one == password_two:
+        new_password = generate_password_hash(request.form.get("new_password"))
+
+        if request.method == "POST":
+
+            mongo.db.users.update({"username": username}, {"password": new_password})
+
+            flash("Password updated")
+            return redirect(url_for(
+                    "profile", username=username))
+            
+        else:
+            flash("Passwords do not match, please try again")
+            return render_template('choose_new_password.html', username=username, user=user)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -143,11 +172,10 @@ def login():
 @app.route("/profile/<username>", methods=["GET", "POST"])
 def profile(username):
     # grab session user's username from db
-    username = mongo.db.users.find_one(
-        {"username": session["user"]})["username"]
+    user = mongo.db.users.find_one({"username": session["user"]})
 
     if session["user"]:
-        return render_template("profile.html", username=username)
+        return render_template("profile.html", user=user)
 
     return redirect(url_for("login"))
 
@@ -199,9 +227,25 @@ def add_term():
 @app.route("/manage_users")
 def manage_users():
     users = list(mongo.db.users.find())
+    levels = mongo.db.access_levels.find().sort("level_name", 1)
     
-    return render_template("manage_users.html", users=users)
+    return render_template("manage_users.html", users=users, levels=levels)
 
+
+@app.route("/add_user", methods=["GET", "POST"])
+def add_user():
+    if request.method == "POST":
+
+        new_user = {
+            "username": request.form.get("username"),
+            "password": request.form.get("password"),
+            "access_level": request.form.get("access_level")
+        }
+
+        mongo.db.users.insert_one(new_user)
+        flash("New user added")
+        return redirect(url_for("manage_users"))
+    
 
 
 

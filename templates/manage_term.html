@@ -44,12 +44,12 @@
                                     <p class="show-comments">{{ term_comment.comment }}</p>
                                 </strong>
                                 {% if user == "admin" %}
-                                <a class="delete-btn" href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id)}}">delete comment</a>
+                                <a class="delete-btn" href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete comment</a>
                                 {% elif user == "notadmin" %}
                                     {% if already_flagged %}
                                     <p>Sorry you have already flagged this comment</p>
                                     {% else %}
-                                    <a class="flag-btn" href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username)}}">flag comment</a>
+                                    <a class="flag-btn" href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag comment</a>
                                     {% endif %}
                                 {% endif %}
                             </div>
