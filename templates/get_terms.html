@@ -14,26 +14,26 @@
 
                     <p>{{ term.type_name }}</p>
                     {% if term.alt_terms|length > 0 %}
+                    <div class=""><p><strong>Also:</strong></p></div>
                     {% for alt_term in term.alt_terms %}
-                    <span><a href="#">{{ alt_term }}</a></span>
+                    <span><p>{{ alt_term }}</p></span>
                     {% endfor %}
                     {% endif %}
                 </div>
                 <div class="card-reveal">
                     <span class="card-title grey-text text-darken-4">{{ term.term_name }}<i
                             class="material-icons right">close</i></span>
-                    {% for incorrect_term in term.incorrect_terms %}
-                    <span>
-                        {% if loop.first %}
-                        <strong>not</strong> 
-                        {% endif %}<a href="#">{{ incorrect_term }}</a></span>
-                    {% if not loop.last %}
-                    <span> or </span>
-                    {% endif %}
+                    <div>
+                        {% if term.incorrect_terms|length > 0%}
+                        <strong>not:</strong> </div>
+                        {% for incorrect_term in term.incorrect_terms %}
+                    <div><p>{{ incorrect_term }}</p></div>
                     {% endfor %}
+                    {% endif %}
+  
                 </div>
                 <div>
-                    <p>{{ term._id }}</p>
+                    
                     <a href="{{ url_for('manage_term', term_id=term._id) }}">View more</a>
                 </div>
             </div>

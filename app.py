@@ -10,6 +10,10 @@ if os.path.exists("env.py"):
     import env
 
 
+
+
+
+
 app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
@@ -30,12 +34,13 @@ def get_terms():
 
 @app.route("/manage_term/<term_id>", methods=["GET", "POST"])
 def manage_term(term_id):
-    user = session["user"]
+    user = session['user']
+    access_level = mongo.db.users.find_one({"username": session['user']})['access_level']
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
     comments = list(mongo.db.comments.find())
     term_comments = mongo.db.comments.find({"rel_term_id": ObjectId(term_id)})
 
-    return render_template("manage_term.html", term=term, term_comments=term_comments, user=user, comments=comments)
+    return render_template("manage_term.html", term=term, term_comments=term_comments, user=user, comments=comments, access_level=access_level)
 
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])
@@ -201,7 +206,7 @@ def add_term():
 
             def split_terms(self):
                 request.form.get(self.to_split)
-                return self.to_split.split(" ")
+                return self.to_split.split(",")
 
         alt_split = Term(alt)
         alternatives = alt_split.split_terms()
@@ -222,6 +227,14 @@ def add_term():
 
     types = mongo.db.types.find().sort("types", 1)
     return render_template("add_term.html", types=types)
+
+
+@app.route("/delete_term/<term_id>")
+def delete_term(term_id):
+    mongo.db.terms.remove({"_id": ObjectId(term_id)})
+
+    flash("Term successfully deleted")
+    return redirect(url_for("get_terms", term_id=term_id))
 
 
 @app.route("/manage_users")

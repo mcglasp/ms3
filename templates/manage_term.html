@@ -11,29 +11,85 @@
                         <i class="material-icons right">more_vert</i></span>
                     <span><a class="btn-floating waves-effect waves-light red"><i
                                 class="material-icons">add</i></a></span>
-
                     <p>{{ term.type_name }}</p>
-                    <p>{{ term._id }}</p>
                     {% if term.alt_terms|length > 0 %}
+                    <div><p><strong>And: </strong></p></div>
                     {% for alt_term in term.alt_terms %}
                     <span><a href="#">{{ alt_term }}</a></span>
                     {% endfor %}
                     {% endif %}
-                </div>
-                <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">{{ term.term_name }}<i
-                            class="material-icons right">close</i></span>
                     {% for incorrect_term in term.incorrect_terms %}
                     <span>
                         {% if loop.first %}
                         <strong>not</strong>
-                        {% endif %}<a href="#">{{ incorrect_term }}</a></span>
+                        {% endif %}
+                        <a href="#">{{ incorrect_term }}</a></span>
                     {% if not loop.last %}
                     <span> or </span>
                     {% endif %}
                     {% endfor %}
                 </div>
+                
+                <div class="card-reveal">
+                    {% if access_level == "administrator" %}
+                    <span class="card-title grey-text text-darken-4"><strong>Manage term:</strong> {{ term.term_name }}<i
+                            class="material-icons right">close</i></span>
+                        <form class="col s12" method="POST" action="{{ url_for('add_term') }}">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Principle term" id="term_name" name="term_name" type="text"
+                                class="validate">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea placeholder="Alternative terms" id="alt_terms" name="alt_terms" type="text"
+                                class="" rows="5" cols="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea placeholder="Incorrect terms" id="incorrect_terms" name="incorrect_terms"
+                                type="text" class="validate" rows="5" cols="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div class="form-outline">
+                                <select id="type_name" name="type_name" class="validate" required>
+                                    <option value="" disabled selected>Type</option>
+                                    {% for type in types %}
+                                    <option value="{{ type.type_name }}">{{ type.type_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input placeholder="Usage notes" id="usage_notes" name="usage_notes" type="text"
+                                class="validate">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <button type="submit" class="btn-large light-blue darken-1 text-shadow">
+                    Add term <i class="fas fa-plus-square right"></i>
+                </button>
+                        </div>
+                            <div class="input-field col s6">
+                            <a href="{{ url_for('delete_term', term_id=term._id) }}" class="btn-large light-blue darken-1 text-shadow">
+                    Delete term <i class="fas fa-plus-square right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+                </div>
+               
                 <div>
+
+
                     <div>
                         {% for term_comment in term_comments %}
                         <div class="container comment-width">
@@ -46,11 +102,8 @@
                                 {% if user == "admin" %}
                                 <a class="delete-btn" href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete comment</a>
                                 {% elif user == "notadmin" %}
-                                    {% if already_flagged %}
-                                    <p>Sorry you have already flagged this comment</p>
-                                    {% else %}
                                     <a class="flag-btn" href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag comment</a>
-                                    {% endif %}
+                                    
                                 {% endif %}
                             </div>
                         </div>
