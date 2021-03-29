@@ -117,33 +117,35 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/choose_new_password", methods=["GET", "POST"])
-def choose_new_password():
-    user = mongo.db.users.find_one({"username": session["user"]})
-
-    return render_template("choose_new_password.html", user=user)
-
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
-    user = mongo.db.users.find_one({"username": session["user"]})
-    username = session["user"]
-    password_one = request.form.get("new_password")
-    password_two = request.form.get("confirm_password")
+    users = mongo.db["users"]
+    existing_user = users.find_one(
+        {"username": request.form.get("username").lower()}) 
 
-    if password_one == password_two:
-        new_password = generate_password_hash(request.form.get("new_password"))
+    if request.method == "POST":
+        new_password = request.form.get("new_password")
 
-        if request.method == "POST":
+        if existing_user:
+            if check_password_hash(existing_user["password"], request.form.get("password")):
+                to_update = {"_id" : existing_user["_id"]}
+                updated_password = {"$set": {"password": generate_password_hash(new_password)}}
+                users.update_one(to_update, updated_password)
+                flash("Password successfully updated")
+                return redirect(url_for(
+                    "profile", username=session["user"]))
 
-            mongo.db.users.update({"username": username}, {"password": new_password})
+            else:
+                # invalid password match
+                flash("Incorrect Username and/or Current Password")
+                return redirect(url_for("profile"))
 
-            flash("Password updated")
-            return redirect(url_for(
-                    "profile", username=username))
-            
         else:
-            flash("Passwords do not match, please try again")
-            return render_template('choose_new_password.html', username=username, user=user)
+            # username doesn't exist
+            flash("Incorrect Username and/or Current Password")
+            return redirect(url_for('profile'))
+
+    return render_template("profile.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

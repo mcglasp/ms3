@@ -14,7 +14,7 @@
 
                     <p>{{ term.type_name }}</p>
                     {% if term.alt_terms|length > 0 %}
-                    <div class=""><p><strong>Also:</strong></p></div>
+                    <div class=""><p><strong>Also: </strong></p></div>
                     {% for alt_term in term.alt_terms %}
                     <span><p>{{ alt_term }}</p></span>
                     {% endfor %}
