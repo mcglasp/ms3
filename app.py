@@ -260,8 +260,36 @@ def add_user():
         mongo.db.users.insert_one(new_user)
         flash("New user added")
         return redirect(url_for("manage_users"))
+
+
+@app.route("/update_user/<user_id>", methods=["POST","GET"])
+def update_user(user_id):
+    if request.method == "POST":
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        access_level = request.form["access_level"]
+
+        if access_level == "read_and_comment":
+            access_level = "Read & Comment"
+        elif access_level == "administrator":
+            access_level = "Administrator"
+        else:
+            access_level = "Read only"
+        
+        mongo.db.users.update_one({"_id": user["_id"]}, {"$set": {"access_level": access_level}})
+        
+        flash("User's access level updated")
+        return redirect(url_for("manage_users", user=user))
+    
+    flash("User's access level was not updated")
+    return redirect(url_for("manage_users", user=user))
     
 
+@app.route("/delete_user/<user_id>")
+def delete_user(user_id):
+    mongo.db.users.remove({"_id": ObjectId(user_id)})
+
+    flash("User deleted")
+    return redirect(url_for("manage_users",  user_id=user_id))
 
 
 

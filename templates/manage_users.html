@@ -46,15 +46,54 @@
     <div class="row">
         <div class="col s12 m6">
             <div class="card">
-                <span class="card-title">{{ user.username }}</span>
                 <div class="card-content">
-                    <p>I am a very simple card. I am good at containing small bits of information. I am convenient
-                        because I require little markup to use effectively.</p>
+                    <div class="row">
+                        <div class="col s6">
+                    <span class="card-title">{{ user.username }}</span></div>
+                    <div class="col s6">
+                        <span>{{ user.access_level }}</span>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <form method="POST" action="{{ url_for('update_user', user_id=user._id) }}">
+                            <div class="row">
+                                <div class="col s6 m6">
+                                    <p>
+                                        <label for="read_only">
+                                            <input id="read_only" name="access_level" value="read_only" type="radio" />
+                                            <span>Read only</span>
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                            <input id="read_and_comment" name="access_level" value="read_and_comment" type="radio" />
+                                            <span>Read & Comment</span>
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label for="administrator">
+                                            <input id="administrator" name="access_level" value="administrator" type="radio" />
+                                            <span>Administrator</span>
+                                        </label>
+                                    </p>
+                                </div>
+                                <div class="col s6 m6">
+                                    <div class="row">
+                                    <button class="btn" type="submit">Update user</button>
+                                    </div>
+                                    <div class="row">
+                                    <a class="btn" href="{{ url_for('delete_user', user_id=user._id) }}">Delete user</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+       </div>
     </div>
-    {% endfor %}
+{% endfor %}
+ 
 </div>
 
 {% endblock %}
