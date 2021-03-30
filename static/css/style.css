@@ -1,14 +1,17 @@
-.card-btn {
-    display: inline;
-}
-.right-float {
-    display: inline;
+.card-header {
+    padding-bottom: 10px;
+    border-bottom: 1px dotted grey;
 }
 
-.comment-width {
-    width: 90%;
+.subtitle {
+    color: grey;
+    display: inline-block;
+    font-size: 65%;
+    text-transform: uppercase;
+    padding-left: 10px;
 }
 
-.rad::after {
-    content:"Administrator";
+.margin-t {
+    margin-top: 10px;
 }
+

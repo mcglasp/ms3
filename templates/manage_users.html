@@ -23,13 +23,15 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
-                                <select placeholder="access_level" id="access_level" name="access_level" type="text"
-                                    class="validate">
-                                    <option value="" disabled selected>Access level</option>
-                                    {% for access_level in levels %}
-                                    <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
-                                    {% endfor %}
-                                </select>
+                                {% for access_level in levels %}
+                                <p>
+                                    <label for="{{ access_level.level_name }}_add">
+                                        <input id="{{ access_level.level_name }}_add" name="access_level_add"
+                                            value="{{ access_level.level_name }}" type="radio" />
+                                        <span>{{ access_level.level_name }}</span>
+                                    </label>
+                                </p>
+                                {% endfor %}
                             </div>
                             <div class="input-field col s6">
                                 <button type="submit" class="btn">Add user</button>
@@ -38,62 +40,90 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<div class="container">
-    {% for user in users %}
-    <div class="row">
-        <div class="col s12 m6">
-            <div class="card">
+
+
+                        <div class="card">
                 <div class="card-content">
-                    <div class="row">
-                        <div class="col s6">
-                    <span class="card-title">{{ user.username }}</span></div>
-                    <div class="col s6">
-                        <span>{{ user.access_level }}</span>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <form method="POST" action="{{ url_for('update_user', user_id=user._id) }}">
-                            <div class="row">
-                                <div class="col s6 m6">
-                                    <p>
-                                        <label for="read_only">
-                                            <input id="read_only" name="access_level" value="read_only" type="radio" />
-                                            <span>Read only</span>
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <label>
-                                            <input id="read_and_comment" name="access_level" value="read_and_comment" type="radio" />
-                                            <span>Read & Comment</span>
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <label for="administrator">
-                                            <input id="administrator" name="access_level" value="administrator" type="radio" />
-                                            <span>Administrator</span>
-                                        </label>
-                                    </p>
-                                </div>
-                                <div class="col s6 m6">
-                                    <div class="row">
-                                    <button class="btn" type="submit">Update user</button>
-                                    </div>
-                                    <div class="row">
-                                    <a class="btn" href="{{ url_for('delete_user', user_id=user._id) }}">Delete user</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <form method="POST" action="{{ url_for('search_users') }}">
+                        <div class="card-title">Search users</div>
+                        <div class="row">
+                            <div class="col s8">
+                        <div class="input-field">
+                <input type="text" name="query" id="query" minlength="3">
+                <label for="query">Search users</label>
+            </div>
+                  </div>
+                  <div class="col s4">
+                <a href="{{ url_for('manage_users') }}" class="btn-small">Reset</a>
+                <button type="submit" class="btn-small">
+                    Search
+                </button>
+            </div>
+                  </div>
+                    </form>
                 </div>
             </div>
-       </div>
-    </div>
-{% endfor %}
- 
-</div>
 
-{% endblock %}
+            
+
+
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6">
+                    {% for user in users %}
+                    {% set counter = loop.index %}
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="row">
+                                <div class="col s12">
+                                    <span class="card-title card-header"><strong>{{ user.username }}:</strong>
+                                        <p class="subtitle">{{ user.access_level }}</p>
+                                    </span>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ url_for('update_user', user_id=user._id) }}">
+                                <div class="row">
+                                    <div class="col s6">
+                                        {% for access_level in levels %}
+
+                                        <p>
+                                            <label for="{{ access_level.level_name }}_{{ counter }}">
+                                                {% if access_level.level_name == user.access_level %}
+                                                <input id="{{ access_level.level_name }}_{{ counter }}"
+                                                    name="access_level" value="{{ access_level.level_name }}"
+                                                    type="radio" checked />
+                                                {% else %}
+                                                <input id="{{ access_level.level_name }}_{{ counter }}"
+                                                    name="access_level" value="{{ access_level.level_name }}"
+                                                    type="radio" />
+                                                {% endif %}
+                                                <span>{{ access_level.level_name }}</span>
+                                            </label>
+                                        </p>
+
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col s1"></div>
+                                    <div class="col s4">
+                                        <div class="row">
+                                            <button class="btn-small margin-t" type="submit">Update user</button>
+                                        </div>
+                                        <div class="row">
+                                            <a class="btn-small"
+                                                href="{{ url_for('delete_user', user_id=user._id) }}">Delete
+                                                user</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% endblock %}

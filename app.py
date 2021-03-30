@@ -108,6 +108,7 @@ def register():
             "password": generate_password_hash(request.form.get("password"))
         }
         mongo.db.users.insert_one(register)
+        updates = mongo.db.updates['new_registrations']
         
         # Put the new user into 'session' cookie
         session["user"] = request.form.get("username").lower()
@@ -239,11 +240,19 @@ def delete_term(term_id):
     return redirect(url_for("get_terms", term_id=term_id))
 
 
-@app.route("/manage_users")
+@app.route("/manage_users", methods=["POST", "GET"])
 def manage_users():
-    users = list(mongo.db.users.find())
-    levels = mongo.db.access_levels.find().sort("level_name", 1)
-    
+    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+    users = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
+
+    return render_template("manage_users.html", users=users, levels=levels)
+
+
+@app.route("/search_users", methods=["POST", "GET"])
+def search_users():
+    query = request.form.get("query")
+    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+    users = list(mongo.db.users.find({"$text": {"$search": query}}))
     return render_template("manage_users.html", users=users, levels=levels)
 
 
@@ -254,7 +263,7 @@ def add_user():
         new_user = {
             "username": request.form.get("username"),
             "password": request.form.get("password"),
-            "access_level": request.form.get("access_level")
+            "access_level": request.form.get("access_level_add")
         }
 
         mongo.db.users.insert_one(new_user)
@@ -262,20 +271,13 @@ def add_user():
         return redirect(url_for("manage_users"))
 
 
-@app.route("/update_user/<user_id>", methods=["POST","GET"])
+@app.route("/update_user/<user_id>", methods=["POST", "GET"])
 def update_user(user_id):
     if request.method == "POST":
         user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
-        access_level = request.form["access_level"]
-
-        if access_level == "read_and_comment":
-            access_level = "Read & Comment"
-        elif access_level == "administrator":
-            access_level = "Administrator"
-        else:
-            access_level = "Read only"
+        acc_level = request.form["access_level"]
         
-        mongo.db.users.update_one({"_id": user["_id"]}, {"$set": {"access_level": access_level}})
+        mongo.db.users.update_one({"_id": user["_id"]}, {"$set": {"access_level": acc_level}})
         
         flash("User's access level updated")
         return redirect(url_for("manage_users", user=user))
@@ -290,7 +292,6 @@ def delete_user(user_id):
 
     flash("User deleted")
     return redirect(url_for("manage_users",  user_id=user_id))
-
 
 
 if __name__ == "__main__":
