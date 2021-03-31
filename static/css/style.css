@@ -69,3 +69,8 @@ li a:hover::after {
     content: "*";
     color: black;
 }
+
+.btn-floating.halfway-fab {
+    right: 15px;
+    bottom: 15px;
+}

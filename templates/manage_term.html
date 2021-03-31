@@ -31,7 +31,7 @@
                 </div>
                 
                 <div class="card-reveal">
-                    {% if access_level == "administrator" %}
+                    {% if access_level|lower == "administrator" %}
                     <span class="card-title grey-text text-darken-4"><strong>Manage term:</strong> {{ term.term_name }}<i
                             class="material-icons right">close</i></span>
                         <form class="col s12" method="POST" action="{{ url_for('add_term') }}">

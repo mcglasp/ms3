@@ -26,13 +26,14 @@ mongo = PyMongo(app)
 @app.route("/")
 @app.route("/get_terms")
 def get_terms():
+    user = session['user']
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
 
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms)
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user)
 
 
-@app.route("/manage_term/<term_id>", methods=["GET", "POST"])
+@app.route("/manage_term/<term_id>")
 def manage_term(term_id):
     user = session['user']
     access_level = mongo.db.users.find_one({"username": session['user']})['access_level']
@@ -41,6 +42,19 @@ def manage_term(term_id):
     term_comments = mongo.db.comments.find({"rel_term_id": ObjectId(term_id)})
 
     return render_template("manage_term.html", term=term, term_comments=term_comments, user=user, comments=comments, access_level=access_level)
+
+
+@app.route("/pin_term/<term_id>")
+def pin_term(term_id):
+    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
+    users = mongo.db["users"]
+    username = users.find_one({"username": session["user"]})["username"]
+    pinner = {"username": username}
+    term_to_pin = {"$push": {"pinned_term": term_id}}
+
+    users.update_one(pinner, term_to_pin)
+
+    return redirect(url_for("get_terms", username=username, term=term))
 
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])
