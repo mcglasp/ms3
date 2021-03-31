@@ -6,29 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Style Guide</title>
 </head>
 
 <body>
-    <nav>
+    <nav class="z-depth-0 light-bg">
         <div class="nav-wrapper">
-            <a href="{{ url_for('get_terms') }}" class="brand-logo">MyHouse</a>
-            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-            <ul class="right hide-on-med-and-down">
+            <a href="{{ url_for('get_terms') }}" class="brand-logo logo grey-text text-darken-3">myHouse</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons grey-text text-darken-3">menu</i></a>
+            <ul class="right hide-on-med-and-down b-border">
                 {% if session.user %}
-                <li><a href="">Search</a></li>
-                <li><a href="">Make a suggestion</a></li>
-                <li><a href="{{ url_for('add_term') }}">Add terms</a></li>
-                <li><a href="{{ url_for('manage_users') }}">Manage users</a></li>
-                <li><a href="{{ url_for('logout') }}">Log out</a></li>
-                <li><a href="{{ url_for('profile', username=session['user']) }}">Profile</a></li>
+                <li><a class="w-hover grey-text text-darken-3" href="">Search</a></li>
+                <li><a class="grey-text text-darken-3" href="">Make a suggestion</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Add terms</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('manage_users') }}">Manage users</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('logout') }}">Log out</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('profile', username=session['user']) }}">Profile</a></li>
                 {% else %}
-                <li><a href="{{ url_for('register') }}">Register</a></li>
-                <li><a href="{{ url_for('login') }}">Log in</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('register') }}">Register</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('login') }}">Log in</a></li>
                 {% endif %}
             </ul>
         </div>
+           
+      
+   
     </nav>
 
     <ul class="sidenav" id="mobile-demo">
@@ -50,7 +55,8 @@
         {% block content %}
         {% endblock %}
     </main>
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

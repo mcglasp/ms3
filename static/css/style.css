@@ -1,3 +1,55 @@
+body {
+    background-color: #f5f5f5;
+    font-family: 'Nanum Myeongjo', serif;
+}
+
+
+.light-bg {
+    background-color: #f5f5f5;
+}
+
+nav {
+    border-bottom: 1px dotted black;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    margin: 0;
+}
+
+main {
+    margin-top: 100px;
+    position: relative;
+}
+
+.logo {
+    margin-left: 20px;
+}
+
+nav-wrapper:hover {
+    background-color: #f5f5f5;
+}
+
+li a::after {
+    content: "*";
+    color: #f5f5f5;
+}
+
+h2 {
+    margin-left: 20px;
+}
+
+.button-override {
+    font-family: 'Nanum Myeongjo', serif;
+    width: 135px;
+    box-shadow: none;
+}
+
+.right-col {
+    float: right;
+    height: 80vh;
+    overflow: scroll;
+}
+
 .card-header {
     padding-bottom: 10px;
     border-bottom: 1px dotted grey;
@@ -11,7 +63,9 @@
     padding-left: 10px;
 }
 
-.margin-t {
-    margin-top: 10px;
-}
 
+
+li a:hover::after {
+    content: "*";
+    color: black;
+}
