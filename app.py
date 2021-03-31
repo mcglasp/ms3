@@ -29,8 +29,9 @@ def get_terms():
     user = session['user']
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
+    alt_terms = list(mongo.db.terms.alt_terms.find())
 
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, user=user)
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user)
 
 
 @app.route("/manage_term/<term_id>")
@@ -244,6 +245,13 @@ def add_term():
 
     types = mongo.db.types.find().sort("types", 1)
     return render_template("add_term.html", types=types)
+
+
+@app.route("/search_terms", methods=["POST", "GET"])
+def search_terms():
+    query = request.form.get("query")
+    terms = list(mongo.db.terms.find({"$text": {"$search": query}}))
+    return render_template("get_terms.html", terms=terms)
 
 
 @app.route("/delete_term/<term_id>")
