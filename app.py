@@ -26,12 +26,14 @@ mongo = PyMongo(app)
 @app.route("/")
 @app.route("/get_terms")
 def get_terms():
-    user = session['user']
+    user = mongo.db.users.find_one({"username": session['user']})
+    username = mongo.db.users.find_one({"username": session['user']})['username']
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
     alt_terms = list(mongo.db.terms.alt_terms.find())
-
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user)
+    pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
+    
+    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, username=username, pinned_terms=pinned_terms)
 
 
 @app.route("/manage_term/<term_id>")
@@ -48,14 +50,31 @@ def manage_term(term_id):
 @app.route("/pin_term/<term_id>")
 def pin_term(term_id):
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
+    term_name = term['term_name']
     users = mongo.db["users"]
     username = users.find_one({"username": session["user"]})["username"]
     pinner = {"username": username}
-    term_to_pin = {"$push": {"pinned_term": term_id}}
+    term_to_pin = {"$push": {"pinned_terms": term_name}}
+    user_record_field = users.count_documents({"$and": [{"username": username}, {"pinned_terms": term_name}]})
 
-    users.update_one(pinner, term_to_pin)
+    if user_record_field > 0:
+        flash("Sorry, you've already pinned this term")
+        print(user_record_field)
+        return redirect(url_for("get_terms", username=username, term=term, term_name=term_name))
+    else:
+        print(user_record_field)
+        users.update_one(pinner, term_to_pin)
+        flash("Term pinned to your dashboard")
 
-    return redirect(url_for("get_terms", username=username, term=term))
+    return redirect(url_for("get_terms", username=username, term=term, term_name=term_name))
+
+
+@app.route("/remove_pin/<pinned>/<user_id>")
+def remove_pin(pinned, user_id):   
+    mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$pull": {"pinned_terms": pinned}})
+    
+    flash("Pin successfully deleted")
+    return redirect(url_for("get_terms"))
 
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])

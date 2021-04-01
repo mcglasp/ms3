@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="center-align"> dashboard</h2>
+<h2 class="center-align"> {{ user.username }}'s dashboard</h2>
 <div class="container">
     <div class="row">
         <div class="col s12 m6 col-fix">
             <div class="card z-depth-0">
                 <div class="card-content">
+<div class="card-title">Your pinned terms</div>
+{% for pinned in pinned_terms %}
+<div class="chip">
+{{ pinned }}   <a href="{{ url_for('remove_pin', pinned=pinned, user_id=user._id) }}"><i class="close material-icons">close</i></a>
+  </div>
+{% endfor %}
 
                 </div>
                         </div>
