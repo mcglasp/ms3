@@ -7,12 +7,21 @@
             <div class="card z-depth-0">
                 <div class="card-content">
 <div class="card-title">Your pinned terms</div>
+<div class="row">
+{% if pinned_terms|length > 0 %}
 {% for pinned in pinned_terms %}
+<div class="col">
 <div class="chip">
-{{ pinned }}   <a href="{{ url_for('remove_pin', pinned=pinned, user_id=user._id) }}"><i class="close material-icons">close</i></a>
+{{ pinned }}<a href="{{ url_for('remove_pin', pinned=pinned, user_id=user._id) }}"><i class="close material-icons">close</i></a>
+  </div>
   </div>
 {% endfor %}
-
+{% else %}
+<div class="col">
+<p>Pin your most searched-for terms here!</p>
+  </div>
+{% endif %}
+</div>
                 </div>
                         </div>
 

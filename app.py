@@ -31,8 +31,14 @@ def get_terms():
     terms = list(mongo.db.terms.find())
     incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
     alt_terms = list(mongo.db.terms.alt_terms.find())
-    pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
-    
+
+    try:
+        pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
+    except KeyError:
+        pinned_terms = []
+    else:
+        pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
+
     return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, username=username, pinned_terms=pinned_terms)
 
 
@@ -139,10 +145,10 @@ def register():
 
         register = {
             "username": request.form.get("username").lower(),
-            "password": generate_password_hash(request.form.get("password"))
+            "password": generate_password_hash(request.form.get("password")),
+            "access_level": "Read only"
         }
         mongo.db.users.insert_one(register)
-        updates = mongo.db.updates['new_registrations']
         
         # Put the new user into 'session' cookie
         session["user"] = request.form.get("username").lower()
@@ -163,7 +169,7 @@ def change_password():
 
         if existing_user:
             if check_password_hash(existing_user["password"], request.form.get("password")):
-                to_update = {"_id" : existing_user["_id"]}
+                to_update = {"_id": existing_user["_id"]}
                 updated_password = {"$set": {"password": generate_password_hash(new_password)}}
                 users.update_one(to_update, updated_password)
                 flash("Password successfully updated")
@@ -302,8 +308,8 @@ def add_user():
     if request.method == "POST":
 
         new_user = {
-            "username": request.form.get("username"),
-            "password": request.form.get("password"),
+            "username": request.form.get("username").lower(),
+            "password": generate_password_hash(request.form.get("password")),
             "access_level": request.form.get("access_level_add")
         }
 
