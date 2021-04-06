@@ -23,24 +23,29 @@ app.secret_key = os.environ.get("SECRET_KEY")
 mongo = PyMongo(app)
 
 
+
+
 @app.route("/")
 @app.route("/get_terms")
-def get_terms():
-    user = mongo.db.users.find_one({"username": session['user']})
-    username = mongo.db.users.find_one({"username": session['user']})['username']
-    terms = list(mongo.db.terms.find())
-    incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
-    alt_terms = list(mongo.db.terms.alt_terms.find())
-
+def get_terms():  
     try:
-        pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
+        user = session['user']
+        terms = list(mongo.db.terms.find())
+        incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
+        alt_terms = list(mongo.db.terms.alt_terms.find())
+
+        try:
+            pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
+        except KeyError:
+            pinned_terms = []
+        else:
+            pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
+
+        return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, pinned_terms=pinned_terms)
+    
     except KeyError:
-        pinned_terms = []
-    else:
-        pinned_terms = list(mongo.db.users.find_one({"username": username})['pinned_terms'])
-
-    return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, username=username, pinned_terms=pinned_terms)
-
+        return redirect(url_for('login'))
+    
 
 @app.route("/manage_term/<term_id>")
 def manage_term(term_id):
@@ -48,7 +53,7 @@ def manage_term(term_id):
     access_level = mongo.db.users.find_one({"username": session['user']})['access_level']
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
     comments = list(mongo.db.comments.find())
-    term_comments = mongo.db.comments.find({"rel_term_id": ObjectId(term_id)})
+    term_comments = mongo.db.comments.find({"rel_term_name": term["term_name"]})
 
     return render_template("manage_term.html", term=term, term_comments=term_comments, user=user, comments=comments, access_level=access_level)
 
@@ -58,29 +63,31 @@ def pin_term(term_id):
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
     term_name = term['term_name']
     users = mongo.db["users"]
-    username = users.find_one({"username": session["user"]})["username"]
-    pinner = {"username": username}
+    user = session['user']
+    pinner = {"username": user}
     term_to_pin = {"$push": {"pinned_terms": term_name}}
-    user_record_field = users.count_documents({"$and": [{"username": username}, {"pinned_terms": term_name}]})
+    user_record_field = users.count_documents({"$and": [{"username": user}, {"pinned_terms": term_name}]})
 
     if user_record_field > 0:
         flash("Sorry, you've already pinned this term")
         print(user_record_field)
-        return redirect(url_for("get_terms", username=username, term=term, term_name=term_name))
+        return redirect(url_for("get_terms", user=user, term=term, term_name=term_name))
     else:
         print(user_record_field)
         users.update_one(pinner, term_to_pin)
         flash("Term pinned to your dashboard")
 
-    return redirect(url_for("get_terms", username=username, term=term, term_name=term_name))
+    return redirect(url_for("get_terms", user=user, term=term, term_name=term_name))
 
 
-@app.route("/remove_pin/<pinned>/<user_id>")
-def remove_pin(pinned, user_id):   
-    mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$pull": {"pinned_terms": pinned}})
+@app.route("/remove_pin/<pinned>/<user>")
+def remove_pin(pinned, user):
+    user = session['user']
+    print(user)
+    mongo.db.users.update_one({"username": user}, {"$pull": {"pinned_terms": pinned}})
     
     flash("Pin successfully deleted")
-    return redirect(url_for("get_terms"))
+    return redirect(url_for("get_terms", user=session['user']))
 
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])
@@ -93,10 +100,10 @@ def add_comment(term_id):
         comment = {
             "timestamp": now.strftime("%d/%m/%Y, %H:%M:%S"),
             "comment": request.form.get("comment"),
-            "commenter": session['user'],
-            "rel_term_id": term["_id"]
+            "user": session['user'],
+            "rel_term_name": term['term_name']
             }
-
+        print("gah")
         mongo.db.comments.insert_one(comment)
         flash("Hooray it worked!")
         return redirect(url_for("manage_term", term_id=term_id))
@@ -107,6 +114,13 @@ def delete_comment(comment_id, term_id):
     mongo.db.comments.remove({"_id": ObjectId(comment_id)})
     flash("Comment successfully deleted")
     return redirect(url_for("manage_term", term_id=term_id))
+
+
+@app.route("/view_comments")
+def view_comments():
+    comments = mongo.db.comments.find()
+
+    return render_template("view_comments.html", comments=comments)
 
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
@@ -239,6 +253,7 @@ def logout():
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
     if request.method == "POST":
+        user = session['user']
         alt = request.form.get("alt_terms")
         inc = request.form.get("incorrect_terms")
 
@@ -249,7 +264,11 @@ def add_term():
 
             def split_terms(self):
                 request.form.get(self.to_split)
-                return self.to_split.split(",")
+                split_len = len(self.to_split)
+                if split_len > 0:
+                    return self.to_split.split(",")
+                else:
+                    return None
 
         alt_split = Term(alt)
         alternatives = alt_split.split_terms()
@@ -261,7 +280,8 @@ def add_term():
             "alt_terms": alternatives,
             "incorrect_terms": incorrect,
             "usage_notes": request.form.get("usage_notes"),
-            "type_name": request.form.get("type_name")
+            "type_name": request.form.get("type_name"),
+            "pending": False if user == 'admin' else True
             }
 
         mongo.db.terms.insert_one(term)
@@ -274,9 +294,31 @@ def add_term():
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
+    
     query = request.form.get("query")
     terms = list(mongo.db.terms.find({"$text": {"$search": query}}))
-    return render_template("get_terms.html", terms=terms)
+
+    if len(terms) == 0:
+        print("no results!")
+
+    user = session['user']
+
+    try:
+        pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
+    except KeyError:
+        pinned_terms = []
+    else:
+        pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
+
+    return render_template("get_terms.html", terms=terms, user=session['user'], pinned_terms=pinned_terms)
+
+
+@app.route("/got_to_term/<pinned>")
+def go_to_term(pinned):
+    pin = mongo.db.terms.find_one({"term_name": pinned})
+    term_id = pin["_id"]
+    return redirect(url_for("manage_term", term_id=term_id))
+   
 
 
 @app.route("/delete_term/<term_id>")

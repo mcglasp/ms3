@@ -3,6 +3,11 @@ body {
     font-family: 'Nanum Myeongjo', serif;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 
 .light-bg {
     background-color: #f5f5f5;
@@ -54,6 +59,7 @@ h2 {
 .card-header {
     padding-bottom: 10px;
     border-bottom: 1px dotted grey;
+    display: inline;
 }
 
 .subtitle {
@@ -64,6 +70,33 @@ h2 {
     padding-left: 10px;
 }
 
+.comment-width {
+    width: 95%;
+    padding: 0;
+}
+
+.comment-head {
+    border-bottom: 0.1px dotted grey;
+    padding: 0.3rem 0.3rem 0.1rem 0.3rem;
+}
+
+.timestamp {
+    font-size: 70%;
+    padding: 0rem;
+    margin: 0;
+
+}
+
+.comment-user {
+    font-size: 80%;
+    padding: 0rem;
+    margin: 0;
+}
+
+.comment {
+    margin: 0;
+    padding: 1rem; 
+}
 
 
 li a:hover::after {
@@ -73,5 +106,24 @@ li a:hover::after {
 
 .btn-floating.halfway-fab {
     right: 15px;
-    bottom: 15px;
+    top: 15px;
+}
+
+.comment-btn {
+    display: block;
+    margin: auto;
+    
+}
+
+
+
+.more{
+    display: block;
+}
+
+.card-subhead {
+    font-size: 1rem;
+    display: inline;
+    margin-left: 10px;
+
 }

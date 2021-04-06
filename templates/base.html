@@ -20,11 +20,12 @@
             <ul class="right hide-on-med-and-down b-border">
                 {% if session.user %}
                 <li><a class="w-hover grey-text text-darken-3" href="">Search</a></li>
-                <li><a class="grey-text text-darken-3" href="">Make a suggestion</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Add terms</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('manage_users') }}">Manage users</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('logout') }}">Log out</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('profile', username=session['user']) }}">Profile</a></li>
+                <li><a class="grey-text text-darken-3" href="{{ url_for('view_comments') }}">View comments</a></li>
                 {% else %}
                 <li><a class="grey-text text-darken-3" href="{{ url_for('register') }}">Register</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('login') }}">Log in</a></li>
