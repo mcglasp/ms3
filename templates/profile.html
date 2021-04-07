@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome to myHouse {{ user.username }}</h2>
+<h2>Welcome to myHouse {{ user }}</h2>
 <p></p>
 <p>
-<h3 class="center-align">Change password for {{ user.username }}</h3>
+<h3 class="center-align">Change password for {{ user }}</h3>
 
 <div class="row">
     <form class="col s12 m8 offset-m2" method="POST"
-        action="{{ url_for('change_password', user_id=user._id, username=username) }}">
+        action="{{ url_for('change_password', user_id=user._id, user=user) }}">
             <div class="row">
                 <div class="input-field col s12">
                     <input id="username" name="username" type="text" class="validate">

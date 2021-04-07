@@ -30,9 +30,14 @@ mongo = PyMongo(app)
 def get_terms():  
     try:
         user = session['user']
+        access_level = mongo.db.users.find_one({"username": user})['access_level'].lower()
+        levels = list(mongo.db.access_levels.find())
         terms = list(mongo.db.terms.find())
         incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
         alt_terms = list(mongo.db.terms.alt_terms.find())
+        new_registrations = list(mongo.db.users.find())
+        flagged_comments = mongo.db.comments.find().sort('timestamp', 1)
+        suggested_terms = mongo.db.terms.find({"pending": True})
 
         try:
             pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
@@ -41,10 +46,14 @@ def get_terms():
         else:
             pinned_terms = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
 
-        return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, pinned_terms=pinned_terms)
+        return render_template("get_terms.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, pinned_terms=pinned_terms, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms)
     
     except KeyError:
         return redirect(url_for('login'))
+
+
+
+
     
 
 @app.route("/manage_term/<term_id>")
@@ -115,12 +124,6 @@ def delete_comment(comment_id, term_id):
     flash("Comment successfully deleted")
     return redirect(url_for("manage_term", term_id=term_id))
 
-
-@app.route("/view_comments")
-def view_comments():
-    comments = mongo.db.comments.find()
-
-    return render_template("view_comments.html", comments=comments)
 
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
@@ -216,7 +219,7 @@ def login():
                 session["user"] = request.form.get("username").lower()
                 flash("Welcome, {}".format(request.form.get("username")))
                 return redirect(url_for(
-                    "profile", username=session["user"]))
+                    "get_terms", username=session["user"]))
 
             else:
                 # invalid password match
@@ -231,10 +234,11 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/profile/<username>", methods=["GET", "POST"])
-def profile(username):
+@app.route("/profile/<user>", methods=["GET", "POST"])
+def profile(user):
     # grab session user's username from db
-    user = mongo.db.users.find_one({"username": session["user"]})
+    user = session["user"]
+
 
     if session["user"]:
         return render_template("profile.html", user=user)
@@ -252,8 +256,10 @@ def logout():
 
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
+    user = session['user']
+    access_level = mongo.db.users.find_one({"username": user})['access_level']
     if request.method == "POST":
-        user = session['user']
+        
         alt = request.form.get("alt_terms")
         inc = request.form.get("incorrect_terms")
 
@@ -268,7 +274,7 @@ def add_term():
                 if split_len > 0:
                     return self.to_split.split(",")
                 else:
-                    return None
+                    return []
 
         alt_split = Term(alt)
         alternatives = alt_split.split_terms()
@@ -281,7 +287,8 @@ def add_term():
             "incorrect_terms": incorrect,
             "usage_notes": request.form.get("usage_notes"),
             "type_name": request.form.get("type_name"),
-            "pending": False if user == 'admin' else True
+            "pending": False if access_level == 'administrator' else True,
+            "created_by": session['user']
             }
 
         mongo.db.terms.insert_one(term)
@@ -289,7 +296,7 @@ def add_term():
         return redirect(url_for("add_term"))
 
     types = mongo.db.types.find().sort("types", 1)
-    return render_template("add_term.html", types=types)
+    return render_template("add_term.html", types=types, user=user)
 
 
 @app.route("/search_terms", methods=["POST", "GET"])

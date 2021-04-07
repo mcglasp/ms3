@@ -127,3 +127,7 @@ li a:hover::after {
     margin-left: 10px;
 
 }
+
+.new_reg {
+    display: inline;
+}

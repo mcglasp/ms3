@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% if user.access_level == "administrator" %}
 <h2>Add terms</h2>
+{% else %}
+<h2>Suggest a term</h2>
+                    {% endif %}
+
 
 
 <div class="container">
             <div class="card z-depth-0">
                 <div class="card-content">
+                {% if user.access_level == "administrator" %}
                     <div class="card-title">Add term</div>
+{% else %}
+                    <div class="card-title">Suggest term</div>
+                    {% endif %}
                     <form class="col s12" method="POST" action="{{ url_for('add_term') }}">
                         <div class="input-field col s6">
                             <input id="term_name" name="term_name" type="text"
@@ -41,16 +50,18 @@
                                 <label for="usage_notes">Usage notes</label>
                         </div>
                         <div class="input-field col s6">
-                            <button type="submit" class="btn-small text-shadow">
-                                Add term <i class="fas fa-plus-square right"></i>
+                            <button type="submit" class="btn-small
+                             text-shadow">
+                             {% if user.access_level == "administrator" %}
+                                Add term
+                                {% else %}
+                                Make suggestion
+                                {% endif %}
+                                <i class="fas fa-plus-square right"></i>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
-
-
-
 {% endblock %}
