@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col s5">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4">
+                        {{ term.term_name }}
+                        <i class="material-icons right">more_vert</i></span>
+                    <span><a class="btn-floating waves-effect waves-light red"><i
+                                class="material-icons">add</i></a></span>
+                    <p>{{ term.type_name }}</p>
+                    {% if term.alt_terms|length > 0 %}
+                    <div>
+                        <p><strong>And: </strong></p>
+                    </div>
+                    {% for alt_term in term.alt_terms %}
+                    <span><a href="#">{{ alt_term }}</a></span>
+                    {% endfor %}
+                    {% endif %}
+                    {% for incorrect_term in term.incorrect_terms %}
+                    <span>
+                        {% if loop.first %}
+                        <strong>not</strong>
+                        {% endif %}
+                        <a href="#">{{ incorrect_term }}</a></span>
+                    {% if not loop.last %}
+                    <span> or </span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+               
+
+                <!-- Comments -->
+                
+                        {% for term_comment in term_comments %}
+                        <div class="container comment-width">
+                            {% if loop.index % 2 == 0 %}
+                            <div class="card z-depth-0 teal lighten-4">
+                                {% else %}
+                                <div class="card z-depth-0 teal lighten-5 pad-3">
+                                    {% endif %}
+                                    <div class="comment-head">
+                                        <p class="timestamp">{{ term_comment.timestamp }}</p>
+                                        <p class="comment-user">{{ term_comment.user }} said:</p>
+                                    </div>
+                                    <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
+                                    {% if user == "admin" %}
+                                    <a class="delete-btn"
+                                        href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete
+                                        comment</a>
+                                    {% elif user == "notadmin" %}
+                                    <a class="flag-btn"
+                                        href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag
+                                        comment</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        
+                        
+                        <div class="card z-depth-0">
+                            <div class="card-content">
+                        <div class="input-field comment-width">
+                            <p class="comment-username">Comment as {{ user }}</p>
+                            <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
+                                <textarea name="comment" id="comment" cols="30" rows="10" type="text"
+                                    class="materialize-textarea"></textarea>
+                                <button type="submit" class="btn-small comment-btn">Add comment</button>
+                             
+                            </form>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        
+        {% endblock %}

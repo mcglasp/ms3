@@ -1,65 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
-
 <div class="container">
-    <div class="row">
-        <div class="col s5">
-            <div class="card">
-                <div class="card-content">
+<div class="card z-depth-0">
+    <div class="card-content">
                     <span class="card-title activator grey-text text-darken-4">
-                        {{ term.term_name }}
-                        <i class="material-icons right">more_vert</i></span>
-                    <span><a class="btn-floating waves-effect waves-light red"><i
-                                class="material-icons">add</i></a></span>
-                    <p>{{ term.type_name }}</p>
-                    {% if term.alt_terms|length > 0 %}
-                    <div>
-                        <p><strong>And: </strong></p>
-                    </div>
-                    {% for alt_term in term.alt_terms %}
-                    <span><a href="#">{{ alt_term }}</a></span>
-                    {% endfor %}
-                    {% endif %}
-                    {% for incorrect_term in term.incorrect_terms %}
-                    <span>
-                        {% if loop.first %}
-                        <strong>not</strong>
-                        {% endif %}
-                        <a href="#">{{ incorrect_term }}</a></span>
-                    {% if not loop.last %}
-                    <span> or </span>
-                    {% endif %}
-                    {% endfor %}
-                </div>
+                        Manage term</span>
 
-                <div class="card-reveal">
-                    {% if access_level|lower == "administrator" %}
-                    <span class="card-title grey-text text-darken-4"><strong>Manage term:</strong>
-                        {{ term.term_name }}<i class="material-icons right">close</i></span>
-                    <form class="col s12" method="POST" action="{{ url_for('add_term') }}">
+                   
+                    <form class="col s12" method="POST" action="{{ url_for('update_term', term_id=term._id) }}">
                         <div class="row">
                             <div class="input-field col s6">
-                                <input placeholder="Principle term" id="term_name" name="term_name" type="text"
+                                <input value="{{ term.term_name }}" id="term_name" name="term_name" type="text"
                                     class="validate">
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea placeholder="Alternative terms" id="alt_terms" name="alt_terms" type="text"
-                                    class="" rows="5" cols="4"></textarea>
+                                <textarea value="{{ term.alt_name }}"" id=" alt_terms" name="alt_terms" type="text"
+                                    class="" rows="5" cols="4"> 
+                                    {%- for alt_term in term.alt_terms -%}
+                                   
+                                        {{- alt_term -}} 
+                                       
+                                    {%- endfor -%}</textarea>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea placeholder="Incorrect terms" id="incorrect_terms" name="incorrect_terms"
-                                    type="text" class="validate" rows="5" cols="4"></textarea>
+                                <textarea value="{{ term.incorrect_terms }}" id="incorrect_terms" name="incorrect_terms"
+                                    type="text" class="validate" rows="5" cols="4">
+                                    {% if incorrect_terms|length > 0 %}
+                                 {%- for incorrect_term in term.incorrect_terms -%}
+                                   
+                                        {{- incorrect_term -}} 
+                                       
+                                    {%- endfor -%}
+                                    {% endif %}
+                                </textarea>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <div class="form-outline">
                                     <select id="type_name" name="type_name" class="validate" required>
-                                        <option value="" disabled selected>Type</option>
+                                        <option value="{{ term.type_name }}" disabled selected>{{ term.type_name }}</option>
                                         {% for type in types %}
                                         <option value="{{ type.type_name }}">{{ type.type_name }}</option>
                                         {% endfor %}
@@ -69,14 +53,14 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input placeholder="Usage notes" id="usage_notes" name="usage_notes" type="text"
+                                <input value="{{ term.usage_notes }}" id="usage_notes" name="usage_notes" type="text"
                                     class="validate">
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <button type="submit" class="btn-large light-blue darken-1 text-shadow">
-                                    Add term <i class="fas fa-plus-square right"></i>
+                                    Update term <i class="fas fa-plus-square right"></i>
                                 </button>
                             </div>
                             <div class="input-field col s6">
@@ -87,54 +71,6 @@
                             </div>
                         </div>
                     </form>
-                    {% endif %}
-                </div>
-
-                <!-- Comments -->
-                
-                        {% for term_comment in term_comments %}
-                        <div class="container comment-width">
-                            {% if loop.index % 2 == 0 %}
-                            <div class="card z-depth-0 teal lighten-4">
-                                {% else %}
-                                <div class="card z-depth-0 teal lighten-5 pad-3">
-                                    {% endif %}
-                                    <div class="comment-head">
-                                        <p class="timestamp">{{ term_comment.timestamp }}</p>
-                                        <p class="comment-user">{{ term_comment.user }} said:</p>
-                                    </div>
-                                    <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
-                                    {% if user == "admin" %}
-                                    <a class="delete-btn"
-                                        href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete
-                                        comment</a>
-                                    {% elif user == "notadmin" %}
-                                    <a class="flag-btn"
-                                        href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag
-                                        comment</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        
-                        
-                        <div class="card z-depth-0">
-                            <div class="card-content">
-                        <div class="input-field comment-width">
-                            <p class="comment-username">Comment as {{ user }}</p>
-                            <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
-                                <textarea name="comment" id="comment" cols="30" rows="10" type="text"
-                                    class="materialize-textarea"></textarea>
-                                <button type="submit" class="btn-small comment-btn">Add comment</button>
-                             
-                            </form>
-                            </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-        
-        {% endblock %}
+</div>
+       </div> </div>
+{% endblock %}

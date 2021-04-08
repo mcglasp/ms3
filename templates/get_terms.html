@@ -70,7 +70,7 @@
                                 {% for access_level in levels %}
                                 <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
                                 {% endfor %}
-                                </select>
+                            </select>
                             </div>
                             <div class="col m3">
                             <button class="btn-small" type="submit">Update</button>
@@ -120,6 +120,7 @@
                             </span>
                             {% endfor %}
                             {% endif %}
+                             <a class="more" href="{{ url_for('view_term', term_id=term._id) }}">View more</a>
                              <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">View more</a>
                         </div>
                       </div>
