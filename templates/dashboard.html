@@ -10,11 +10,11 @@
                     <div class="card-title">Your pinned terms</div>
                     <div class="row">
                         {% if pinned_terms|length > 0 %}
-                        {% for pinned in pinned_terms %}
+                        {% for pinned_term in pinned_terms %}
                         <div class="col">
                             <div class="chip">
-                                <a class="link" href="{{ url_for('go_to_term', pinned=pinned) }}">{{ pinned }}</a><a
-                                    href="{{ url_for('remove_pin', pinned=pinned, user=user) }}"><i
+                                <a class="link" href="{{ url_for('go_to_term', term_id=pinned_term._id) }}">{{ pinned_term.term_name }}</a><a
+                                    href="{{ url_for('remove_pin', pinned_term=pinned_term._id) }}"><i
                                         class="close material-icons">close</i></a>
                             </div>
                         </div>
@@ -31,7 +31,7 @@
             <!-- Search terms -->
             <div class="card z-depth-0">
                 <div class="card-content">
-                    <form method="POST" action="{{ url_for('search_terms', user=user) }}">
+                    <form method="POST" action="{{ url_for('search_terms') }}">
                         <div class="card-title">Search terms</div>
                         <div class="row">
                             <div class="col s7">
@@ -43,7 +43,7 @@
                             <div class="col s1"></div>
                             <div class="col s4">
                                 <div class="row">
-                                    <a href="{{ url_for('get_terms') }}" class="btn-small button-override">Reset</a>
+                                    <a href="{{ url_for('dashboard') }}" class="btn-small button-override">Reset</a>
                                 </div>
                                 <div class="row">
                                     <button type="submit" class="btn-small button-override">
@@ -60,6 +60,7 @@
             <div class="card z-depth-0">
                 <div class="card-content">
                         <div class="card-title">Recent Activity</div>
+                        
                            {% for new_reg in new_registrations %}
                         <div class="row">
                         <form class="new_reg" method="POST" action="{{ url_for('update_user', user_id=new_reg._id) }}">
@@ -88,6 +89,14 @@
                               {% endfor %}
 
                               {% for flagged in flagged_comments %}
+                              
+                              <div class="row">
+                              <div class="col m8">
+                                  <p><span class="truncate inline">"{{ flagged.comment }}"</span> <a class="more" href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
+                                        class="close material-icons">close</i></a></p>
+                              </div>
+                              </div>
+                              
                               {% endfor %}
                             </div>
                             </div>
@@ -97,6 +106,25 @@
 
         <!-- Term list Should return a random assortment until search is performed. NOT YET IMPLEMENTED-->
         <div class="col s6 m6 right-col">
+            <div class="row">
+                <div class="col s12">
+                    <div class="card z-depth-0">
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4 card-header">
+                                <p>Browse style guide</p>
+                                </span>
+                                
+                                <div class="row">
+                                    {% for letter in letters %}
+                                <div class="col s1"><div class="chip"><a href="{{ url_for('get_category', letter=letter) }}">{{ letter }}</a></div></div>
+                                
+                                {% endfor %}
+                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
             {% if terms|length == 0 %}
             <p>Your search returned no results</p>
             {% else %}
@@ -110,7 +138,7 @@
                                 <p>{{ term.term_name }}<em class="card-subhead">{{ term.type_name }}</em></p>
                                 </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
                                 href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
-                            {% if term.alt_terms != None %}
+                            {% if term.alt_terms|length > 0 %}
                             <strong>Also: </strong>
                             {% for alt_term in term.alt_terms %}
                             <span>
@@ -121,7 +149,9 @@
                             {% endfor %}
                             {% endif %}
                              <a class="more" href="{{ url_for('view_term', term_id=term._id) }}">View more</a>
-                             <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">View more</a>
+                             {% if access_level == "administrator" %}
+                             <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">Manage term</a>
+                             {% endif %}
                         </div>
                       </div>
                     </div>

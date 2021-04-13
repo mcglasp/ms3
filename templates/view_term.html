@@ -9,27 +9,33 @@
                     <span class="card-title activator grey-text text-darken-4">
                         {{ term.term_name }}
                         <i class="material-icons right">more_vert</i></span>
-                    <span><a class="btn-floating waves-effect waves-light red"><i
-                                class="material-icons">add</i></a></span>
+                    <a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
+                                href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
                     <p>{{ term.type_name }}</p>
-                    {% if term.alt_terms|length > 0 %}
-                    <div>
-                        <p><strong>And: </strong></p>
-                    </div>
+
+                    <p>{{ term.created_by }}</p>
+                    
+                    <div>{% if term.alt_terms|length > 0 %}
+                    
+                        <strong>And: </strong>
+                    
                     {% for alt_term in term.alt_terms %}
                     <span><a href="#">{{ alt_term }}</a></span>
                     {% endfor %}
                     {% endif %}
+                    </div>
+                    <div>
                     {% for incorrect_term in term.incorrect_terms %}
                     <span>
                         {% if loop.first %}
-                        <strong>not</strong>
+                        <strong>Not</strong>
                         {% endif %}
                         <a href="#">{{ incorrect_term }}</a></span>
                     {% if not loop.last %}
                     <span> or </span>
                     {% endif %}
                     {% endfor %}
+                    </div>
                 </div>
 
                
@@ -48,11 +54,11 @@
                                         <p class="comment-user">{{ term_comment.user }} said:</p>
                                     </div>
                                     <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
-                                    {% if user == "admin" %}
+                                    {% if access_level == "administrator" %}
                                     <a class="delete-btn"
                                         href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete
                                         comment</a>
-                                    {% elif user == "notadmin" %}
+                                    {% elif access_level == "read and comment" %}
                                     <a class="flag-btn"
                                         href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag
                                         comment</a>
