@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="center-align"> {{ user }}'s dashboard</h2>
+{% if to_change_pword == True %}
+                <p>Looks like you're new here, please <a href="{{ url_for('profile', user=session['user']) }}">change your password.</a></p>
+{% else %}
+<h2 class="center-align"> {{ user.username }}'s dashboard</h2>
 <div class="container">
     <div class="row">
         <div class="col s12 m6 col-fix">
@@ -125,7 +128,10 @@
             </div>
         </div>
         
-            {% if terms|length == 0 %}
+            {% if terms == None %}
+                        <p>Search for a term of browse the style guide</p>
+
+            {% elif  terms|length == 0 %}
             <p>Your search returned no results</p>
             {% else %}
             {% for term in terms %}
@@ -163,4 +169,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

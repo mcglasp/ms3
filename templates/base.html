@@ -18,6 +18,8 @@
             <a href="{{ url_for('dashboard') }}" class="brand-logo logo grey-text text-darken-3">myHouse</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons grey-text text-darken-3">menu</i></a>
             <ul class="right hide-on-med-and-down b-border">
+                {% if to_change_pword == True %}
+                {% else %}
                 {% if access_level == "administrator" %}
                 <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Add terms</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('manage_users') }}">Manage users</a></li>
@@ -26,7 +28,7 @@
                 {% endif %}
                 <li><a class="grey-text text-darken-3" href="{{ url_for('logout') }}">Log out</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('profile', user=session['user']) }}">Profile</a></li>
-                
+                {% endif %}
                 {% if not session.user %}
                 <li><a class="grey-text text-darken-3" href="{{ url_for('register') }}">Register</a></li>
                 <li><a class="grey-text text-darken-3" href="{{ url_for('login') }}">Log in</a></li>

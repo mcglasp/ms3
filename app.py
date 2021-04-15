@@ -1,5 +1,5 @@
 import os
-import random
+from selenium import webdriver
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
@@ -25,14 +25,34 @@ app.secret_key = os.environ.get("SECRET_KEY")
 mongo = PyMongo(app)
 
 
-def get_access_level(user):
-    user = session['user']
-    access_level = mongo.db.users.find_one({"username": user})['access_level'].lower()
+def get_access_level():
+    
+    user = mongo.db.users.find_one({"username": session['user']})['_id']
+    print(user)
+    access_level = mongo.db.users.find_one({"_id": ObjectId(user)})['access_level'].lower()
 
     return access_level
 
-                
-            
+
+def get_collections(**what):
+    col_var = what["col"]
+    collection = mongo.db[col_var]
+    find_col = collection.find()
+    if what['list_it'] == True:
+        collect_return = list(find_col)
+        print(collect_return)
+        return collect_return
+    else:
+        collect_return = find_col
+        print(collect_return)
+        return collect_return
+
+
+def get_letters():
+    letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+
+    return letters
+
 
 
 @app.route("/")
@@ -40,30 +60,27 @@ def get_access_level(user):
 def dashboard():  
     
     try:
-        user = session['user']
-        access_level = get_access_level(user)
-        levels = list(mongo.db.access_levels.find())
-        terms = list(mongo.db.terms.find())
-        random_terms = list(random.choice(terms))
-        letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-        incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
-        alt_terms = list(mongo.db.terms.alt_terms.find())
+        user = mongo.db.users.find_one({'username': session['user']})
+        access_level = get_access_level()
+        letters = get_letters()
+        to_change_pword = user['to_change_pword']
+        print(to_change_pword)
+        levels = get_collections(col='access_levels', list_it=False)
+        terms = None 
         new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
         flagged_comments = list(mongo.db.comments.find({"flagged": True}))
         suggested_terms = mongo.db.terms.find({"pending": True})
         numbers = ['0','1','2','3','4','5','6','7','8','9']
         general = ['General Usage']
 
-
-        
         try: 
-            pinned_term_ids = list(mongo.db.users.find_one({"username": user})['pinned_terms'])
+            pinned_term_ids = list(user['pinned_terms'])
             pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
 
         except Exception:
-            pass
+            pinned_terms = []
                
-        return render_template("dashboard.html", terms=terms, incorrect_terms=incorrect_terms, alt_terms=alt_terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, random_terms=random_terms, letters=letters, numbers=numbers, general=general)
+        return render_template("dashboard.html", terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, to_change_pword=to_change_pword)
     
     except KeyError:
         return redirect(url_for('login'))
@@ -71,9 +88,12 @@ def dashboard():
 
 @app.route("/get_category/<letter>")
 def get_category(letter):
+    user = mongo.db.users.find_one({"username": session['user']})
+    letters = get_letters()
+    access_level = get_access_level()
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + letter, "$options": 'i'}}))
 
-    return render_template('dashboard.html', terms=terms)
+    return render_template('dashboard.html', terms=terms, access_level=access_level, user=user, letters=letters)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -90,8 +110,8 @@ def delete_flag(comment_id):
 @app.route("/view_term/<term_id>")
 def view_term(term_id):
     user = session['user']
-    access_level = get_access_level(user)
-    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
+    access_level = get_access_level()
+    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})    
 
     try:
         term_creator_user = mongo.db.users.find_one({"_id": term['created_by']})
@@ -99,7 +119,7 @@ def view_term(term_id):
     except Exception as e:
        pass
 
-    comments = list(mongo.db.comments.find())
+    comments = get_collections(col='comments', list_it=False)
     
     term_comments = mongo.db.comments.find({"rel_term_id": term_id})
 
@@ -109,13 +129,11 @@ def view_term(term_id):
 @app.route("/manage_term/<term_id>")
 def manage_term(term_id):
     user = session['user']
-    access_level = get_access_level(user)
+    access_level = get_access_level()
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
-    incorrect_terms = list(mongo.db.terms.incorrect_terms.find())
-    alt_terms = list(mongo.db.terms.alt_terms.find())
-    types = list(mongo.db.types.find())
+    types = get_collections(col='types', list_it=False)
     
-    return render_template("manage_term.html", term=term, incorrect_terms=incorrect_terms, alt_terms=alt_terms, types=types, access_level=access_level)
+    return render_template("manage_term.html", term=term, types=types, access_level=access_level)
 
 
 @app.route("/pin_term/<term_id>")
@@ -181,7 +199,7 @@ def delete_comment(comment_id, term_id):
 def flag_comment(comment_id, term_id):
     user = session['user']
 
-    comments = mongo.db["comments"]
+    comments = get_collections(col='comments', list_it=False)
     flag_status = comments.find_one({"_id": ObjectId(comment_id)})["flagged"]
     
     if flag_status > True:
@@ -210,7 +228,8 @@ def register():
         register = {
             "username": request.form.get("username").lower(),
             "password": generate_password_hash(request.form.get("password")),
-            "access_level": "requested"
+            "access_level": "requested",
+            "to_change_pword": False
         }
         mongo.db.users.insert_one(register)
         
@@ -222,13 +241,17 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/change_password", methods=["GET", "POST"])
-def change_password():
-    user = session['user']
-    access_level = get_access_level(user)
+@app.route("/change_password/<user_id>", methods=["GET", "POST"])
+def change_password(user_id):
+    username = session['user']
+    user = mongo.db.users.find_one({'username': username})
+    user_id = user['_id']
+    access_level = get_access_level()
     users = mongo.db["users"]
     existing_user = users.find_one(
         {"username": request.form.get("username").lower()}) 
+    to_change_pword = existing_user['to_change_pword']
+    print(user_id)
 
     if request.method == "POST":
         new_password = request.form.get("new_password")
@@ -236,23 +259,27 @@ def change_password():
         if existing_user:
             if check_password_hash(existing_user["password"], request.form.get("password")):
                 to_update = {"_id": existing_user["_id"]}
-                updated_password = {"$set": {"password": generate_password_hash(new_password)}}
+                if to_change_pword == True:
+                    updated_password = {"$set": {"password": generate_password_hash(new_password), 'to_change_pword': False}}
+                    
+                else:
+                    updated_password = {"$set": {"password": generate_password_hash(new_password)}}
                 users.update_one(to_update, updated_password)
                 flash("Password successfully updated")
                 return redirect(url_for(
-                    "profile", username=session["user"]))
+                "profile", user=user, access_level=access_level))
 
             else:
                 # invalid password match
                 flash("Incorrect Username and/or Current Password")
-                return redirect(url_for("profile"))
+                return redirect(url_for("profile", user=user, access_level=access_level))
 
         else:
             # username doesn't exist
             flash("Incorrect Username and/or Current Password")
-            return redirect(url_for('profile'))
+            return redirect(url_for('profile', user=user, access_level=access_level))
 
-    return render_template("profile.html", access_level=access_level)
+    return render_template("profile.html", user=user, access_level=access_level)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -268,7 +295,7 @@ def login():
                 session["user"] = request.form.get("username").lower()
                 flash("Welcome, {}".format(request.form.get("username")))
                 return redirect(url_for(
-                    "dashboard", username=session["user"]))
+                    "dashboard", user=session['user']))
 
             else:
                 # invalid password match
@@ -285,11 +312,16 @@ def login():
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
-    user = session['user']
-    access_level = get_access_level(user)
+    username = session['user']
+    access_level = get_access_level()
+    user = mongo.db.users.find_one({"username": username})
+    user_id = user['_id']
+    to_change_pword = user['to_change_pword']
+    print(to_change_pword)
+    print(user_id)
 
     if session["user"]:
-        return render_template("profile.html", user=user, access_level=access_level)
+        return render_template("profile.html", user=user, access_level=access_level, to_change_pword=to_change_pword)
 
     return redirect(url_for("login"))
 
@@ -305,7 +337,7 @@ def logout():
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
     user = session['user']
-    access_level = get_access_level(user)
+    access_level = get_access_level()
     database_user = mongo.db.users.find_one({"username": user})
 
     if request.method == "POST":
@@ -351,7 +383,7 @@ def add_term():
 @app.route("/update_term/<term_id>", methods=["GET", "POST"])
 def update_term(term_id):
     user = session['user']
-    access_level = get_access_level(user)
+    access_level = get_access_level()
     term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
     updated_by = mongo.db.users.find_one({'username': session['user']})
 
@@ -400,21 +432,19 @@ def update_term(term_id):
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
-    
+    user = mongo.db.users.find_one({'username': session['user']})
+    letters = get_letters()
     query = request.form.get("query")
     terms = list(mongo.db.terms.find({"$text": {"$search": query}}))
 
-    if len(terms) == 0:
-        print("no results!")
-
     
-    return render_template("dashboard.html", terms=terms)
+    return render_template("dashboard.html", terms=terms, user=user, letters=letters)
 
 
 @app.route("/go_to_term/<term_id>")
 def go_to_term(term_id):
     user = session['user']
-    access_level = get_access_level(user)
+    access_level = get_access_level()
     mongo.db.terms.find_one({'_id': ObjectId(term_id)})
     
     return redirect(url_for("view_term", term_id=term_id, access_level=access_level))
@@ -431,8 +461,8 @@ def delete_term(term_id):
 
 @app.route("/manage_users", methods=["POST", "GET"])
 def manage_users():
-    user = session['user']
-    access_level = get_access_level(user)
+    
+    access_level = get_access_level()
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
     users = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
 
@@ -454,7 +484,8 @@ def add_user():
         new_user = {
             "username": request.form.get("username").lower(),
             "password": generate_password_hash(request.form.get("password")),
-            "access_level": request.form.get("access_level_add")
+            "access_level": request.form.get("access_level_add"),
+            "to_change_pword": True
         }
 
         mongo.db.users.insert_one(new_user)

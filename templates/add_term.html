@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if user.access_level == "administrator" %}
+{% if access_level == "administrator" %}
 <h2>Add terms</h2>
 {% else %}
 <h2>Suggest a term</h2>
@@ -12,7 +12,7 @@
 <div class="container">
             <div class="card z-depth-0">
                 <div class="card-content">
-                {% if user.access_level == "administrator" %}
+                {% if access_level == "administrator" %}
                     <div class="card-title">Add term</div>
 {% else %}
                     <div class="card-title">Suggest term</div>
@@ -52,7 +52,7 @@
                         <div class="input-field col s6">
                             <button type="submit" class="btn-small
                              text-shadow">
-                             {% if user.access_level == "administrator" %}
+                             {% if access_level == "administrator" %}
                                 Add term
                                 {% else %}
                                 Make suggestion
