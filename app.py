@@ -1,5 +1,4 @@
 import os
-from selenium import webdriver
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
