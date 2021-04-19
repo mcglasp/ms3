@@ -13,7 +13,10 @@
                                 href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
                     <p>{{ term.type_name }}</p>
 
-                    <p>{{ term.created_by }}</p>
+                    <p>Term created by: {{ term.created_by }}</p>
+                    {% if term.last_updated_by %}
+                    <p>Last updated by: {{ term.last_updated_by }}</p>
+                    {% endif %}
                     
                     <div>{% if term.alt_terms|length > 0 %}
                     

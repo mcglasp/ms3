@@ -16,36 +16,43 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea value="{{ term.alt_name }}"" id=" alt_terms" name="alt_terms" type="text"
-                                    class="" rows="5" cols="4"> 
-                                    {%- for alt_term in term.alt_terms -%}
-                                   
-                                        {{- alt_term -}} 
-                                       
-                                    {%- endfor -%}</textarea>
+                                <p class="alts_incs">Alternative usage </p>
+                                
+                                {% for alt_term in term.alt_terms %}
+                                    <div name="alt_terms" value="" type="text" class="chip inc_alt_chip">{{ alt_terms }}<a href="" class="close material-icons">close</a></div>
+                                    {% endfor %}
+                                    <p>Add new alternative terms below, separated by commas:</p>
+                                     <input class="materialize-textarea" name="alt_terms" type="text">
                             </div>
                         </div>
+
+
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea value="{{ term.incorrect_terms }}" id="incorrect_terms" name="incorrect_terms"
-                                    type="text" class="validate" rows="5" cols="4">
-                                    {% if incorrect_terms|length > 0 %}
-                                 {%- for incorrect_term in term.incorrect_terms -%}
-                                   
-                                        {{- incorrect_term -}} 
-                                       
-                                    {%- endfor -%}
-                                    {% endif %}
-                                </textarea>
+                                <p class="alts_incs">Incorrect usage </p>
+                                
+                                {% for incorrect_term in term.incorrect_terms %}
+                                
+                                    <input name="incorrect_terms" value="{{ incorrect_term }}">
+                                    {% endfor %}
+                                    <p>Add new incorrect terms below, separated by commas:</p>
+                                     <input name="incorrect_terms" type="text">
+                                     <a href="" id="add">add</a>
+
                             </div>
                         </div>
+
+
                         <div class="row">
                             <div class="input-field col s12">
                                 <div class="form-outline">
                                     <select id="type_name" name="type_name" class="validate" required>
-                                        <option value="{{ term.type_name }}" disabled selected>{{ term.type_name }}</option>
                                         {% for type in types %}
+                                        {% if term.type_name == type.type_name %}
+                                        <option value="{{ type.type_name }}" disabled selected>{{ type.type_name }}</option>
+                                        {% else %}
                                         <option value="{{ type.type_name }}">{{ type.type_name }}</option>
+                                        {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -59,13 +66,13 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
-                                <button type="submit" class="btn-large light-blue darken-1 text-shadow">
-                                    Update term <i class="fas fa-plus-square right"></i>
+                                <button type="submit" class="btn-small">Update term
+                                    <i class="fas fa-plus-square right"></i>
                                 </button>
                             </div>
                             <div class="input-field col s6">
                                 <a href="{{ url_for('delete_term', term_id=term._id) }}"
-                                    class="btn-large light-blue darken-1 text-shadow">
+                                    class="btn-small">
                                     Delete term <i class="fas fa-plus-square right"></i>
                                 </a>
                             </div>

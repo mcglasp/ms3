@@ -1,4 +1,5 @@
 import os
+from html.parser import HTMLParser
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
@@ -37,10 +38,12 @@ def get_collections(**what):
     col_var = what["col"]
     collection = mongo.db[col_var]
     find_col = collection.find()
+
     if what['list_it'] == True:
         collect_return = list(find_col)
         print(collect_return)
         return collect_return
+        
     else:
         collect_return = find_col
         print(collect_return)
@@ -53,6 +56,43 @@ def get_letters():
     return letters
 
 
+def get_pinned_terms(user):
+
+    try: 
+        pinned_term_ids = list(user['pinned_terms'])
+        pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
+
+    except Exception:
+        pinned_terms = []
+    
+    return pinned_terms
+
+
+def get_fields(find):
+
+    class Field_name:
+
+        def __init__(self, find):
+            self.list = find
+        
+        def make_list(self):
+            name = self.list
+            
+            items = request.form.getlist(name)
+            
+            made_list = []
+            for item in items:
+                if item != "":
+                    made_list.append(item)
+            
+            
+            return made_list
+
+    get_list = Field_name(find)
+    return_list = get_list.make_list()
+
+    return return_list
+
 
 @app.route("/")
 @app.route("/dashboard")
@@ -63,7 +103,6 @@ def dashboard():
         access_level = get_access_level()
         letters = get_letters()
         to_change_pword = user['to_change_pword']
-        print(to_change_pword)
         levels = get_collections(col='access_levels', list_it=False)
         terms = None 
         new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
@@ -71,13 +110,7 @@ def dashboard():
         suggested_terms = mongo.db.terms.find({"pending": True})
         numbers = ['0','1','2','3','4','5','6','7','8','9']
         general = ['General Usage']
-
-        try: 
-            pinned_term_ids = list(user['pinned_terms'])
-            pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
-
-        except Exception:
-            pinned_terms = []
+        pinned_terms = get_pinned_terms(user)
                
         return render_template("dashboard.html", terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, to_change_pword=to_change_pword)
     
@@ -90,9 +123,10 @@ def get_category(letter):
     user = mongo.db.users.find_one({"username": session['user']})
     letters = get_letters()
     access_level = get_access_level()
+    pinned_terms = get_pinned_terms(user)
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + letter, "$options": 'i'}}))
 
-    return render_template('dashboard.html', terms=terms, access_level=access_level, user=user, letters=letters)
+    return render_template('dashboard.html', terms=terms, access_level=access_level, user=user, letters=letters, pinned_terms=pinned_terms)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -110,16 +144,18 @@ def delete_flag(comment_id):
 def view_term(term_id):
     user = session['user']
     access_level = get_access_level()
-    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})    
+    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)}) 
 
     try:
         term_creator_user = mongo.db.users.find_one({"_id": term['created_by']})
+        term_updated_by = mongo.db.users.find_one({"_id": term['last_updated_by']})
         term['created_by'] = term_creator_user['username']
+        term['last_updated_by'] = term_updated_by['username']
     except Exception as e:
-       pass
+        term['created_by'] = ""
+        term['last_updated_by'] = ""
 
     comments = get_collections(col='comments', list_it=False)
-    
     term_comments = mongo.db.comments.find({"rel_term_id": term_id})
 
     return render_template("view_term.html", term=term, term_comments=term_comments, user=user, comments=comments, access_level=access_level)
@@ -151,7 +187,11 @@ def pin_term(term_id):
         users.update_one(pinner, term_to_pin)
         flash("Term pinned to your dashboard")
 
+
     return redirect(url_for("dashboard", user=user, term=term))
+        
+
+    
 
 
 @app.route("/remove_pin/<pinned_term>")
@@ -316,8 +356,6 @@ def profile(user):
     user = mongo.db.users.find_one({"username": username})
     user_id = user['_id']
     to_change_pword = user['to_change_pword']
-    print(to_change_pword)
-    print(user_id)
 
     if session["user"]:
         return render_template("profile.html", user=user, access_level=access_level, to_change_pword=to_change_pword)
@@ -331,6 +369,10 @@ def logout():
     flash("You have been logged out")
     session.pop("user")
     return redirect(url_for("login"))
+
+
+
+
 
 
 @app.route("/add_term", methods=["GET", "POST"])
@@ -379,52 +421,25 @@ def add_term():
     return render_template("add_term.html", types=types, user=user, access_level=access_level)
 
 
+
 @app.route("/update_term/<term_id>", methods=["GET", "POST"])
 def update_term(term_id):
-    user = session['user']
-    access_level = get_access_level()
-    term = mongo.db.terms.find_one({"_id": ObjectId(term_id)})
-    updated_by = mongo.db.users.find_one({'username': session['user']})
-
-    print(updated_by['username'])
-    if request.method == "POST":
-        
-        alt = request.form.get("alt_terms")
-        inc = request.form.get("incorrect_terms")
-
-        class Term:
-
-            def __init__(self, to_split):
-                self.to_split = to_split
-
-            def split_terms(self):
-                request.form.get(self.to_split)
-                split_len = len(self.to_split)
-                if split_len > 0:
-                    return self.to_split.split(",")
-                else:
-                    return []
-
-        alt_split = Term(alt)
-        alternatives = alt_split.split_terms()
-        inc_split = Term(inc)
-        incorrect = inc_split.split_terms()
-
-        to_update = {
-            "term_name": request.form.get("term_name"),
-            "alt_terms": alternatives,
-            "incorrect_terms": incorrect,
-            "usage_notes": request.form.get("usage_notes"),
-            "type_name": request.form.get("type_name"),
-            "pending": False,
-            "last_updated_by": ObjectId(updated_by['_id']),
-            "created_by": ObjectId(term['created_by'])
-            }
-
-        mongo.db.terms.update({"_id": ObjectId(term_id)}, to_update)
-        flash("Term updated")
     
-    return redirect(url_for("view_term", term_id=term_id, access_level=access_level))
+    if request.method == "POST":
+
+        inc_term_list = get_fields("incorrect_terms")
+        alt_term_list = get_fields("alt_terms")
+
+    print(inc_term_list)
+    print(alt_term_list)
+
+    flash("Term successfully updated")
+    return redirect(url_for("dashboard"))
+
+
+
+
+        
 
     
 
@@ -432,17 +447,17 @@ def update_term(term_id):
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
     user = mongo.db.users.find_one({'username': session['user']})
+    access_level = get_access_level()
     letters = get_letters()
     query = request.form.get("query")
     terms = list(mongo.db.terms.find({"$text": {"$search": query}}))
-
+    pinned_terms = get_pinned_terms(user)
     
-    return render_template("dashboard.html", terms=terms, user=user, letters=letters)
+    return render_template("dashboard.html", terms=terms, user=user, letters=letters, access_level=access_level, pinned_terms=pinned_terms)
 
 
 @app.route("/go_to_term/<term_id>")
 def go_to_term(term_id):
-    user = session['user']
     access_level = get_access_level()
     mongo.db.terms.find_one({'_id': ObjectId(term_id)})
     
