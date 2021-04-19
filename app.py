@@ -85,7 +85,6 @@ def get_fields(find):
                 if item != "":
                     made_list.append(item)
             
-            
             return made_list
 
     get_list = Field_name(find)

@@ -1,83 +1,95 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-<div class="card z-depth-0">
-    <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4">
-                        Manage term</span>
-
-                   
-                    <form class="col s12" method="POST" action="{{ url_for('update_term', term_id=term._id) }}">
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <input value="{{ term.term_name }}" id="term_name" name="term_name" type="text"
-                                    class="validate">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <p class="alts_incs">Alternative usage </p>
-                                
-                                {% for alt_term in term.alt_terms %}
-                                    <div name="alt_terms" value="" type="text" class="chip inc_alt_chip">{{ alt_terms }}<a href="" class="close material-icons">close</a></div>
-                                    {% endfor %}
-                                    <p>Add new alternative terms below, separated by commas:</p>
-                                     <input class="materialize-textarea" name="alt_terms" type="text">
-                            </div>
-                        </div>
+    <div class="card z-depth-0">
+        <div class="card-content">
+            <span class="card-title activator grey-text text-darken-4">
+                Manage term</span>
 
 
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <p class="alts_incs">Incorrect usage </p>
-                                
-                                {% for incorrect_term in term.incorrect_terms %}
-                                
-                                    <input name="incorrect_terms" value="{{ incorrect_term }}">
-                                    {% endfor %}
-                                    <p>Add new incorrect terms below, separated by commas:</p>
-                                     <input name="incorrect_terms" type="text">
-                                     <a href="" id="add">add</a>
+            <form class="col s12" method="POST" action="{{ url_for('update_term', term_id=term._id) }}">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input value="{{ term.term_name }}" id="term_name" name="term_name" type="text"
+                            class="validate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12" id="alts">
+                        <p class="alts_incs">Incorrect usage </p>
+                        {% for alt_term in term.alt_terms %}
+                        {% if term.alt_terms|length > 0 %}
+                        <input name="alt_terms" value="{{ alt_term }}">
+                        {% else %}
+                        <p>No alternative terms have been added yet</p>
+                        {% endif %}
+                        {% endfor %}
+                        <p>Add new alternative terms below</p>
+                        <div id="new-alts">
+                            <input name="alt_terms" type="text">
+                        </div>
+                        <a href="javascript:void(0);" onclick="add_field('alt_terms', 'new-alts')" id="add_alt">add</a>
+                    </div>
+                </div>
 
-                            </div>
+
+                <div class="row">
+                    <div class="input-field col s12" id="incs">
+                        <p class="alts_incs">Incorrect usage </p>
+                        
+                        {% for incorrect_term in term.incorrect_terms %}
+                        {% if term.incorrect_terms|length > 0 %}
+                        <input name="incorrect_terms" value="{{ incorrect_term }}">
+                        {% else %}
+                        <p>No incorrect terms have been added yet</p>
+                        {% endif %}
+                        {% endfor %}
+                        
+                       
+                        <p>Add new incorrect terms below</p>
+                        <div id="new-incs">
+                            <input name="incorrect_terms" type="text">
                         </div>
+                        <a href="javascript:void(0);" onclick="add_field('incorrect_terms', 'new-incs')" id="add_inc">add</a>
+                    </div>
+                </div>
 
 
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <div class="form-outline">
-                                    <select id="type_name" name="type_name" class="validate" required>
-                                        {% for type in types %}
-                                        {% if term.type_name == type.type_name %}
-                                        <option value="{{ type.type_name }}" disabled selected>{{ type.type_name }}</option>
-                                        {% else %}
-                                        <option value="{{ type.type_name }}">{{ type.type_name }}</option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <div class="form-outline">
+                            <select id="type_name" name="type_name" class="validate" required>
+                                {% for type in types %}
+                                {% if term.type_name == type.type_name %}
+                                <option value="{{ type.type_name }}" disabled selected>{{ type.type_name }}</option>
+                                {% else %}
+                                <option value="{{ type.type_name }}">{{ type.type_name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
                         </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <input value="{{ term.usage_notes }}" id="usage_notes" name="usage_notes" type="text"
-                                    class="validate">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <button type="submit" class="btn-small">Update term
-                                    <i class="fas fa-plus-square right"></i>
-                                </button>
-                            </div>
-                            <div class="input-field col s6">
-                                <a href="{{ url_for('delete_term', term_id=term._id) }}"
-                                    class="btn-small">
-                                    Delete term <i class="fas fa-plus-square right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input value="{{ term.usage_notes }}" id="usage_notes" name="usage_notes" type="text"
+                            class="validate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <button type="submit" class="btn-small">Update term
+                            <i class="fas fa-plus-square right"></i>
+                        </button>
+                    </div>
+                    <div class="input-field col s6">
+                        <a href="{{ url_for('delete_term', term_id=term._id) }}" class="btn-small">
+                            Delete term <i class="fas fa-plus-square right"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-       </div> </div>
 {% endblock %}
