@@ -161,5 +161,69 @@ li a:hover::after {
     margin-right: 5px;
 }
 
+.narrow-card {
+    display: block;
+    margin: 20px auto;
+    width: 80%;
+    padding: 30px;
+}
+
+.underline-header {
+    border-bottom: 1px grey ridge;
+    padding-bottom: 10px;
+}
+
+.light-underline {
+    border-bottom: 1px grey solid;
+    padding-bottom: 10px;
+}
+
+input.dotted-underline, .new-alts>input.dotted-underline {
+    border-bottom: 1px grey dotted!important;
+    padding-bottom: 10px;
+    width: 50%;
+}
+
+
+
+.term-form {
+    margin-top: 20px;
+}
+
+input.input-box, .alts-incs>input.input-box, input, .input-box { 
+    padding: 0px 0 0 10px;
+    margin-top: 10px;
+    font-family: 'Nanum Myeongjo', serif!important;
+    background-color: #f3f3f3;   
+    border-bottom: 1px grey dotted!important;
+}
+
+.input-width-half {
+    width: 60%!important;
+}
+
+.input-width-full {
+    width: 100%!important;
+}
+
+.pt1 {
+    margin-top: 1rem;
+}
+
+.btn-small {
+    font-family: 'Nanum Myeongjo', serif!important;
+}
+
+.add_btn_info {
+    padding: 10px 0 0 10px;
+}
+
+::placeholder {
+    color: rgba(0, 0, 0, 0.781);
+}
+
+
+
+
 
 

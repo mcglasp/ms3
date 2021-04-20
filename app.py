@@ -381,26 +381,8 @@ def add_term():
     database_user = mongo.db.users.find_one({"username": user})
 
     if request.method == "POST":
-        alt = request.form.get("alt_terms")
-        inc = request.form.get("incorrect_terms")
-
-        class Term:
-
-            def __init__(self, to_split):
-                self.to_split = to_split
-
-            def split_terms(self):
-                request.form.get(self.to_split)
-                split_len = len(self.to_split)
-                if split_len > 0:
-                    return self.to_split.split(",")
-                else:
-                    return []
-
-        alt_split = Term(alt)
-        alternatives = alt_split.split_terms()
-        inc_split = Term(inc)
-        incorrect = inc_split.split_terms()
+        alternatives = get_fields("alt_terms")
+        incorrect = get_fields("incorrect_terms")
 
         term = {
             "term_name": request.form.get("term_name"),
@@ -423,14 +405,26 @@ def add_term():
 
 @app.route("/update_term/<term_id>", methods=["GET", "POST"])
 def update_term(term_id):
+    user = session['user']
+    access_level = get_access_level()
+    database_user = mongo.db.users.find_one({"username": user})
     
     if request.method == "POST":
 
-        inc_term_list = get_fields("incorrect_terms")
-        alt_term_list = get_fields("alt_terms")
+        incorrect = get_fields("incorrect_terms")
+        alternatives = get_fields("alt_terms")
 
-    print(inc_term_list)
-    print(alt_term_list)
+        update_term = {
+            "term_name": request.form.get("term_name"),
+            "alt_terms": alternatives,
+            "incorrect_terms": incorrect,
+            "usage_notes": request.form.get("usage_notes"),
+            "type_name": request.form.get("type_name"),
+            "pending": False if access_level == 'administrator' else True,
+            "created_by": ObjectId(database_user['_id'])
+            }
+        
+        mongo.db.terms.update({"_id": ObjectId(term_id)}, update_term)
 
     flash("Term successfully updated")
     return redirect(url_for("dashboard"))

@@ -1,62 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if access_level == "administrator" %}
-<h2>Add terms</h2>
-{% else %}
-<h2>Suggest a term</h2>
-{% endif %}
 
 
 
 <div class="container">
-    <div class="card z-depth-0">
+    <div class="card z-depth-0 narrow-card">
         <div class="card-content">
             {% if access_level == "administrator" %}
-            <div class="card-title">Add term</div>
+            <span class="card-title activator grey-text text-darken-4 underline-header">Add term</span>
             {% else %}
-            <div class="card-title">Suggest term</div>
+            <span class="card-title activator grey-text text-darken-4 underline-header">Suggest term</span>
             {% endif %}
-            <form class="col s12" method="POST" action="{{ url_for('add_term') }}">
-                <div class="input-field col s6">
-                    <input id="term_name" name="term_name" type="text" class="validate">
-                    <label for="term_name">Principle term</label>
-                </div>
-                <div class="input-field col s12">
-                    <textarea id="alt_terms" name="alt_terms" type="text" class="materialize-textarea" rows="5"
-                        cols="4"></textarea>
-                    <label for="alt_terms">Alternative terms</label>
-                </div>
-                <div class="input-field col s12">
-                    <textarea id="incorrect_terms" name="incorrect_terms" type="text" class="materialize-textarea"
-                        rows="5" cols="4"></textarea>
-                    <label for="incorrect_terms">Incorrect terms</label>
-                </div>
-                <div class="input-field col s12">
-                    <div class="form-outline">
-                        <select id="type_name" name="type_name" class="validate" required>
-                            <option value="" disabled selected><label for="type_name">Term type</label></option>
-                            {% for type in types %}
-                            <option value="{{ type.type_name }}">{{ type.type_name }}</option>
-                            {% endfor %}
-                        </select>
+            <form class="col s12 term-form" method="POST" action="{{ url_for('add_term') }}">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input placeholder="Principle term" id="term_name" name="term_name" type="text"
+                            class="validate input-box input-width-half">
                     </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12" id="alts">
+                        <p class="alts_incs light-underline">Alternative usage </p>
 
+                        <div id="new-alts">
+                        </div>
+                        <div class="valign-wrapper">
+                            <a href="javascript:void(0);"
+                                onclick="add_field('alt_terms', 'new-alts', 'input-box input-width-half')"
+                                class="btn-floating btn-small waves-effect waves-light pt1"><i
+                                    class="material-icons">add</i></a>
+                            <span class="add_btn_info">Click to add incorrect terms</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-field col s12">
-                    <textarea id="usage_notes" name="usage_notes" type="text" class="materialize-textarea"></textarea>
-                    <label for="usage_notes">Usage notes</label>
+
+                <div class="row">
+                    <div class="input-field col s12" id="incs">
+                        <p class="alts_incs light-underline">Incorrect usage </p>
+
+                        <div id="new-incs">
+                        </div>
+
+                        <div class="valign-wrapper">
+                            <a href="javascript:void(0);"
+                                onclick="add_field('incorrect_terms', 'new-incs', 'input-box input-width-half')"
+                                class="btn-floating btn-small waves-effect waves-light pt1"><i
+                                    class="material-icons">add</i></a>
+
+
+                            <span class="add_btn_info">Click to add incorrect terms</span></div>
+                    </div>
                 </div>
-                <div class="input-field col s6">
-                    <button type="submit" class="btn-small
-                             text-shadow">
-                        {% if access_level == "administrator" %}
-                        Add term
-                        {% else %}
-                        Make suggestion
-                        {% endif %}
-                        <i class="fas fa-plus-square right"></i>
-                    </button>
+
+
+
+
+                <div class="row">
+                    <div class="input-field col s8">
+                        <div class="form-outline">
+                            <select class="input-width-half validate" id="type_name" name="type_name"
+                                required>
+                                <option class="left-align" selected disabled>Select term type</option>
+                                {% for type in types %}
+                                <option class="" value="{{ type.type_name }}">{{ type.type_name }}</option>
+
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input placeholder="Usage notes" id="usage_notes" name="usage_notes" type="text"
+                            class="input-box input-width-full validate">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <button type="submit" class="btn-small right">Add term
+                            <i class="fas fa-plus-square right"></i>
+                        </button>
+                    </div>
+                    <div class="input-field col s6">
+                        <a href="{{ url_for('add_term') }}" class="btn-small left">Reset</a>
+                    </div>
                 </div>
             </form>
         </div>
