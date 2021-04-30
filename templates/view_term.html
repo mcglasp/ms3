@@ -10,86 +10,107 @@
                         {{ term.term_name }}
                         <i class="material-icons right">more_vert</i></span>
                     <a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
-                                href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
-                    <p>{{ term.type_name }}</p>
+                        href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
+                    <p><em>{{ term.type_name }}</em></p>
+<hr>
+<hr>
 
-                    <p>Term created by: {{ term.created_by }}</p>
-                    {% if term.last_updated_by %}
+                    <div>
+
+                        <span>
+                            {% if term.alt_terms %}
+                            <strong>Also: </strong>
+                            {% endif %}
+                            {% for alt_term in term.alt_terms %}
+                            <a href="#">{{ alt_term }}</a></span>
+                        {%- if loop.length > 1 and not loop.last -%}
+                        {%- if loop.revindex0 == 1 -%}
+                        <span> and </span>
+                        {%- else -%}
+                        <span>, </span>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+               
+                    <div>
+
+                        <span>
+                            {% if term.incorrect_terms %}
+                            <strong>Not: </strong>
+                            {% endif %}
+                            {% for incorrect_term in term.incorrect_terms %}
+                            <a href="#">{{ incorrect_term }}</a></span>
+                        {%- if loop.length > 1 and not loop.last -%}
+                        {%- if loop.revindex0 == 1 -%}
+                        <span> or </span>
+                        {%- else -%}
+                        <span>, </span>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                                        <p>Term created by: {{ term.created_by }}</p>
+                    {% if term.last_updated_by != "" %}
                     <p>Last updated by: {{ term.last_updated_by }}</p>
                     {% endif %}
-                    
-                    <div>{% if term.alt_terms|length > 0 %}
-                    
-                        <strong>And: </strong>
-                    
-                    {% for alt_term in term.alt_terms %}
-                    <span><a href="#">{{ alt_term }}</a></span>
-                    {% endfor %}
-                    {% endif %}
-                    </div>
-                    <div>
-                    {% for incorrect_term in term.incorrect_terms %}
-                    <span>
-                        {% if loop.first %}
-                        <strong>Not</strong>
-                        {% endif %}
-                        <a href="#">{{ incorrect_term }}</a></span>
-                    {% if not loop.last %}
-                    <span> or </span>
-                    {% endif %}
-                    {% endfor %}
-                    </div>
                 </div>
+              
 
-               
+
+
 
                 <!-- Comments -->
+
+                {% for term_comment in term_comments %}
                 
-                        {% for term_comment in term_comments %}
-                        <div class="container comment-width">
-                            {% if loop.index % 2 == 0 %}
-                            <div class="card z-depth-0 teal lighten-4">
-                                {% else %}
-                                <div class="card z-depth-0 teal lighten-5 pad-3">
-                                    {% endif %}
-                                    <div class="comment-head">
-                                        <p class="timestamp">{{ term_comment.timestamp }}</p>
-                                        <p class="comment-user">{{ term_comment.user }} said:</p>
-                                    </div>
-                                    <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
-                                    {% if access_level == "administrator" %}
-                                    <a class="delete-btn"
-                                        href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete
-                                        comment</a>
-                                    {% elif access_level == "read and comment" %}
-                                    <a class="flag-btn"
-                                        href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag
-                                        comment</a>
-                                    {% endif %}
-                                </div>
+                
+                <div class="container comment-width">
+                    {% if loop.index % 2 == 0 %}
+                    <div class="card z-depth-0 teal lighten-4">
+                        {% else %}
+                        <div class="card z-depth-0 teal lighten-5 pad-3">
+                            {% endif %}
+                            <div class="comment-head">
+                                <p class="timestamp">{{ term_comment.timestamp }}</p>
+                                <p class="comment-user">{{ find_commenter(term_comment) }} said:</p>
                             </div>
-                            {% endfor %}
-                        
-                        
-                        <div class="card z-depth-0">
-                            <div class="card-content">
-                        <div class="input-field comment-width">
-                            <p class="comment-username">Comment as {{ user }}</p>
-                            <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
-                                <textarea name="comment" id="comment" cols="30" rows="10" type="text"
-                                    class="materialize-textarea"></textarea>
-                                <button type="submit" class="btn-small comment-btn">Add comment</button>
-                                <div class="row">
-                                <a href="{{ url_for('manage_term', term_id=term._id)  }}" class="btn-small comment-btn">Manage term</a></div>
-                             
-                            </form>
-                            </div>
-                            </div>
+                            <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
+                            {% if access_level == "administrator" %}
+                            <a class="delete-btn"
+                                href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}">delete
+                                comment</a>
+                            {% elif access_level == "read and comment" %}
+                            <a class="flag-btn"
+                                href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}">flag
+                                comment</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+
+                    <div class="card z-depth-0">
+                        <div class="card-content">
+                            <div class="input-field comment-width">
+                                <p class="comment-username">Comment as {{ user.username }}</p>
+                                <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
+                                    <textarea name="comment" id="comment" cols="30" rows="10" type="text"
+                                        class="materialize-textarea"></textarea>
+                                    <button type="submit" class="btn-small comment-btn">Add comment</button>
+                                    <div class="row">
+                                        <a href="{{ url_for('manage_term', term_id=term._id)  }}"
+                                            class="btn-small comment-btn">Manage term</a></div>
+
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        
-        
-        {% endblock %}
+        </div>
+    </div>
+
+
+    {% endblock %}

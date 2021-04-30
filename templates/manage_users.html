@@ -73,25 +73,25 @@
         </div>
             <div class="row">
                 <div class="col s12 m6 right-col">
-                    {% for user in users %}
+                    {% for each_user in users_list %}
                     {% set counter = loop.index %}
                     <div class="card z-depth-0">
                         <div class="card-content">
                             <div class="row">
                                 <div class="col s12">
-                                    <span class="card-title card-header"><strong>{{ user.username }}:</strong>
-                                        <p class="subtitle">{{ user.access_level }}</p>
+                                    <span class="card-title card-header"><strong>{{ each_user.username }}:</strong>
+                                        <p class="subtitle">{{ each_user.access_level }}</p>
                                     </span>
                                 </div>
                             </div>
-                            <form method="POST" action="{{ url_for('update_user', user_id=user._id) }}">
+                            <form method="POST" action="{{ url_for('update_user', each_user_id=each_user._id) }}">
                                 <div class="row">
                                     <div class="col s6">
                                         {% for access_level in levels %}
 
                                         <p>
                                             <label for="{{ access_level.level_name }}_{{ counter }}">
-                                                {% if access_level.level_name == user.access_level %}
+                                                {% if access_level.level_name == each_user.access_level %}
                                                 <input id="{{ access_level.level_name }}_{{ counter }}"
                                                     name="access_level" value="{{ access_level.level_name }}"
                                                     type="radio" checked />
@@ -113,7 +113,7 @@
                                         </div>
                                         <div class="row">
                                             <a class="btn-small z-depth-0 button-override"
-                                                href="{{ url_for('delete_user', user_id=user._id) }}">Delete
+                                                href="{{ url_for('delete_user', each_user_id=each_user._id) }}">Delete
                                                 user</a>
                                         </div>
                                     </div>
