@@ -69,7 +69,7 @@
                     {% if new_registrations|length > 0 %}
                     {% for new_reg in new_registrations %}
                     <div class="row">
-                        <form class="new_reg" method="POST" action="{{ url_for('update_user', user_id=new_reg._id) }}">
+                        <form class="new_reg" method="POST" action="{{ url_for('update_user', each_user_id=new_reg._id) }}">
                             <div class="col m3">{{ new_reg.username }}:</div>
                             <div class="col m6">
                                 <select id="access_level" name="access_level">
