@@ -10,7 +10,7 @@
                         {{ term.term_name }}
                         <i class="material-icons right">more_vert</i></span>
                     <a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
-                        href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
+                        href="{{ url_for('pin_term', term_id=term._id, origin='view') }}"><i class="material-icons">add</i></a>
                     <p><em>{{ term.type_name }}</em></p>
 <hr>
 <hr>
@@ -51,9 +51,12 @@
                         {% endfor %}
                     </div>
                     
-                                        <p>Term created by: {{ term.created_by }}</p>
+                                        <p>Term created by: {{ term.created_by|capitalize() }}</p>
                     {% if term.last_updated_by != "" %}
-                    <p>Last updated by: {{ term.last_updated_by }}</p>
+                    <p>Last updated by: {{ term.last_updated_by|capitalize() }}</p>
+                    {% endif %}
+                    {% if term.usage_notes != "" %}
+                    <p>Usage notes: {{ term.usage_notes }}</p>
                     {% endif %}
                 </div>
               
@@ -74,7 +77,12 @@
                             {% endif %}
                             <div class="comment-head">
                                 <p class="timestamp">{{ term_comment.timestamp }}</p>
-                                <p class="comment-user">{{ find_commenter(term_comment) }} said:</p>
+
+                                <p class="comment-user">{{ find_commenter(term_comment)|capitalize() }} 
+                                    {% if find_commenter(term_comment) != "" %} said:
+                                    {% else %}
+                                    Anon
+                                    {% endif %}</p>
                             </div>
                             <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
                             {% if access_level == "administrator" %}
@@ -94,7 +102,7 @@
                     <div class="card z-depth-0">
                         <div class="card-content">
                             <div class="input-field comment-width">
-                                <p class="comment-username">Comment as {{ user.username }}</p>
+                                <p class="comment-username">Comment as {{ user.username|capitalize() }}</p>
                                 <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
                                     <textarea name="comment" id="comment" cols="30" rows="10" type="text"
                                         class="materialize-textarea"></textarea>

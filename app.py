@@ -22,22 +22,30 @@ mongo = PyMongo(app)
 
 
 def get_access_level():
-    user_id = mongo.db.users.find_one({"username": session['user']})['_id']
+    user = get_record('users', 'username', session['user'])
+    print(user)
+    user_id = user['_id']
     access_level = mongo.db.users.find_one({"_id": ObjectId(user_id)})['access_level'].lower()
 
     return access_level
 
 
-def get_collection(get_col, list):
-    col = mongo.db['get_col']
-    collection = list(col.find()) if list else col.find()
+def return_flags():
+    records = mongo.db.comments.find({'flagged': True})
+    flagged = list(records)
+    return flagged
+
+
+def get_collection(get_col):
+    col = mongo.db[get_col]
+    collection = col.find()
 
     return collection
     
 
-def get_record(col, key, val, *make_list):
+def get_record(col, key, val):
     collection = mongo.db[col]
-    record = list(collection.find({key: val})) if make_list else collection.find_one({key: val})
+    record = collection.find_one({key: val})
     
     return record
 
@@ -94,30 +102,41 @@ def dashboard():
     numbers = ['0','1','2','3','4','5','6','7','8','9']
     general = ['General Usage']
     
+
     try:
-        user = get_record('users', 'username', session['user'], False)
+        user = get_record('users', 'username', session['user'])
         access_level = get_access_level()
-        levels = get_collection('access_levels', False)
+        levels = list(get_collection('access_levels').sort("level_name", 1))
         terms = None
-        new_registrations = get_record('users', 'access_level', 'requested', True)
-        flagged_comments = get_record('comments', 'flagged', True, True)
-        suggested_terms = get_record('terms', 'pending', True, True)
+        new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
+        flagged_comments = list(mongo.db.comments.find({'flagged': True}))
+        suggested_terms = list(mongo.db.terms.find({'pending': True}))
         pinned_terms = get_pinned_terms()
 
         def manage_flagged_comments(flagged):
             term_id = flagged['rel_term_id']
-            term_name = get_record('terms', '_id', ObjectId(term_id), False)
+            term_name = get_record('terms', '_id', ObjectId(term_id))
             return term_name['term_name']
+        
+        def manage_suggested_terms(suggestion):
+            suggestion_user = suggestion['created_by']
+            try:
+                suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
+                print('sug_by', suggested_by)
+            except Exception as e:
+                suggested_by = ""
+            
+            return suggested_by
 
     except KeyError:
         return redirect(url_for('login'))
             
-    return render_template("dashboard.html", terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, manage_flagged_comments=manage_flagged_comments)
+    return render_template("dashboard.html", terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms)
     
 
 @app.route("/get_category/<letter>")
 def get_category(letter):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     letters = get_letters()
     access_level = get_access_level()
     pinned_terms = get_pinned_terms()
@@ -128,7 +147,7 @@ def get_category(letter):
 
 @app.route("/delete_flag/<comment_id>")
 def delete_flag(comment_id):
-    flagged_comment = get_record('comments', '_id', ObjectId(comment_id), False)
+    flagged_comment = get_record('comments', '_id', ObjectId(comment_id))
     update = {"$set": {"flagged": False}}
     mongo.db.comments.update_one(flagged_comment, update)
 
@@ -138,25 +157,31 @@ def delete_flag(comment_id):
 
 @app.route("/view_term/<term_id>")
 def view_term(term_id):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
-    term = get_record('terms', '_id', ObjectId(term_id), False)
-    term_comments = get_record('comments', 'rel_term_id', term_id, True)
+    term = get_record('terms', '_id', ObjectId(term_id))
+    
+    term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
     
     def find_commenter(term_comment):
-        term_comment_user = get_record('users', '_id', term_comment['user'], False)
-        commenter = term_comment_user['username']
+        
+        try:
+            term_comment_user = mongo.db.users.find_one({'_id': ObjectId(term_comment['user'])})
+            commenter = term_comment_user['username']
+        except TypeError:
+            commenter = ""
+        
         return commenter
 
     try:
-        term_creator_user = get_record('users', '_id', term['created_by'], False)
+        term_creator_user = get_record('users', '_id', term['created_by'])
         term['created_by'] = term_creator_user['username']
 
     except Exception as e:
-        term['created_by'] = ""
+        term['created_by'] = term['created_by']
     
     try:
-        term_updated_by = get_record('users', '_id', term['last_updated_by'], False)
+        term_updated_by = get_record('users', '_id', term['last_updated_by'])
         term['last_updated_by'] = term_updated_by['username']
         
     except Exception as e:
@@ -167,44 +192,50 @@ def view_term(term_id):
 
 @app.route("/manage_term/<term_id>")
 def manage_term(term_id):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
-    term = get_record('terms', '_id', ObjectId(term_id), False)
-    types = get_collection('types', False)
+    term = get_record('terms', '_id', ObjectId(term_id))
+    types = get_collection('types')
     
     return render_template("manage_term.html", term=term, types=types, access_level=access_level)
 
 
 @app.route("/pin_term/<term_id>")
 def pin_term(term_id):
-    term = get_record('terms', '_id', ObjectId(term_id), False)
-    user = get_record('users', 'username', session['user'], False)
+    origin = request.args['origin']
+    term = get_record('terms', '_id', ObjectId(term_id))
+    user = get_record('users', 'username', session['user'])
     term_to_pin = {"$push": {"pinned_terms": ObjectId(term_id)}}
     user_query = {'_id': ObjectId(user['_id'])}
     user_record_field = mongo.db.users.count_documents({"$and":  [user_query, {"pinned_terms": ObjectId(term_id)}]})
 
     if user_record_field > 0:
         flash("Sorry, you've already pinned this term")
-        return redirect(url_for("dashboard", user=user, term=term))
+        if origin == 'dash':
+            return redirect(url_for("dashboard", user=user, term=term))
+        else:
+            return redirect(url_for("view_term", term_id=term_id))
     else:        
         mongo.db.users.update_one(user, term_to_pin)
         flash("Term pinned to your dashboard")
 
-    return redirect(url_for("dashboard", user=user, term=term))
-        
+    if origin == 'dash':
+        return redirect(url_for("dashboard", user=user, term=term))
+    else:
+        return redirect(url_for("view_term", term_id=term_id))
+
 
 @app.route("/remove_pin/<pinned_term>")
 def remove_pin(pinned_term):
-    user = get_record('users', 'username', session['user'], False)
-    mongo.db.users.update_one({"username": user}, {"$pull": {"pinned_terms": ObjectId(pinned_term)}})
-
+    user = get_record('users', 'username', session['user'])
+    mongo.db.users.update_one({"username": user['username']}, {"$pull": {"pinned_terms": ObjectId(pinned_term)}})
     flash("Pin successfully deleted")
-    return redirect(url_for("dashboard", user=session['user']))
+    return redirect(url_for("dashboard", user=user))
 
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])
 def add_comment(term_id):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     user_id = user['_id']
 
     comment_field = request.form.get("comment")
@@ -239,8 +270,8 @@ def delete_comment(comment_id, term_id):
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
 def flag_comment(comment_id, term_id):
-    user = get_record('users', 'username', session['user'], False)
-    flag_attempt = get_record('comments', '_id', ObjectId(comment_id), False)
+    user = get_record('users', 'username', session['user'])
+    flag_attempt = get_record('comments', '_id', ObjectId(comment_id))
     flag_status = flag_attempt['flagged']
 
     if flag_status:
@@ -283,7 +314,7 @@ def register():
 
 @app.route("/change_password/<user_id>", methods=["GET", "POST"])
 def change_password(user_id):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     user_id = user['_id']
     access_level = get_access_level()
     users = mongo.db["users"]
@@ -350,9 +381,9 @@ def login():
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
-    username = session['user']
+    user = get_record('users', 'username', session['user'])
+    print(user)
     access_level = get_access_level()
-    user = get_record('users', 'username', session['user'], False)
     to_change_pword = user['to_change_pword']
 
     if session["user"]:
@@ -371,7 +402,7 @@ def logout():
 
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
 
     if request.method == "POST":
@@ -399,14 +430,18 @@ def add_term():
 
 @app.route("/update_term/<term_id>", methods=["GET", "POST"])
 def update_term(term_id):
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
-    term = get_record('terms', '_id', ObjectId(term_id), False)
-    
+    term = get_record('terms', '_id', ObjectId(term_id))
+    print(term)
     if request.method == "POST":
 
         incorrect = get_fields("incorrect_terms")
         alternatives = get_fields("alt_terms")
+        try:
+            created_by = term['created_by']
+        except KeyError:
+            created_by = 'Creator not recorded'
 
         update_term = {
             "term_name": request.form.get("term_name"),
@@ -415,7 +450,7 @@ def update_term(term_id):
             "usage_notes": request.form.get("usage_notes"),
             "type_name": request.form.get("type_name"),
             "pending": False if access_level == 'administrator' else True,
-            "created_by": term['created_by'],
+            "created_by": created_by,
             "last_updated_by": ObjectId(user['_id'])
             }
         
@@ -427,7 +462,7 @@ def update_term(term_id):
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
-    user = get_record('users', 'username', session['user'], False)
+    user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
     letters = get_letters()
     query = request.form.get("query")
@@ -489,13 +524,20 @@ def add_user():
 
 @app.route("/update_user/<each_user_id>", methods=["POST", "GET"])
 def update_user(each_user_id):
+    origin = request.args['origin']
+    
     if request.method == "POST":
-        user_to_update = get_record('users', '_id', ObjectId(each_user_id), False)
+        user_to_update = get_record('users', '_id', ObjectId(each_user_id))
         acc_level = request.form["access_level"]
         mongo.db.users.update_one({"_id": user_to_update["_id"]}, {"$set": {"access_level": acc_level}})
 
         flash("User's access level updated")
-        return redirect(url_for("manage_users", user_to_update=user_to_update))
+
+        if origin == 'dash':
+            return redirect(url_for("dashboard"))
+        else:
+            return redirect(url_for("manage_users", user_to_update=user_to_update))
+        
 
     flash("User's access level was not updated")
     return redirect(url_for("manage_users", user_to_update=user_to_update))

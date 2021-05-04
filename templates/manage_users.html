@@ -79,12 +79,12 @@
                         <div class="card-content">
                             <div class="row">
                                 <div class="col s12">
-                                    <span class="card-title card-header"><strong>{{ each_user.username }}:</strong>
-                                        <p class="subtitle">{{ each_user.access_level }}</p>
+                                    <span class="card-title card-header"><strong>{{ each_user.username|capitalize() }}:</strong>
+                                        <p class="subtitle">{{ each_user.access_level|capitalize() }}</p>
                                     </span>
                                 </div>
                             </div>
-                            <form method="POST" action="{{ url_for('update_user', each_user_id=each_user._id) }}">
+                            <form method="POST" action="{{ url_for('update_user', each_user_id=each_user._id, origin='manage_users') }}">
                                 <div class="row">
                                     <div class="col s6">
                                         {% for access_level in levels %}

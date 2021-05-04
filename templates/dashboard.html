@@ -3,7 +3,7 @@
 {% if user.to_change_pword == True %}
 <p>Looks like you're new here, please <a href="{{ url_for('profile', user=user) }}">change your password.</a></p>
 {% else %}
-<h2 class="center-align"> {{ user.username }}'s dashboard</h2>
+<h2 class="center-align"> {{ user.username|capitalize() }}'s dashboard</h2>
 <div class="container">
     <div class="row">
         <div class="col s12 m6 col-fix">
@@ -35,7 +35,7 @@
             <!-- Search terms -->
             <div class="card z-depth-0">
                 <div class="card-content">
-                    <form method="POST" action="{{ url_for('search_terms', user=user) }}">
+                    <form method="POST" action="{{ url_for('search_terms') }}">
                         <div class="card-title">Search terms</div>
                         <div class="row">
                             <div class="col s7">
@@ -47,7 +47,7 @@
                             <div class="col s1"></div>
                             <div class="col s4">
                                 <div class="row">
-                                    <a href="{{ url_for('dashboard', user=user) }}"
+                                    <a href="{{ url_for('dashboard') }}"
                                         class="btn-small button-override">Reset</a>
                                 </div>
                                 <div class="row">
@@ -69,14 +69,15 @@
                     {% if new_registrations|length > 0 %}
                     {% for new_reg in new_registrations %}
                     <div class="row">
-                        <form class="new_reg" method="POST" action="{{ url_for('update_user', each_user_id=new_reg._id) }}">
-                            <div class="col m3">{{ new_reg.username }}:</div>
+                        <form class="new_reg" method="POST" action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
+                            <div class="col m3">{{ new_reg.username|capitalize() }}:</div>
                             <div class="col m6">
                                 <select id="access_level" name="access_level">
                                     <option value="" disabled selected>Set access level
                                     <option>
                                         {% for access_level in levels %}
                                     <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
+                                    {% print(access_level) %}
                                     {% endfor %}
                                 </select>
                             </div>
@@ -92,7 +93,6 @@
                     <!-- OTHER STUFF -->
                    {% if flagged_comments|length > 0 %}
                     {% for flagged in flagged_comments %}
-
                     <div class="row">
                         <div class="col m8">
                             <p><span class="truncate inline">{{ manage_flagged_comments(flagged) }}
@@ -111,7 +111,11 @@
                     <div class="row">
                         <div class="col m6">
                             {% if access_level == 'administrator' %}
-                            <p>"{{ suggestion.term_name }}", suggested by: {{ suggestion.created_by }} <a class="more"
+                            <p>"{{ suggestion.term_name }}", 
+                                {% if manage_suggested_terms(suggestion) != "" %} suggested by: 
+                                {% else %}
+                                {{ manage_suggested_terms(suggestion) }}
+                                {% endif %} <a class="more"
                                     href="{{ url_for('manage_term', term_id=suggestion._id) }}">View more</a></p>
                             {% else %}
                             <p>"{{ suggestion.term_name }}", suggested by: {{ suggestion.created_by }} <a class="more"
@@ -169,7 +173,7 @@
                                 <p><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
                                         class="card-subhead">{{ term.type_name }}</em></p>
                             </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
-                                href="{{ url_for('pin_term', term_id=term._id) }}"><i class="material-icons">add</i></a>
+                                href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i class="material-icons">add</i></a>
                             {% if term.alt_terms|length > 0 %}
                             <strong>Also: </strong>
                             {% for alt_term in term.alt_terms %}
