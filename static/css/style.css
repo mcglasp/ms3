@@ -125,11 +125,35 @@ li a:hover::after {
     
 }
 
-
+.updates {
+    display: flex;
+    justify-content: space-between;
+    align-content: space-between;
+}
 
 .more{
-    display: block;
+    display: inline;
 }
+
+.updates-hr {
+    margin: 20px 0px;
+}
+
+.icon-btn {
+    display: inline-block;
+    width: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 32px;
+    padding: 0;
+}
+
+.minor-text {
+    font-size: 80%;
+    color: grey;
+    padding-bottom: 10px;
+}
+
 
 .card-subhead {
     font-size: 1rem;

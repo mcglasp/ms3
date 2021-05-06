@@ -1,5 +1,5 @@
 import os
-from html.parser import HTMLParser
+import re
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
@@ -23,7 +23,6 @@ mongo = PyMongo(app)
 
 def get_access_level():
     user = get_record('users', 'username', session['user'])
-    print(user)
     user_id = user['_id']
     access_level = mongo.db.users.find_one({"_id": ObjectId(user_id)})['access_level'].lower()
 
@@ -95,6 +94,57 @@ def get_fields(find):
     return return_list
 
 
+def text_search(user_query):
+
+    def standard_search(input_text):
+        terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+        
+        return terms
+    
+    terms = standard_search(user_query)
+    
+    # number change
+    if terms == []:
+        print('1')
+        numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
+        for num, dig in numbers.items():
+            if num in user_query:
+                num_change = re.sub(num, dig, user_query)
+                user_query = num_change
+                print(2)
+                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                return terms
+
+            elif dig in user_query:
+                num_change = re.sub(dig, num, user_query)
+                user_query = num_change
+                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                print('3')
+                return terms
+        
+        # strip punctuation
+    if terms == []:
+        to_remove = "[\s'&/\-.]"
+        input_stripped = re.sub(to_remove, '', user_query)
+        print('4')
+        terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+
+        
+        print('here, terms is []')
+        # regex search
+    if terms == []:
+        print('5')
+
+        pattern = f"({user_query[0]})[{user_query[1:]}]"+"{3,}"
+        print(pattern)
+        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
+    
+        return terms
+
+    print('6')
+    return terms
+
+
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():  
@@ -122,7 +172,7 @@ def dashboard():
             suggestion_user = suggestion['created_by']
             try:
                 suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
-                print('sug_by', suggested_by)
+
             except Exception as e:
                 suggested_by = ""
             
@@ -176,9 +226,11 @@ def view_term(term_id):
     try:
         term_creator_user = get_record('users', '_id', term['created_by'])
         term['created_by'] = term_creator_user['username']
+        
 
     except Exception as e:
-        term['created_by'] = term['created_by']
+        term['created_by'] = "Username not given"
+        
     
     try:
         term_updated_by = get_record('users', '_id', term['last_updated_by'])
@@ -382,7 +434,6 @@ def login():
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
     user = get_record('users', 'username', session['user'])
-    print(user)
     access_level = get_access_level()
     to_change_pword = user['to_change_pword']
 
@@ -408,9 +459,10 @@ def add_term():
     if request.method == "POST":
         alternatives = get_fields("alt_terms")
         incorrect = get_fields("incorrect_terms")
+        term_name = request.form.get("term_name")
 
         term = {
-            "term_name": request.form.get("term_name"),
+            "term_name": term_name,
             "alt_terms": alternatives,
             "incorrect_terms": incorrect,
             "usage_notes": request.form.get("usage_notes"),
@@ -433,7 +485,7 @@ def update_term(term_id):
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
     term = get_record('terms', '_id', ObjectId(term_id))
-    print(term)
+
     if request.method == "POST":
 
         incorrect = get_fields("incorrect_terms")
@@ -465,9 +517,14 @@ def search_terms():
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
     letters = get_letters()
-    query = request.form.get("query")
-    terms = list(mongo.db.terms.find({"$text": {"$search": query}}))
+    query = request.form.get('query')
     pinned_terms = get_pinned_terms()
+
+    try:
+        terms = text_search(query)
+    
+    except IndexError:
+        terms = None
     
     return render_template("dashboard.html", user=user, terms=terms, letters=letters, access_level=access_level, pinned_terms=pinned_terms)
 
