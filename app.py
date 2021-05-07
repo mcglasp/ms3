@@ -21,6 +21,10 @@ app.secret_key = os.environ.get("SECRET_KEY")
 mongo = PyMongo(app)
 
 
+def page_h3(h3):
+    return h3
+
+
 def get_access_level():
     user = get_record('users', 'username', session['user'])
     user_id = user['_id']
@@ -66,7 +70,6 @@ def get_pinned_terms():
         pinned_terms = []
 
     return pinned_terms
-
 
 
 def get_fields(find):
@@ -127,7 +130,7 @@ def text_search(user_query):
         to_remove = "[\s'&/\-.]"
         input_stripped = re.sub(to_remove, '', user_query)
         print('4')
-        terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
 
         
         print('here, terms is []')
@@ -148,13 +151,15 @@ def text_search(user_query):
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():  
+    
     letters = get_letters()
     numbers = ['0','1','2','3','4','5','6','7','8','9']
     general = ['General Usage']
     
-
     try:
         user = get_record('users', 'username', session['user'])
+        h3_var = user['username']
+        this_h3 = page_h3(f"{h3_var}'s Dashboard")
         access_level = get_access_level()
         levels = list(get_collection('access_levels').sort("level_name", 1))
         terms = None
@@ -173,7 +178,7 @@ def dashboard():
             try:
                 suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
 
-            except Exception as e:
+            except Exception:
                 suggested_by = ""
             
             return suggested_by
@@ -181,7 +186,7 @@ def dashboard():
     except KeyError:
         return redirect(url_for('login'))
             
-    return render_template("dashboard.html", terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms)
+    return render_template("dashboard.html", this_h3=this_h3, terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms)
     
 
 @app.route("/get_category/<letter>")
@@ -226,17 +231,15 @@ def view_term(term_id):
     try:
         term_creator_user = get_record('users', '_id', term['created_by'])
         term['created_by'] = term_creator_user['username']
-        
 
-    except Exception as e:
+    except Exception:
         term['created_by'] = "Username not given"
         
-    
     try:
         term_updated_by = get_record('users', '_id', term['last_updated_by'])
         term['last_updated_by'] = term_updated_by['username']
         
-    except Exception as e:
+    except Exception:
         term['last_updated_by'] = ""
 
     return render_template("view_term.html", term=term, term_comments=term_comments, user=user, access_level=access_level, find_commenter=find_commenter)
@@ -249,7 +252,7 @@ def manage_term(term_id):
     term = get_record('terms', '_id', ObjectId(term_id))
     types = get_collection('types')
     
-    return render_template("manage_term.html", term=term, types=types, access_level=access_level)
+    return render_template("manage_term.html", term=term, types=types, access_level=access_level, user=user)
 
 
 @app.route("/pin_term/<term_id>")
@@ -433,6 +436,7 @@ def login():
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
+    
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
     to_change_pword = user['to_change_pword']
@@ -453,6 +457,8 @@ def logout():
 
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
+    
+    
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
 
@@ -548,11 +554,12 @@ def delete_term(term_id):
 
 @app.route("/manage_users", methods=["POST", "GET"])
 def manage_users():
+    this_h3 = page_h3("Manage users")
     access_level = get_access_level()
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
     users_list = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
 
-    return render_template("manage_users.html", users_list=users_list, levels=levels, access_level=access_level)
+    return render_template("manage_users.html", users_list=users_list, levels=levels, access_level=access_level, this_h3=this_h3)
 
 
 @app.route("/search_users", methods=["POST", "GET"])

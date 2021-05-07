@@ -1,7 +1,59 @@
 .flash {
-    color: black;
+    color: red;
     position: relative;
-    top: 70px;
+    display: block;
+    width: 100%;
+    background-color: inherit;
+    height: 10px;
+    padding: 10px 0px;
+    margin: 0;
+}
+
+#flash-h3-con {
+    margin-top: 90px;
+    width: 65%;
+}
+
+@media only screen and (max-width: 800px) {
+
+.btn-alignment {
+    display: inline;
+}
+}
+
+@media only screen and (max-width: 370px) {
+    .btn-alignment {
+    display: block;
+}
+}
+
+
+
+#message {
+    position: absolute;
+    top: -15px;
+}
+
+.letters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 10px 0 10px;
+}
+
+.letter-chip {
+    width: 32px;
+}
+
+.letter-chip a {
+    display: block;
+    margin: auto;
+}
+
+
+
+.hidden {
+    color: inherit;
 }
 
 .inline {
@@ -32,11 +84,6 @@ nav {
     
 }
 
-main {
-    position: relative;
-    top: 64px;
-}
-
 .logo {
     margin-left: 20px;
 }
@@ -51,13 +98,19 @@ li a::after {
 }
 
 h2 {
-    margin-left: 20px;
+    margin: 0px;
+    margin-bottom: 5px;
 }
 
 .button-override {
     font-family: 'Nanum Myeongjo', serif;
     width: 135px;
     box-shadow: none;
+    margin: 5px 0;
+}
+
+.slim {
+    margin-bottom: 0px;
 }
 
 .right-col {
@@ -119,9 +172,10 @@ li a:hover::after {
     top: 15px;
 }
 
-.comment-btn {
+.manage-btn {
     display: block;
-    margin: auto;
+    margin: 5px auto;
+    width: 50%;
     
 }
 

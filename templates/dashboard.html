@@ -3,10 +3,10 @@
 {% if user.to_change_pword == True %}
 <p>Looks like you're new here, please <a href="{{ url_for('profile', user=user) }}">change your password.</a></p>
 {% else %}
-<h2 class="center-align"> {{ user.username|capitalize() }}'s dashboard</h2>
+
 <div class="container">
     <div class="row">
-        <div class="col s6 m6 col-fix">
+        <div class="col s12 m6 col-fix">
             <!-- Pinned terms -->
             <div class="card z-depth-0">
                 <div class="card-content">
@@ -38,174 +38,181 @@
                     <form method="POST" action="{{ url_for('search_terms') }}">
                         <div class="card-title">Search terms</div>
                         <div class="row">
-                            <div class="col s7">
+                            <div class="col s12">
                                 <div class="input-field">
                                     <input type="text" name="query" id="query" minlength="3">
                                     <label for="query">Search terms</label>
                                 </div>
                             </div>
-                            <div class="col s1"></div>
-                            <div class="col s4">
-                                <div class="row">
-                                    <a href="{{ url_for('dashboard') }}" class="btn-small button-override">Reset</a>
-                                </div>
-                                <div class="row">
-                                    <button type="submit" class="btn-small button-override">
-                                        Search
-                                    </button>
-                                </div>
-                            </div>
                         </div>
-                    </form>
+
+
+                        <div class="row center-align">
+                            <div class="col s6">
+                                <a href="{{ url_for('dashboard') }}"
+                                    class="btn-small z-depth-0 button-override">Reset</a>
+                            </div>
+                        
+                        <div class="col s6">
+                            <button type="submit" class="btn-small z-depth-0 button-override">
+                                Search
+                            </button>
+                        </div>
+                        </div>
+                        </form>
                 </div>
             </div>
 
-            <!-- Admin-only, alerts for new registrations, flagged comments and suggestions -->
+    <!-- Admin-only, alerts for new registrations, flagged comments and suggestions -->
+    <div class="card z-depth-0">
+        <div class="card-content">
+            <div class="card-title">Recent Activity</div>
+
+            {% if new_registrations|length > 0 %}
+            <p class="minor-text">New registrations</p>
+            {% for new_reg in new_registrations %}
+
+            <form class="new_reg" method="POST"
+                action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
+                <div class="updates valign-wrapper">
+                    <p>{{ new_reg.username|capitalize() }}:</p>
+                    <select id="access_level" name="access_level">
+                        <option value="" disabled selected>Set access level
+                        </option>
+                        {% for access_level in levels %}
+                        <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="icon-btn btn-small z-depth-0 button-override" type="submit"><i
+                            class="small material-icons center-align">keyboard_arrow_up</i></button>
+                </div>
+            </form>
+
+            {% endfor %}
+            {% else %}
+            <p>No new registrations</p>
+
+            {% endif %}
+            <hr class="updates-hr">
+            {% if flagged_comments|length > 0 %}
+            <p class="minor-text">Flagged comments</p>
+            {% for flagged in flagged_comments %}
+            <div class="row">
+                <div class="col s12">
+                    <p class="updates valign-wrapper">
+                        <span class="truncate inline">{{ manage_flagged_comments(flagged) }}:
+                            "{{ flagged.comment }}"</span> <a class="btn-small icon-btn z-depth-0 button-override more"
+                            href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
+                                class="keyboard material-icons">close</i></a>
+
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>No new flagged comments</p>
+            {% endif %}
+            <hr class="updates-hr">
+            {% if suggested_terms|length > 0 %}
+            <p class="minor-text">Suggested terms</p>
+            {% for suggestion in suggested_terms %}
+            <div class="row">
+                <div class="col s12">
+                    {% if (access_level == 'administrator') or (access_level == 'read & comment') %}
+                    <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
+                        {% if manage_suggested_terms(suggestion) != "" %}
+                        suggested by:
+                        {% else %}
+                        {{ manage_suggested_terms(suggestion) }}
+                        {% endif %}
+                        <a class="btn-small icon-btn z-depth-0 button-override more"
+                            href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
+                                class="small material-icons">keyboard_arrow_right</i></a></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <div class="row">
+                <div class="col s12">
+                    <p>No new term suggestions</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+</div>
+
+<div class="col s12 m6 right-col">
+    <div class="row">
+        <div class="col s12">
             <div class="card z-depth-0">
                 <div class="card-content">
-                    <div class="card-title">Recent Activity</div>
+                    <span class="card-title activator grey-text text-darken-4 card-header">
+                        <p>Browse style guide</p>
+                    </span>
 
-                    {% if new_registrations|length > 0 %}
-                    <p class="minor-text">New registrations</p>
-                    {% for new_reg in new_registrations %}
-
-                    <form class="new_reg" method="POST"
-                        action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
-                        <div class="updates valign-wrapper">
-                            <p>{{ new_reg.username|capitalize() }}:</p>
-                            <select id="access_level" name="access_level">
-                                <option value="" disabled selected>Set access level
-                                </option>
-                                {% for access_level in levels %}
-                                <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
-                                {% endfor %}
-                            </select>
-                            <button class="icon-btn btn-small z-depth-0 button-override" type="submit"><i class="small material-icons center-align">keyboard_arrow_up</i></button>
-                        </div>
-                    </form>
-
-                    {% endfor %}
-                    {% else %}
-                    <p>No new registrations</p>
-
-                    {% endif %}
-                    <hr class="updates-hr">
-                    {% if flagged_comments|length > 0 %}
-                    <p class="minor-text">Flagged comments</p>
-                    {% for flagged in flagged_comments %}
                     <div class="row">
-                        <div class="col s12">
-                            <p class="updates valign-wrapper">
-                                <span class="truncate inline">{{ manage_flagged_comments(flagged) }}:
-                                    "{{ flagged.comment }}"</span> <a class="btn-small icon-btn z-depth-0 button-override more"
-                                    href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
-                                        class="keyboard material-icons">close</i></a>
+                        <div class="letters">
+                            {% for letter in letters %}
 
-                            </p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <p>No new flagged comments</p>
-                    {% endif %}
-                    <hr class="updates-hr">
-                    {% if suggested_terms|length > 0 %}
-                    <p class="minor-text">Suggested terms</p>
-                        {% for suggestion in suggested_terms %}
-                        <div class="row">
-                            <div class="col s12">
-                                    {% if (access_level == 'administrator') or (access_level == 'read & comment') %}
-                                    <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
-                                        {% if manage_suggested_terms(suggestion) != "" %} 
-                                            suggested by:
-                                        {% else %}
-                                            {{ manage_suggested_terms(suggestion) }}
-                                        {% endif %} 
-                                        <a class="btn-small icon-btn z-depth-0 button-override more"
-                                            href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i class="small material-icons">keyboard_arrow_right</i></a></p>
-                                    {% endif %}
-                            </div>
-                            </div>
-                                {% endfor %}
+                            <div class="chip letter-chip"><a
+                                    href="{{ url_for('get_category', letter=letter) }}">{{ letter }}</a></div>
 
-                            {% else %}
-                            <div class="row">
-                            <div class="col s12">
-                            <p>No new term suggestions</p>
-                        </div>
-                        </div>
-                        {% endif %}
-                    </div>
-               
-
-            </div>
-        </div>
-
-        <div class="col s6 m6 right-col">
-            <div class="row">
-                <div class="col s12">
-                    <div class="card z-depth-0">
-                        <div class="card-content">
-                            <span class="card-title activator grey-text text-darken-4 card-header">
-                                <p>Browse style guide</p>
-                            </span>
-
-                            <div class="row">
-                                {% for letter in letters %}
-                                <div class="col s1">
-                                    <div class="chip"><a
-                                            href="{{ url_for('get_category', letter=letter) }}">{{ letter }}</a></div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {% if terms == None %}
-            <p>Search for a term or browse the style guide</p>
-
-            {% elif terms|length == 0 %}
-            <p>Your search returned no results</p>
-            {% else %}
-            {% for term in terms %}
-            {% if term.pending != True %}
-            <div class="row">
-                <div class="col s12">
-                    <div class="card z-depth-0">
-                        <div class="card-content">
-                            <span class="card-title activator grey-text text-darken-4 card-header">
-                                <p><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
-                                        class="card-subhead">{{ term.type_name }}</em></p>
-                            </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
-                                href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
-                                    class="material-icons">add</i></a>
-                            {% if term.alt_terms|length > 0 %}
-                            <strong>Also: </strong>
-                            {% for alt_term in term.alt_terms %}
-                            <span>
-                                {% if not loop.first and loop.last %}
-                                and
-                                {% endif %}{{ alt_term }}
-                            </span>
                             {% endfor %}
-                            {% endif %}
-                            <a class="more" href="{{ url_for('view_term', term_id=term._id) }}">View more</a>
-                            {% if access_level == "administrator" %}
-                            <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">Manage term</a>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-
-            {% endif %}
-            {% endfor %}
-            {% endif %}
-            {% endif %}
-
         </div>
     </div>
+
+    {% if terms == None %}
+    <p>Search for a term or browse the style guide</p>
+
+    {% elif terms|length == 0 %}
+    <p>Your search returned no results</p>
+    {% else %}
+    {% for term in terms %}
+    {% if term.pending != True %}
+    <div class="row">
+        <div class="col s12">
+            <div class="card z-depth-0">
+                <div class="card-content">
+                    <span class="card-title activator grey-text text-darken-4 card-header">
+                        <p><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
+                                class="card-subhead">{{ term.type_name }}</em></p>
+                    </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
+                        href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
+                            class="material-icons">add</i></a>
+                    {% if term.alt_terms|length > 0 %}
+                    <strong>Also: </strong>
+                    {% for alt_term in term.alt_terms %}
+                    <span>
+                        {% if not loop.first and loop.last %}
+                        and
+                        {% endif %}{{ alt_term }}
+                    </span>
+                    {% endfor %}
+                    {% endif %}
+                    <a class="more" href="{{ url_for('view_term', term_id=term._id) }}">View more</a>
+                    {% if access_level == "administrator" %}
+                    <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">Manage term</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+
+</div>
+</div>
 </div>
 {% endblock %}

@@ -51,15 +51,23 @@
         <li><a href="{{ url_for('add_term') }}">Add term</a></li>
         <li><a href="{{ url_for('register') }}">Register</a></li>
     </ul>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul class="flash">
+    
+    <div id="flash-h3-con" class="container">
+        <h3 class="center-align"> {{ this_h3 }} </h3>
+    <div class="flash">
+        
+        {% with messages = get_flashed_messages() %}
+        {% if messages %} 
+        
         {% for message in messages %}
-        <li>{{ message }}</li>
+        <p id="message">{{ message }}</p>
         {% endfor %}
-    </ul>
-    {% endif %}
+           {% endif %}
+   
     {% endwith %}
+        </div>
+  </div>
+ 
     <main>
         {% block content %}
         {% endblock %}
