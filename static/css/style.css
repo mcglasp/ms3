@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .flash {
     color: red;
     position: relative;
@@ -14,6 +18,37 @@
     width: 65%;
 }
 
+.notifications {
+    border-radius: 50%;
+    background-color: red;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.delete-btn, .flag-btn {
+    margin: 0 0 15px 13px;
+}
+
+.btn-small:hover {
+    box-shadow: none;
+}
+
+.small-icon {
+    font-size: 60%;
+    position: relative;
+    left: -10px;
+    color:red;
+}
+
+.count-notifications {
+    color: red;
+    padding: 0;
+    margin: 0;
+}
+
+
+
+
 @media only screen and (max-width: 800px) {
 
 .btn-alignment {
@@ -25,6 +60,12 @@
     .btn-alignment {
     display: block;
 }
+}
+
+.comment-head {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
 }
 
 
@@ -172,11 +213,19 @@ li a:hover::after {
     top: 15px;
 }
 
+.btn-floating.halfway-fab:hover {
+    box-shadow: none;
+}
+
 .manage-btn {
     display: block;
     margin: 5px auto;
     width: 50%;
     
+}
+
+.term-card {
+    padding-bottom: 5px;
 }
 
 .updates {
@@ -185,8 +234,15 @@ li a:hover::after {
     align-content: space-between;
 }
 
-.more{
+.more {
     display: inline;
+    font-size: 70%;
+    padding: 5px 10px;
+}
+
+.view_more {
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .updates-hr {
@@ -300,6 +356,10 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     color: rgba(0, 0, 0, 0.781);
 }
 
+.red-text {
+    color: red;
+    background: transparent;
+}
 
 
 

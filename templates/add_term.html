@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-
-
 <div class="container">
     <div class="card z-depth-0 narrow-card">
         <div class="card-content">
@@ -28,7 +25,7 @@
                         <div class="valign-wrapper">
                             <a href="javascript:void(0);"
                                 onclick="add_field('alt_terms', 'new-alts', 'input-box input-width-half')"
-                                class="btn-floating btn-small waves-effect waves-light pt1"><i
+                                class="btn-floating btn-small waves-effect waves-light pt1 z-depth-0"><i
                                     class="material-icons">add</i></a>
                             <span class="add_btn_info">Click to add incorrect terms</span>
                         </div>
@@ -78,12 +75,17 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <button type="submit" class="btn-small right">Add term
+                        <button type="submit" class="btn-small right z-depth-0 button-override">
+                            {% if access_level == 'administrator' %}
+                            Add term
+                            {% else %}
+                            Suggest term
+                            {% endif %}
                             <i class="fas fa-plus-square right"></i>
                         </button>
                     </div>
                     <div class="input-field col s6">
-                        <a href="{{ url_for('add_term') }}" class="btn-small left">Reset</a>
+                        <a href="{{ url_for('add_term') }}" class="btn-small left z-depth-0 button-override">Reset</a>
                     </div>
                 </div>
             </form>

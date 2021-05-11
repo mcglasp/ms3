@@ -15,7 +15,10 @@
 <body>
     <nav class="z-depth-0 light-bg">
         <div class="nav-wrapper">
-            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo grey-text text-darken-3">myHouse</a>
+            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo grey-text text-darken-3">myHouse
+                {% if g.notifications > 0 %}
+                <sup href="#activity" id="notification" class="material-icons small-icon">notifications_active</sup></a>
+                {% endif %}
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons grey-text text-darken-3">menu</i></a>
             <ul class="right hide-on-med-and-down b-border">
                 {% if to_change_pword == True %}
@@ -53,20 +56,20 @@
     </ul>
     
     <div id="flash-h3-con" class="container">
-        <h3 class="center-align"> {{ this_h3 }} </h3>
-    <div class="flash">
-        
+        <h3 class="center-align"> {{ this_h3|capitalize }} </h3>
+    <div class="flash"> 
         {% with messages = get_flashed_messages() %}
         {% if messages %} 
-        
         {% for message in messages %}
         <p id="message">{{ message }}</p>
         {% endfor %}
-           {% endif %}
-   
-    {% endwith %}
-        </div>
-  </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+{% if g.notifications > 0 %}
+<p class="count-notifications">You have {{ g.notifications }} notifications</p>
+{% endif %}
+    </div>
  
     <main>
         {% block content %}

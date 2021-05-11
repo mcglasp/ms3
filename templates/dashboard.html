@@ -45,174 +45,184 @@
                                 </div>
                             </div>
                         </div>
-
-
                         <div class="row center-align">
                             <div class="col s6">
                                 <a href="{{ url_for('dashboard') }}"
                                     class="btn-small z-depth-0 button-override">Reset</a>
                             </div>
-                        
-                        <div class="col s6">
-                            <button type="submit" class="btn-small z-depth-0 button-override">
-                                Search
-                            </button>
+                            <div class="col s6">
+                                <button type="submit" class="btn-small z-depth-0 button-override">
+                                    Search
+                                </button>
+                            </div>
                         </div>
-                        </div>
-                        </form>
+                    </form>
                 </div>
             </div>
 
-    <!-- Admin-only, alerts for new registrations, flagged comments and suggestions -->
-    <div class="card z-depth-0">
-        <div class="card-content">
-            <div class="card-title">Recent Activity</div>
+            <!-- Admin-only, alerts for new registrations, flagged comments and suggestions -->
+            {% if access_level != 'read only' %}
+            <div class="card z-depth-0">
+                <div class="card-content">
+                    <div id="activity" class="card-title">Recent Activity</div>
+                    {% if access_level == 'administrator' %}
+                    {% if new_registrations|length > 0 %}
+                    <p class="minor-text">New registrations</p>
+                    {% for new_reg in new_registrations %}
 
-            {% if new_registrations|length > 0 %}
-            <p class="minor-text">New registrations</p>
-            {% for new_reg in new_registrations %}
+                    <form class="new_reg" method="POST"
+                        action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
+                        <div class="updates valign-wrapper">
+                            <p>{{ new_reg.username|capitalize() }}:</p>
+                            <select id="access_level" name="access_level">
+                                <option value="" disabled selected>Set access level
+                                </option>
+                                {% for access_level in levels %}
+                                <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="icon-btn btn-small z-depth-0 button-override" type="submit"><i
+                                    class="small material-icons center-align">keyboard_arrow_up</i></button>
+                        </div>
+                    </form>
 
-            <form class="new_reg" method="POST"
-                action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
-                <div class="updates valign-wrapper">
-                    <p>{{ new_reg.username|capitalize() }}:</p>
-                    <select id="access_level" name="access_level">
-                        <option value="" disabled selected>Set access level
-                        </option>
-                        {% for access_level in levels %}
-                        <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
-                        {% endfor %}
-                    </select>
-                    <button class="icon-btn btn-small z-depth-0 button-override" type="submit"><i
-                            class="small material-icons center-align">keyboard_arrow_up</i></button>
-                </div>
-            </form>
+                    {% endfor %}
+                    {% else %}
+                    <p>No new registrations</p>
 
-            {% endfor %}
-            {% else %}
-            <p>No new registrations</p>
+                    {% endif %}
+                    <hr class="updates-hr">
+                    {% if flagged_comments|length > 0 %}
+                    <p class="minor-text">Flagged comments</p>
+                    {% for flagged in flagged_comments %}
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">
+                                <span class="truncate inline">{{ manage_flagged_comments(flagged) }}:
+                                    "{{ flagged.comment }}"</span> <a
+                                    class="btn-small icon-btn z-depth-0 button-override more"
+                                    href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
+                                        class="keyboard material-icons">close</i></a>
 
-            {% endif %}
-            <hr class="updates-hr">
-            {% if flagged_comments|length > 0 %}
-            <p class="minor-text">Flagged comments</p>
-            {% for flagged in flagged_comments %}
-            <div class="row">
-                <div class="col s12">
-                    <p class="updates valign-wrapper">
-                        <span class="truncate inline">{{ manage_flagged_comments(flagged) }}:
-                            "{{ flagged.comment }}"</span> <a class="btn-small icon-btn z-depth-0 button-override more"
-                            href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
-                                class="keyboard material-icons">close</i></a>
-
-                    </p>
-                </div>
-            </div>
-            {% endfor %}
-            {% else %}
-            <p>No new flagged comments</p>
-            {% endif %}
-            <hr class="updates-hr">
-            {% if suggested_terms|length > 0 %}
-            <p class="minor-text">Suggested terms</p>
-            {% for suggestion in suggested_terms %}
-            <div class="row">
-                <div class="col s12">
-                    {% if (access_level == 'administrator') or (access_level == 'read & comment') %}
-                    <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
-                        {% if manage_suggested_terms(suggestion) != "" %}
-                        suggested by:
-                        {% else %}
-                        {{ manage_suggested_terms(suggestion) }}
-                        {% endif %}
-                        <a class="btn-small icon-btn z-depth-0 button-override more"
-                            href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
-                                class="small material-icons">keyboard_arrow_right</i></a></p>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No new flagged comments</p>
+                    {% endif %}
+                    <hr class="updates-hr">
+                    {% endif %}
+                    {% if suggested_terms|length > 0 %}
+                    <p class="minor-text">Suggested terms</p>
+                    {% for suggestion in suggested_terms %}
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
+                                {% if manage_suggested_terms(suggestion) != "" %}
+                                suggested by: {{ manage_suggested_terms(suggestion) }}                               
+                                {% endif %}
+                                {% if access_level == 'administrator' %}
+                                <a class="btn-small icon-btn z-depth-0 button-override more"
+                                    href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i class="small material-icons">keyboard_arrow_right</i></a>                                   
+                                    {% elif access_level == 'read and comment' %}
+                                    <a class="btn-small icon-btn z-depth-0 button-override more"
+                                    href="{{ url_for('view_term', term_id=suggestion._id, origin='suggestion') }}">
+                                    <i class="small material-icons">keyboard_arrow_right</i></a></p>
+                                    {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                   
+                    {% else %}
+                    <div class="row">
+                        <div class="col s12">
+                            <p>No new term suggestions</p>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
-            </div>
-            {% endfor %}
 
-            {% else %}
-            <div class="row">
-                <div class="col s12">
-                    <p>No new term suggestions</p>
-                </div>
+
             </div>
             {% endif %}
         </div>
 
+        <div class="col s12 m6 right-col">
+            <div class="row">
+                <div class="col s12">
+                    <div class="card z-depth-0">
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4 card-header">
+                                <p>Browse style guide</p>
+                            </span>
 
-    </div>
-</div>
+                            <div class="row">
+                                <div class="letters">
+                                    {% for category in categories %}
 
-<div class="col s12 m6 right-col">
-    <div class="row">
-        <div class="col s12">
-            <div class="card z-depth-0">
-                <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4 card-header">
-                        <p>Browse style guide</p>
-                    </span>
+                                    <div class="chip letter-chip"><a
+                                            href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
+                                    </div>
 
-                    <div class="row">
-                        <div class="letters">
-                            {% for letter in letters %}
+                                    {% endfor %}
 
-                            <div class="chip letter-chip"><a
-                                    href="{{ url_for('get_category', letter=letter) }}">{{ letter }}</a></div>
-
-                            {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    {% if terms == None %}
-    <p>Search for a term or browse the style guide</p>
+            {% if terms == None %}
+            <p>Search for a term or browse the style guide</p>
 
-    {% elif terms|length == 0 %}
-    <p>Your search returned no results</p>
-    {% else %}
-    {% for term in terms %}
-    {% if term.pending != True %}
-    <div class="row">
-        <div class="col s12">
-            <div class="card z-depth-0">
-                <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4 card-header">
-                        <p><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
-                                class="card-subhead">{{ term.type_name }}</em></p>
-                    </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab"
-                        href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
-                            class="material-icons">add</i></a>
-                    {% if term.alt_terms|length > 0 %}
-                    <strong>Also: </strong>
-                    {% for alt_term in term.alt_terms %}
-                    <span>
-                        {% if not loop.first and loop.last %}
-                        and
-                        {% endif %}{{ alt_term }}
-                    </span>
-                    {% endfor %}
-                    {% endif %}
-                    <a class="more" href="{{ url_for('view_term', term_id=term._id) }}">View more</a>
-                    {% if access_level == "administrator" %}
-                    <a class="more" href="{{ url_for('manage_term', term_id=term._id) }}">Manage term</a>
-                    {% endif %}
+            {% elif terms|length == 0 %}
+            <p>Your search returned no results</p>
+            {% else %}
+            {% for term in terms %}
+            {% if term.pending != True %}
+            <div class="row">
+                <div class="col s12">
+                    <div class="card z-depth-0">
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4 card-header">
+                                <p><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
+                                        class="card-subhead">{{ term.type_name }}</em></p>
+                            </span><a class="btn-floating halfway-fab waves-effect waves-light corner-fab z-depth-0"
+                                href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
+                                    class="material-icons">add</i></a>
+                            {% if term.alt_terms|length > 0 %}
+                            <strong>Also: </strong>
+                            {% for alt_term in term.alt_terms %}
+                            <span>
+                                {% if not loop.first and loop.last %}
+                                and
+                                {% endif %}{{ alt_term }}
+                            </span>
+                            {% endfor %}
+                            {% endif %}
+                            <div class="row"></div>
+                            <div class="row view_more">
+                                <div class="col s2">
+                            <a class="more btn-small z-depth-0 button-override" href="{{ url_for('view_term', term_id=term._id) }}">View</a></div>
+    
+                            {% if access_level == "administrator" %}
+                                <div class="col s10">
+                            <a class="more btn-small z-depth-0 button-override" href="{{ url_for('manage_term', term_id=term._id) }}">Manage</a></div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endif %}
+
         </div>
     </div>
-
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    {% endif %}
-
-</div>
-</div>
 </div>
 {% endblock %}

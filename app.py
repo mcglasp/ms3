@@ -1,9 +1,10 @@
 import os
 import re
+import requests
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
-    redirect, request, session, url_for)
+    redirect, request, session, url_for, g)
 
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
@@ -53,10 +54,10 @@ def get_record(col, key, val):
     return record
 
 
-def get_letters():
-    letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+def lets_nums():
+    categories = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0','1','2','3','4','5','6','7','8','9']
 
-    return letters
+    return categories
 
 
 def get_pinned_terms():
@@ -148,13 +149,29 @@ def text_search(user_query):
     return terms
 
 
+
+def get_user():
+    user = mongo.db.users.find_one({'username': session['user']})
+    username = user['username']
+    
+    return user, username
+
+
+@app.context_processor
+def inject_notifications():
+    new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
+    flagged_comments = list(mongo.db.comments.find({'flagged': True}))
+    suggested_terms = list(mongo.db.terms.find({'pending': True}))
+    g.notifications = len(suggested_terms) + len(flagged_comments) + len(new_registrations)
+
+    return dict(notifications=g.notifications)
+
+
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():  
     
-    letters = get_letters()
-    numbers = ['0','1','2','3','4','5','6','7','8','9']
-    general = ['General Usage']
+    categories = lets_nums()
     
     try:
         user = get_record('users', 'username', session['user'])
@@ -166,6 +183,8 @@ def dashboard():
         new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
         flagged_comments = list(mongo.db.comments.find({'flagged': True}))
         suggested_terms = list(mongo.db.terms.find({'pending': True}))
+        notifications = len(suggested_terms) + len(flagged_comments) + len(new_registrations)
+
         pinned_terms = get_pinned_terms()
 
         def manage_flagged_comments(flagged):
@@ -177,7 +196,7 @@ def dashboard():
             suggestion_user = suggestion['created_by']
             try:
                 suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
-
+                
             except Exception:
                 suggested_by = ""
             
@@ -186,18 +205,40 @@ def dashboard():
     except KeyError:
         return redirect(url_for('login'))
             
-    return render_template("dashboard.html", this_h3=this_h3, terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, letters=letters, numbers=numbers, general=general, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms)
-    
+    return render_template("dashboard.html", notifications=notifications, this_h3=this_h3, terms=terms, user=user, access_level=access_level, new_registrations=new_registrations, flagged_comments=flagged_comments, levels=levels, suggested_terms=suggested_terms, pinned_terms=pinned_terms, categories=categories, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms)
+     
 
-@app.route("/get_category/<letter>")
-def get_category(letter):
+@app.route("/get_category/<category>")
+def get_category(category):
     user = get_record('users', 'username', session['user'])
-    letters = get_letters()
+    h3_var = user['username']
+    this_h3 = page_h3(f"{h3_var}'s Dashboard")
+    new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
+    flagged_comments = list(mongo.db.comments.find({'flagged': True}))
+    suggested_terms = list(mongo.db.terms.find({'pending': True}))
+    notifications = len(suggested_terms) + len(flagged_comments) + len(new_registrations)
+    categories = lets_nums()
     access_level = get_access_level()
     pinned_terms = get_pinned_terms()
-    terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + letter, "$options": 'i'}}))
+    terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', terms=terms, access_level=access_level, user=user, letters=letters, pinned_terms=pinned_terms)
+    def manage_flagged_comments(flagged):
+        term_id = flagged['rel_term_id']
+        term_name = get_record('terms', '_id', ObjectId(term_id))
+        return term_name['term_name']
+    
+    def manage_suggested_terms(suggestion):
+        suggestion_user = suggestion['created_by']
+        try:
+            suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
+
+        except Exception:
+            suggested_by = ""
+        
+        return suggested_by
+
+
+    return render_template('dashboard.html', notifications=notifications, this_h3=this_h3, manage_flagged_comments=manage_flagged_comments, suggested_terms=suggested_terms, flagged_comments=flagged_comments, new_registrations=new_registrations, terms=terms, access_level=access_level, user=user, categories=categories, pinned_terms=pinned_terms)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -370,7 +411,6 @@ def register():
 @app.route("/change_password/<user_id>", methods=["GET", "POST"])
 def change_password(user_id):
     user = get_record('users', 'username', session['user'])
-    user_id = user['_id']
     access_level = get_access_level()
     users = mongo.db["users"]
     existing_user = users.find_one(
@@ -417,7 +457,6 @@ def login():
             # ensure hashed password matches user input
             if check_password_hash(existing_user["password"], request.form.get("password")):
                 session["user"] = request.form.get("username").lower()
-                flash("Welcome, {}".format(request.form.get("username")))
                 return redirect(url_for(
                     "dashboard", user=session['user']))
 
@@ -436,7 +475,6 @@ def login():
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
-    
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
     to_change_pword = user['to_change_pword']
@@ -456,9 +494,7 @@ def logout():
 
 
 @app.route("/add_term", methods=["GET", "POST"])
-def add_term():
-    
-    
+def add_term():  
     user = get_record('users', 'username', session['user'])
     access_level = get_access_level()
 
@@ -521,18 +557,39 @@ def update_term(term_id):
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
     user = get_record('users', 'username', session['user'])
+    h3_var = user['username']
+    this_h3 = page_h3(f"{h3_var}'s Dashboard")
+    new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
+    flagged_comments = list(mongo.db.comments.find({'flagged': True}))
+    suggested_terms = list(mongo.db.terms.find({'pending': True}))
+    
     access_level = get_access_level()
-    letters = get_letters()
+    categories = lets_nums()
     query = request.form.get('query')
     pinned_terms = get_pinned_terms()
-
+    
     try:
         terms = text_search(query)
     
     except IndexError:
         terms = None
     
-    return render_template("dashboard.html", user=user, terms=terms, letters=letters, access_level=access_level, pinned_terms=pinned_terms)
+    def manage_flagged_comments(flagged):
+        term_id = flagged['rel_term_id']
+        term_name = get_record('terms', '_id', ObjectId(term_id))
+        return term_name['term_name']
+    
+    def manage_suggested_terms(suggestion):
+        suggestion_user = suggestion['created_by']
+        try:
+            suggested_by = mongo.db.users.find_one({'_id': ObjectId(suggestion_user)})['username']
+
+        except Exception:
+            suggested_by = ""
+        
+        return suggested_by
+
+    return render_template("dashboard.html", this_h3=this_h3, flagged_comments=flagged_comments, suggested_terms=suggested_terms, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, new_registrations=new_registrations, user=user, terms=terms, categories=categories, access_level=access_level, pinned_terms=pinned_terms)
 
 
 @app.route("/go_to_term/<term_id>")
