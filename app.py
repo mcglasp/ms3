@@ -1,6 +1,5 @@
 import os
 import re
-import requests
 from datetime import datetime
 from flask import (
     Flask, flash, render_template, 
