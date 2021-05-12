@@ -220,9 +220,12 @@ def dashboard():
 def get_category(category):
     pinned_terms = get_pinned_terms()
     categories = lets_nums()
+    term_updates = dash_updates()[0]
+    recent_comments = dash_updates()[1]
+    term_comment = dash_updates()[2]
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', pinned_terms=pinned_terms, terms=terms, categories=categories)
+    return render_template('dashboard.html', term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, pinned_terms=pinned_terms, terms=terms, categories=categories)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -544,6 +547,9 @@ def search_terms():
     pinned_terms = get_pinned_terms()
     categories = lets_nums()
     query = request.form.get('query')
+    term_updates = dash_updates()[0]
+    recent_comments = dash_updates()[1]
+    term_comment = dash_updates()[2]
 
     try:
         terms = text_search(query)
@@ -551,7 +557,7 @@ def search_terms():
     except IndexError:
         terms = None
 
-    return render_template("dashboard.html", terms=terms, categories=categories, pinned_terms=pinned_terms)
+    return render_template("dashboard.html", term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, terms=terms, categories=categories, pinned_terms=pinned_terms)
 
 
 @app.route("/go_to_term/<term_id>")
