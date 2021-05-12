@@ -16,7 +16,7 @@
     <nav class="z-depth-0 light-bg">
         <div class="nav-wrapper">
             <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo grey-text text-darken-3">myHouse
-                {% if g.notifications > 0 %}
+                {% if (g.notifications > 0) and (g.user != None) %}
                 <sup href="#activity" id="notification" class="material-icons small-icon">notifications_active</sup></a>
                 {% endif %}
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons grey-text text-darken-3">menu</i></a>
@@ -66,7 +66,7 @@
         {% endif %}
         {% endwith %}
     </div>
-{% if g.notifications > 0 %}
+{% if (g.notifications > 0) and (g.user != None) %}
 <p class="count-notifications">You have {{ g.notifications }} notifications</p>
 {% endif %}
     </div>
