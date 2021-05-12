@@ -132,7 +132,7 @@ def inject_user():
         g.user = mongo.db.users.find_one({'username': session['user']})
         user_id = g.user['_id'] if g.user else None
         g.access_level = mongo.db.users.find_one({"_id": ObjectId(user_id)})['access_level'].lower() if user_id else 'requested'
-
+        print('hoho', g.user)
         return dict(user=g.user, access_level=g.access_level)
 
     except KeyError:
@@ -168,10 +168,9 @@ def inject_notifications():
 
 def get_pinned_terms():
     user = inject_user()
-    pinned_terms = user['user']['pinned_terms']
-    print(pinned_terms)
 
     try:
+        pinned_terms = user['user']['pinned_terms']
         pinned_term_ids = list(pinned_terms)
         pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
 
@@ -188,7 +187,7 @@ def dashboard():
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
     terms = None
-
+    
     try:
         pinned_terms = get_pinned_terms()
 
@@ -263,6 +262,7 @@ def pin_term(term_id):
     origin = request.args['origin']
     term = get_record('terms', '_id', ObjectId(term_id))
     user_record = inject_user()
+    user = user_record['user']
     user_id = user_record['user']['_id']
     term_to_pin = {"$push": {"pinned_terms": ObjectId(term_id)}}
     user_query = {'_id': ObjectId(user_id)}
