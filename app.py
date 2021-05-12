@@ -132,7 +132,7 @@ def inject_user():
         g.user = mongo.db.users.find_one({'username': session['user']})
         user_id = g.user['_id'] if g.user else None
         g.access_level = mongo.db.users.find_one({"_id": ObjectId(user_id)})['access_level'].lower() if user_id else 'requested'
-        print('hoho', g.user)
+        
         return dict(user=g.user, access_level=g.access_level)
 
     except KeyError:
@@ -143,7 +143,7 @@ def inject_user():
 
 @app.context_processor
 def inject_notifications():
-    g.new_registrations = list(mongo.db.users.find({'access_level':'requested'}))
+    g.new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
     g.flagged_comments = list(mongo.db.comments.find({'flagged': True}))
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
@@ -178,7 +178,23 @@ def get_pinned_terms():
         pinned_terms = []
 
     return pinned_terms
-    
+
+
+def dash_updates():
+    term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
+    recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
+
+    def term_comment(comment):
+        rel_term_id = comment['rel_term_id']
+        related_term = mongo.db.terms.find_one({'_id': ObjectId(rel_term_id)})
+        print(comment)
+        if not related_term == None:
+            related_term_name = related_term['term_name']
+            return related_term_name, rel_term_id
+        else:
+            return None
+
+    return term_updates, recent_comments, term_comment
 
 
 @app.route("/")
@@ -187,6 +203,9 @@ def dashboard():
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
     terms = None
+    term_updates = dash_updates()[0]
+    recent_comments = dash_updates()[1]
+    term_comment = dash_updates()[2]
     
     try:
         pinned_terms = get_pinned_terms()
@@ -194,8 +213,7 @@ def dashboard():
     except TypeError:
         return redirect(url_for('login'))
 
-    return render_template("dashboard.html", pinned_terms=pinned_terms, terms=terms, levels=levels, 
-    categories=categories)
+    return render_template("dashboard.html", term_comment=term_comment, term_updates=term_updates, recent_comments=recent_comments, pinned_terms=pinned_terms, terms=terms, levels=levels, categories=categories)
 
 
 @app.route("/get_category/<category>")
@@ -235,18 +253,20 @@ def view_term(term_id):
     try:
         term_creator_user = get_record('users', '_id', term['created_by'])
         term['created_by'] = term_creator_user['username']
+        created_by = term['created_by']
 
-    except Exception:
-        term['created_by'] = "Username not given"
+    except TypeError:
+        created_by = ""
  
     try:
         term_updated_by = get_record('users', '_id', term['last_updated_by'])
         term['last_updated_by'] = term_updated_by['username']
+        last_updated_by = term['last_updated_by']
 
     except Exception:
-        term['last_updated_by'] = ""
+        last_updated_by = ""
 
-    return render_template("view_term.html", term=term, term_comments=term_comments, find_commenter=find_commenter)
+    return render_template("view_term.html", term=term, term_comments=term_comments, find_commenter=find_commenter, created_by=created_by, last_updated_by=last_updated_by)
 
 
 @app.route("/manage_term/<term_id>")
@@ -462,6 +482,7 @@ def add_term():
     access_level = user_record['access_level']
 
     if request.method == "POST":
+        now = datetime.now()
         alternatives = get_fields("alt_terms")
         incorrect = get_fields("incorrect_terms")
         term_name = request.form.get("term_name")
@@ -473,7 +494,8 @@ def add_term():
             "usage_notes": request.form.get("usage_notes"),
             "type_name": request.form.get("type_name"),
             "pending": False if access_level == 'administrator' else True,
-            "created_by": ObjectId(user_id)
+            "created_by": ObjectId(user_id),
+            "last_updated": now.strftime("%d/%m/%Y")
             }
 
         mongo.db.terms.insert_one(term)

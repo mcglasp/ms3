@@ -61,11 +61,12 @@
             </div>
 
             <!-- Admin-only, alerts for new registrations, flagged comments and suggestions -->
-            {% if access_level != 'read only' %}
+            {% if access_level == 'administrator' %}
             <div class="card z-depth-0">
                 <div class="card-content">
-                    <div id="activity" class="card-title">Recent Activity</div>
-                    {% if access_level == 'administrator' %}
+                    <div id="activity" class="card-title">
+                        Recent Updates</div>
+                        
                     {% if new_registrations|length > 0 %}
                     <p class="minor-text">New registrations</p>
                     {% for new_reg in new_registrations %}
@@ -103,6 +104,7 @@
                                     class="btn-small icon-btn z-depth-0 button-override more"
                                     href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
                                         class="keyboard material-icons">close</i></a>
+                                        
 
                             </p>
                         </div>
@@ -112,7 +114,7 @@
                     <p>No new flagged comments</p>
                     {% endif %}
                     <hr class="updates-hr">
-                    {% endif %}
+                    
                     {% if suggested_terms|length > 0 %}
                     <p class="minor-text">Suggested terms</p>
                     {% for suggestion in suggested_terms %}
@@ -122,14 +124,11 @@
                                 {% if manage_suggested_terms(suggestion) != "" %}
                                 suggested by: {{ manage_suggested_terms(suggestion) }}                               
                                 {% endif %}
-                                {% if access_level == 'administrator' %}
+                                
                                 <a class="btn-small icon-btn z-depth-0 button-override more"
                                     href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i class="small material-icons">keyboard_arrow_right</i></a>                                   
-                                    {% elif access_level == 'read and comment' %}
-                                    <a class="btn-small icon-btn z-depth-0 button-override more"
-                                    href="{{ url_for('view_term', term_id=suggestion._id, origin='suggestion') }}">
-                                    <i class="small material-icons">keyboard_arrow_right</i></a></p>
-                                    {% endif %}
+                              </p>
+                                    
                         </div>
                     </div>
                     {% endfor %}
@@ -141,9 +140,58 @@
                         </div>
                     </div>
                     {% endif %}
+                   
                 </div>
 
 
+            </div>
+            {% endif %}
+     
+{% if access_level != 'administrator' %}
+          <div class="card z-depth-0">
+                <div class="card-content">
+                    <div id="activity" class="card-title">
+                        Recent Updates</div>
+                        
+                    <hr class="updates-hr">
+                    
+                    {% for update in term_updates %}
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">"{{ update.term_name }}" was recently updated
+                                
+                                <a class="btn-small icon-btn z-depth-0 button-override more"
+                                    href="{{ url_for('view_term', term_id=update._id) }}"><i class="small material-icons">keyboard_arrow_right</i></a>                                   
+                              </p>
+                                    
+                        </div>
+                    </div>
+                    {% endfor %} 
+                </div>
+            </div>
+            {% endif %}
+
+            {% if access_level != 'read only' %}
+          <div class="card z-depth-0">
+                <div class="card-content">
+                    <div id="activity" class="card-title">
+                        Recent Comments</div>
+                        
+                    <hr class="updates-hr">
+                    
+                    {% for comment in recent_comments %}
+                    {% if not term_comment(comment) == None %}
+                    <div class="row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">{{ term_comment(comment)[0] }}: {{ comment.comment }} 
+                                <a class="btn-small icon-btn z-depth-0 button-override more"
+                                    href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i class="small material-icons">keyboard_arrow_right</i></a>                                   
+                              </p>  
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %} 
+                </div>
             </div>
             {% endif %}
         </div>
