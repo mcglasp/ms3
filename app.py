@@ -80,20 +80,39 @@ def text_search(user_query):
 
     def standard_search(input_text):
         terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+        print('0', user_query)
 
         return terms
 
     terms = standard_search(user_query)
 
-    # number change
+
+
+        # strip punctuation
     if terms == []:
-        print('1')
+        to_remove = "[\s'&/\-.]"
+        input_stripped = re.sub(to_remove, '', user_query)
+        print('4', user_query)
+        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
+
+        print('here, terms is []')
+        # regex search
+    if terms == []:
+        print('5', user_query)
+
+        pattern = f"({user_query[0]})[{user_query[1:]}]"+"{3,}"
+        print(pattern)
+        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
+    
+        # number change
+    if terms == []:
+        print('1', user_query)
         numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
         for num, dig in numbers.items():
             if num in user_query:
                 num_change = re.sub(num, dig, user_query)
                 user_query = num_change
-                print(2)
+                print('2', user_query)
                 terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
                 return terms
 
@@ -101,28 +120,12 @@ def text_search(user_query):
                 num_change = re.sub(dig, num, user_query)
                 user_query = num_change
                 terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                print('3')
+                print('3', user_query)
                 return terms
-
-        # strip punctuation
-    if terms == []:
-        to_remove = "[\s'&/\-.]"
-        input_stripped = re.sub(to_remove, '', user_query)
-        print('4')
-        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
-
-        print('here, terms is []')
-        # regex search
-    if terms == []:
-        print('5')
-
-        pattern = f"({user_query[0]})[{user_query[1:]}]"+"{3,}"
-        print(pattern)
-        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
 
         return terms
 
-    print('6')
+    print('6', user_query)
     return terms
 
 
@@ -137,7 +140,7 @@ def inject_user():
 
     except KeyError:
         g.user = None
-
+    print(g.user)
     return dict(user=g.user)
 
 
@@ -187,7 +190,7 @@ def dash_updates():
     def term_comment(comment):
         rel_term_id = comment['rel_term_id']
         related_term = mongo.db.terms.find_one({'_id': ObjectId(rel_term_id)})
-        print(comment)
+        
         if not related_term == None:
             related_term_name = related_term['term_name']
             return related_term_name, rel_term_id
@@ -200,6 +203,15 @@ def dash_updates():
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
+    try:
+        get_user = inject_user()
+        user_for_header = get_user['user']['username'].capitalize()
+        this_h3 = page_h3(f"{user_for_header}'s Dashboard")
+
+    except TypeError:
+        user_for_header = ""
+        this_h3 = page_h3("Dashboard")
+    
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
     terms = None
@@ -213,11 +225,13 @@ def dashboard():
     except TypeError:
         return redirect(url_for('login'))
 
-    return render_template("dashboard.html", term_comment=term_comment, term_updates=term_updates, recent_comments=recent_comments, pinned_terms=pinned_terms, terms=terms, levels=levels, categories=categories)
+    return render_template("dashboard.html", this_h3=this_h3, term_comment=term_comment, term_updates=term_updates, recent_comments=recent_comments, pinned_terms=pinned_terms, terms=terms, levels=levels, categories=categories)
 
 
 @app.route("/get_category/<category>")
 def get_category(category):
+    user_for_header = inject_user()['user']['username'].capitalize()
+    this_h3 = page_h3(f"{user_for_header}'s Dashboard")
     pinned_terms = get_pinned_terms()
     categories = lets_nums()
     term_updates = dash_updates()[0]
@@ -225,7 +239,7 @@ def get_category(category):
     term_comment = dash_updates()[2]
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, pinned_terms=pinned_terms, terms=terms, categories=categories)
+    return render_template('dashboard.html', this_h3=this_h3, term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, pinned_terms=pinned_terms, terms=terms, categories=categories)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -544,6 +558,9 @@ def update_term(term_id):
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
+    user_for_header = inject_user()['user']['username'].capitalize()
+    print(user_for_header)
+    this_h3 = page_h3(f"{user_for_header}'s Dashboard")
     pinned_terms = get_pinned_terms()
     categories = lets_nums()
     query = request.form.get('query')
@@ -557,7 +574,7 @@ def search_terms():
     except IndexError:
         terms = None
 
-    return render_template("dashboard.html", term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, terms=terms, categories=categories, pinned_terms=pinned_terms)
+    return render_template("dashboard.html", this_h3=this_h3, term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, terms=terms, categories=categories, pinned_terms=pinned_terms)
 
 
 @app.route("/go_to_term/<term_id>")

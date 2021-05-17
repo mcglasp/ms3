@@ -6,46 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Style Guide</title>
 </head>
 
 <body>
-    <nav class="z-depth-0 light-bg">
+    <nav class="z-depth-0 grad white-text">
         <div class="nav-wrapper">
-            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo grey-text text-darken-3">myHouse
-                {% if (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
-                <sup href="#activity" id="notification" class="material-icons small-icon">notifications_active</sup></a>
-                {% endif %}
-            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons grey-text text-darken-3">menu</i></a>
+            <a href="{{ url_for('dashboard', user=session['user']) }}"
+                class="brand-logo logo white-text">myHouse
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i
+                    class="material-icons deep-orange darken-0">menu</i></a>
             <ul class="right hide-on-med-and-down b-border">
                 {% if to_change_pword == True %}
                 {% else %}
                 {% if not session.user %}
-                <li><a class="grey-text text-darken-3" href="{{ url_for('register') }}">Register</a></li>
-                <li><a class="grey-text text-darken-3" href="{{ url_for('login') }}">Log in</a></li>
-                
+                <li><a class="white-text" href="{{ url_for('register') }}">Register</a></li>
+                <li><a class="white-text" href="{{ url_for('login') }}">Log in</a></li>
+
                 {% else %}
                 {% if access_level == "administrator" %}
-                <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Add terms</a></li>
-                <li><a class="grey-text text-darken-3" href="{{ url_for('manage_users') }}">Manage users</a></li>
+                <li><a class="" href="{{ url_for('add_term') }}">Add terms</a></li>
+                <li><a class="" href="{{ url_for('manage_users') }}">Manage users</a></li>
                 {% elif access_level == "read and comment" %}
-                <li><a class="grey-text text-darken-3" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
+                <li><a class="" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
                 {% endif %}
-                <li><a class="grey-text text-darken-3" href="{{ url_for('logout') }}">Log out</a></li>
-                <li><a class="grey-text text-darken-3" href="{{ url_for('profile', user=session['user']) }}">Profile</a></li>
-                
+                <li><a class="" href="{{ url_for('logout') }}">Log out</a></li>
+                <li><a class="" href="{{ url_for('profile', user=session['user']) }}">Profile</a>
+                </li>
+
                 {% endif %}
                 {% endif %}
-                
-                
+
+
             </ul>
         </div>
-           
-      
-   
+
+
+
     </nav>
 
     <ul class="sidenav" id="mobile-demo">
@@ -54,23 +56,32 @@
         <li><a href="{{ url_for('add_term') }}">Add term</a></li>
         <li><a href="{{ url_for('register') }}">Register</a></li>
     </ul>
-    
-    <div id="flash-h3-con" class="container">
-        <h3 class="center-align"> {{ this_h3|capitalize }} </h3>
-    <div class="flash"> 
-        {% with messages = get_flashed_messages() %}
-        {% if messages %} 
-        {% for message in messages %}
-        <p id="message">{{ message }}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+    <div class="row subheader valign-wrapper">
+
+        <div id="flash-h3-con">
+            <span class="page-title">{{- this_h3 -}}</span>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <span class="flash">
+
+                {% for message in messages %}
+                <p id="message">{{ message }}</p>
+                {% endfor %}
+
+            </span>
+
+
+
+            {% elif (not messages) and (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
+            <span class="count-notifications">You have {{ g.notifications }} notifications</span>
+
+
+            {% endif %}
+            {% endwith %}
+
+        </div>
     </div>
-{% if (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
-<p class="count-notifications">You have {{ g.notifications }} notifications</p>
-{% endif %}
-    </div>
- 
     <main>
         {% block content %}
         {% endblock %}

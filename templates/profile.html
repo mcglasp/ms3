@@ -2,19 +2,19 @@
 {% block content %}
 
 
-<div class="container">
+<div id="profile" class="container">
     <div class="row">
         <div class="col s6">
-            <div class="card z-depth-0">
+            <div class="card z-depth-1">
                 <div class="card-content">
                     <div class="card-title">{{ user.username|capitalize() }}'s account details</div>
                     <h6>Your access level is {{ user.access_level|capitalize() }}</h6>
                 </div>
             </div>
 
-            <div class="card z-depth-0">
+            <div class="card z-depth-1">
                 <div class="card-content">
-                    <div class="card-title activator grey-text text-darken-4">Update password</div>
+                    <div class="card-title grey-text text-darken-4">Update password</div>
                     <div class="card-content">
                         <form method="POST" action="{{ url_for('change_password', user_id=user._id) }}">
                             <div class="row">

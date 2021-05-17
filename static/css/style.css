@@ -1,21 +1,27 @@
 html {
     scroll-behavior: smooth;
+    background: linear-gradient(to right, #ffffff 0%, #f7f7f7 100%);
+}
+
+main {
+    font-size: 14px;
+
+}
+
+.rule {
+    color: red;
+    border-bottom: rgba(128, 128, 128, 0.521) solid 0.5px;
+    border-top: none;
 }
 
 .flash {
     color: red;
-    position: relative;
-    display: block;
-    width: 100%;
-    background-color: inherit;
-    height: 10px;
-    padding: 10px 0px;
-    margin: 0;
+        font-family: 'Nanum Myeongjo', serif;
+
 }
 
-#flash-h3-con {
-    margin-top: 90px;
-    width: 65%;
+.zero-margin-row {
+    margin: 0;
 }
 
 .notifications {
@@ -23,15 +29,10 @@ html {
     background-color: red;
     color: #fff;
     font-size: 1rem;
+    
 }
 
-.delete-btn, .flag-btn {
-    margin: 0 0 15px 13px;
-}
 
-.btn-small:hover {
-    box-shadow: none;
-}
 
 .small-icon {
     font-size: 60%;
@@ -44,6 +45,18 @@ html {
     color: red;
     padding: 0;
     margin: 0;
+        font-family: 'Nanum Myeongjo', serif;
+
+}
+
+.card {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.card-title {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 
 
@@ -70,41 +83,43 @@ html {
 
 
 
-#message {
-    position: absolute;
-    top: -15px;
-}
-
 .letters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 10px 10px 0 10px;
+    
+    padding-top: 15px;
+    overflow: auto;
+    white-space: wrap;
 }
 
 .letter-chip {
-    width: 32px;
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+
+    text-align: center;
+    border-radius: 0.2rem;
+    margin: 2px;
+    
 }
 
 .letter-chip a {
-    display: block;
+    display: inline-flex;
+    margin: auto;
+    vertical-align: middle;
     margin: auto;
 }
 
-
-
-.hidden {
-    color: inherit;
+.visibility {
+    visibility: hidden;
 }
 
-.inline {
-    display: inline;
-}
 
 body {
-    background-color: #f5f5f5;
-    font-family: 'Nanum Myeongjo', serif;
+    background-color: #FEFEFE;
+font-family: 'Nanum Gothic', sans-serif;
+
 }
+
 
 a {
     text-decoration: none;
@@ -117,7 +132,7 @@ a {
 }
 
 nav {
-    border-bottom: 1px dotted black;
+    font-family: 'Nanum Myeongjo', serif;
     position: fixed;
     top: 0;
     z-index: 10;
@@ -126,6 +141,7 @@ nav {
 }
 
 .logo {
+    font-family: 'Nanum Myeongjo', serif;
     margin-left: 20px;
 }
 
@@ -135,7 +151,7 @@ nav-wrapper:hover {
 
 li a::after {
     content: "*";
-    color: #f5f5f5;
+    color: transparent;
 }
 
 h2 {
@@ -143,11 +159,11 @@ h2 {
     margin-bottom: 5px;
 }
 
-.button-override {
-    font-family: 'Nanum Myeongjo', serif;
-    width: 135px;
-    box-shadow: none;
-    margin: 5px 0;
+
+
+#browse-toggle .card-content .row{
+    padding: 5px;
+    overflow: hidden;
 }
 
 .slim {
@@ -161,9 +177,8 @@ h2 {
 }
 
 .card-header {
-    padding-bottom: 10px;
-    border-bottom: 1px dotted grey;
-    display: inline;
+        font-family: 'Nanum Myeongjo', serif;
+    
 }
 
 .subtitle {
@@ -188,7 +203,6 @@ h2 {
     font-size: 70%;
     padding: 0rem;
     margin: 0;
-
 }
 
 .comment-user {
@@ -205,27 +219,31 @@ h2 {
 
 li a:hover::after {
     content: "*";
-    color: black;
+    color: #fff;
 }
 
-.btn-floating.halfway-fab {
-    right: 15px;
-    top: 15px;
+
+
+.term-card .card-content {
+    /* font-family: 'Nanum Gothic', sans-serif; */
+
+    padding: 10px 20px;
+    border-radius: 3px;
 }
 
-.btn-floating.halfway-fab:hover {
-    box-shadow: none;
+.term-card .dash-header.card-title {
+    font-family: 'Nanum Myeongjo', serif;
+    border-bottom: solid darkgrey 1px;
+    padding: 1px;
 }
 
-.manage-btn {
-    display: block;
-    margin: 5px auto;
-    width: 50%;
-    
-}
+/* .slim-p.card-content {
+    padding: 13px;
+} */
 
-.term-card {
-    padding-bottom: 5px;
+.slim-p .col, .slim-p .input-field {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .updates {
@@ -234,34 +252,34 @@ li a:hover::after {
     align-content: space-between;
 }
 
-.more {
-    display: inline;
-    font-size: 70%;
-    padding: 5px 10px;
+
+
+
+ul.dropdown-content.select-dropdown li span {
+    font-size: 85%;
+    padding: 10px;
+    margin: 0;
+
 }
 
-.view_more {
-    margin-bottom: 0;
-    padding-bottom: 0;
+
+
+.dropdown-content li {
+    min-height: 7px;
 }
+
+
 
 .updates-hr {
-    margin: 20px 0px;
+    margin: 10px 0px;
 }
 
-.icon-btn {
-    display: inline-block;
-    width: 32px;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 32px;
-    padding: 0;
-}
+
 
 .minor-text {
     font-size: 80%;
     color: grey;
-    padding-bottom: 10px;
+    padding-bottom: 0px;
 }
 
 
@@ -276,9 +294,16 @@ li a:hover::after {
     display: inline;
 }
 
+#add-term .card-title, #profile .card-title {
+            font-family: 'Nanum Myeongjo', serif;
+
+}
+
 .alts_incs {
     font-weight: 600;
     padding-bottom: 10px;
+        font-family: 'Nanum Myeongjo', serif;
+
 }
 
 .chip-style {
@@ -301,6 +326,8 @@ li a:hover::after {
     width: 80%;
     padding: 30px;
 }
+
+
 
 .underline-header {
     border-bottom: 1px grey ridge;
@@ -327,10 +354,12 @@ input.dotted-underline, .new-alts>input.dotted-underline {
 input.input-box, .alts-incs>input.input-box, input, .input-box { 
     padding: 0px 0 0 10px;
     margin-top: 10px;
-    font-family: 'Nanum Myeongjo', serif!important;
+    /* font-family: 'Nanum Myeongjo', serif!important; */
     background-color: #f3f3f3;   
     border-bottom: 1px grey dotted!important;
 }
+
+
 
 .input-width-half {
     width: 60%!important;
@@ -344,13 +373,7 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     margin-top: 1rem;
 }
 
-.btn-small {
-    font-family: 'Nanum Myeongjo', serif!important;
-}
 
-.add_btn_info {
-    padding: 10px 0 0 10px;
-}
 
 ::placeholder {
     color: rgba(0, 0, 0, 0.781);
@@ -361,7 +384,140 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     background: transparent;
 }
 
+.subheader {
+    margin: 63px 0 0 10px;
+    padding-top: 0px;
+}
+
+.page-title {
+    font-size: 1.5rem;
+        font-family: 'Nanum Myeongjo', serif;
+}
+
+.page-title, .count-notifications {
+    padding: 15px 10px 9px 10px;
+}
+
+#flash-h3-con {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: baseline;
+}
+
+/* buttons */
+
+.icon-btn {
+background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+
+    width: 32px;
+color: black;
+    line-height: 32px;
+    padding: 0;
+    margin: 2px;
+}
+
+.btn-floating.halfway-fab {
+    right: 15px;
+    top: 15px;
+background: #e43a15;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to bottom, #e65245, #e43a15);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to bottom, #e65245, #e43a15); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.btn-floating.halfway-fab:hover {
+    box-shadow: none;
+}
+
+
+.btn-small:hover {
+    box-shadow: none;
+}
+
+.button-override {
+font-family: 'Nanum Gothic', sans-serif;
+ background-image: linear-gradient(to bottom, #BDBBBE 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
+ background-blend-mode: normal, lighten, soft-light;
+}
+
+.term-buttons {
+    padding: 10px 0 0 10px;
+}
+
+.term-buttons a .btn-small {
+ background-image: linear-gradient(to left, #BDBBBE 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
+ background-blend-mode: normal, lighten, soft-light;
+}
+
+.term-buttons p {
+    position: relative;
+    bottom: 27%;
+    
+    
+}
+
+.term-card .row .btn-small {
+    color: black;
+    font-size: 0.6rem;
+    height: 20px;
+background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+}
+
+#search button, #search a {
+    color: black;
+background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+
+
+}
+
+.pin {
+background: linear-gradient(to top, rgb(252, 223, 130), rgb(248, 228, 162)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
 
 
 
 
+
+
+.dash-header.card-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 18px;
+    padding: 9px 10px 10px 9px;
+    color: #fff;
+}
+
+.dash-header.card-title.term {
+    padding: 9px 10px 0px 0px;
+}
+
+
+.dash-dropdown {
+    margin: 0;
+    padding: 0;
+    background-color: #26a69933;
+}
+
+.grad {
+background: #1e3c72;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to left, #2a5298, #1e3c72);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to left, #2a5298, #1e3c72); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.card-content.reduce-padding-top {
+    padding: 10px 24px;
+}
+
+.input-field.reduce-padding-top {
+    padding-top: 10px;
+    margin: 0px;
+}
+
+#search-card form .row, .m0 .row {
+    margin-bottom: 0px;
+}
+
+#terms {
+    padding-right: 10px;
+}

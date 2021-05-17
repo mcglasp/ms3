@@ -2,13 +2,13 @@
 {% block content %}
 
 
-<div class="container">
+<div id="manage-users" class="container">
     <div class="row">
         <div class="col s12 m6 col-fix">
-            <div class="card z-depth-0">
+            <div class="card z-depth-1">
                 <div class="card-content">
                     <form method="POST" action="{{ url_for('add_user') }}">
-                        <div class="card-title">Add user</div>
+                        <div class="card-title card-header">Add user</div>
                         <div class="row">
                             <div class="input-field col s6">
                                 <input placeholder="username" id="username" name="username" type="text"
@@ -42,10 +42,10 @@
             </div>
 
 
-            <div class="card z-depth-0">
+            <div class="card z-depth-1">
                 <div class="card-content">
                     <form method="POST" action="{{ url_for('search_users') }}">
-                        <div class="card-title">Search users</div>
+                        <div class="card-title card-header">Search users</div>
                         <div class="row">
                             <div class="col s12">
                                 <div class="input-field">
@@ -78,7 +78,7 @@
                 <div class="col s12 m6 right-col">
                     {% for each_user in users_list %}
                     {% set counter = loop.index %}
-                    <div class="card z-depth-0">
+                    <div class="card z-depth-1">
                         <div class="card-content">
                             <div class="row">
                                 <div class="col s12">

@@ -6,6 +6,16 @@ $(document).ready(function(){
     $('select').formSelect();
   });
 
+$(document).ready(function(){
+
+$("#browse-toggle").click(function(){
+  $("#letters").toggleClass('visibility');
+});
+});
+
+
+
+
   $(document).ready(function(){
   // Add smooth scrolling to all links
   $("#notification").on('click', function(event) {
@@ -40,3 +50,5 @@ $(document).ready(function(){
     add_to = document.getElementById(parent_id)
     add_to.appendChild(to_add)
   }
+
+
