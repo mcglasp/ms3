@@ -1,135 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 html {
     scroll-behavior: smooth;
     background: linear-gradient(to right, #ffffff 0%, #f7f7f7 100%);
 }
 
-main {
-    font-size: 14px;
-
-}
-
-.rule {
-    color: red;
-    border-bottom: rgba(128, 128, 128, 0.521) solid 0.5px;
-    border-top: none;
-}
-
-.flash {
-    color: red;
-        font-family: 'Nanum Myeongjo', serif;
-
-}
-
-.zero-margin-row {
-    margin: 0;
-}
-
-.notifications {
-    border-radius: 50%;
-    background-color: red;
-    color: #fff;
-    font-size: 1rem;
-    
-}
-
-
-
-.small-icon {
-    font-size: 60%;
-    position: relative;
-    left: -10px;
-    color:red;
-}
-
-.count-notifications {
-    color: red;
-    padding: 0;
-    margin: 0;
-        font-family: 'Nanum Myeongjo', serif;
-
-}
-
-.card {
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-
-.card-title {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-}
-
-
-
-
-@media only screen and (max-width: 800px) {
-
-.btn-alignment {
-    display: inline;
-}
-}
-
-@media only screen and (max-width: 370px) {
-    .btn-alignment {
-    display: block;
-}
-}
-
-.comment-head {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-}
-
-
-
-.letters {
-    
-    padding-top: 15px;
-    overflow: auto;
-    white-space: wrap;
-}
-
-.letter-chip {
-    display: inline-flex;
-    width: 20px;
-    height: 20px;
-background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
-
-    text-align: center;
-    border-radius: 0.2rem;
-    margin: 2px;
-    
-}
-
-.letter-chip a {
-    display: inline-flex;
-    margin: auto;
-    vertical-align: middle;
-    margin: auto;
-}
-
-.visibility {
-    visibility: hidden;
-}
-
-
 body {
     background-color: #FEFEFE;
-font-family: 'Nanum Gothic', sans-serif;
-
+    font-family: 'Nanum Gothic', sans-serif;
 }
 
+main {
+    font-size: 14px;
+}
 
 a {
     text-decoration: none;
     color: inherit;
 }
 
-
-.light-bg {
-    background-color: #f5f5f5;
+.p10 {
+    padding: 10px 24px;
 }
+
+.pt10 {
+    padding-top: 10px;
+}
+
+.pt0 {
+    padding-top: 0;
+}
+
+.gradient {
+background: #1e3c72;
+background: -webkit-linear-gradient(to left, #2a5298, #1e3c72);
+background: linear-gradient(to left, #2a5298, #1e3c72);
+}
+
+.gradient-light {
+       background: linear-gradient(to top, rgba(252, 223, 130, 0.623), rgba(248, 228, 162, 0.87));
+}
+
+.light-underline {
+    border-bottom: 1px grey solid;
+    padding-bottom: 10px;
+}
+
+.red-text {
+    color: red;
+    background: transparent;
+}
+
+hr {
+    margin: 10px 0;
+}
+
+/* Navigation */
 
 nav {
     font-family: 'Nanum Myeongjo', serif;
@@ -137,7 +66,6 @@ nav {
     top: 0;
     z-index: 10;
     margin: 0;
-    
 }
 
 .logo {
@@ -154,31 +82,76 @@ li a::after {
     color: transparent;
 }
 
+li a:hover::after {
+    content: "*";
+    color: #fff;
+}
+
+/* Base */
+
 h2 {
     margin: 0px;
     margin-bottom: 5px;
 }
 
-
-
-#browse-toggle .card-content .row{
-    padding: 5px;
-    overflow: hidden;
+.col-fix {
+    position: fixed;
+    top: 121px;
+    overflow-y: scroll;
 }
 
-.slim {
-    margin-bottom: 0px;
-}
+/* General card styles */
 
-.right-col {
-    float: right;
-    height: 80vh;
-    overflow: scroll;
+
+
+.card-radius {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .card-header {
-        font-family: 'Nanum Myeongjo', serif;
-    
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.1rem!important;
+    padding: 9px 9px 9px 9px!important;
+
+}
+
+.card-subhead {
+    font-size: 1rem;
+    display: inline;
+    margin-left: 10px;
+}
+
+.letters {
+    border: solid rgba(128, 128, 128, 0.349) 1px;
+    margin-top: 130px;
+    width: 500px;
+    height: 100%;
+    white-space: nowrap;
+    overflow: scroll;
+}
+
+.letter-chip {
+    display: inline-flex;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+    text-align: center;
+    border-radius: 0.2rem;
+    margin: 2px;
+}
+
+.letter-chip a {
+    display: inline-flex;
+    margin: auto;
+    vertical-align: middle;
+    margin: auto;
+}
+
+.visibility {
+    visibility: hidden;
 }
 
 .subtitle {
@@ -189,15 +162,306 @@ h2 {
     padding-left: 10px;
 }
 
+/* Dropdown & inputs styling override */
+
+ul.dropdown-content.select-dropdown li span {
+    font-size: 85%;
+    padding: 10px;
+    margin: 0;
+    color: #0d47a1;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1rem;
+
+}
+
+.dropdown-content li {
+    min-height: 7px;
+}
+
+input.dotted-underline, .new-alts>input.dotted-underline {
+    border-bottom: 1px grey dotted!important;
+    padding-bottom: 10px;
+    width: 50%;
+}
+
+input.input-box, .alts-incs>input.input-box, input, .input-box { 
+    padding: 0px 0 0 10px;
+    margin-top: 10px;
+    font-family: 'Nanum Myeongjo', serif!important;
+    background-color: #f3f3f3;   
+    border-bottom: 1px grey dotted!important;
+}
+
+
+
+#search-bar #search-input input.search-input-box#query {
+    border-bottom: none!important;
+    background-color: #f3f3f3;
+}
+
+#search-label {
+    padding-left: 10px;
+}
+
+#manage-term .input-field:first-child, #add-term .input-field:first-child {
+ margin-top: 0;
+}
+
+::placeholder {
+    color: rgba(0, 0, 0, 0.63);
+}
+
+
+
+/* NEW */
+
+.alts-incs {
+    font-weight: 600;
+    padding-bottom: 10px;
+    font-family: 'Nanum Myeongjo', serif;
+}
+
+.new-alts, .new-incs, .add-btn-info {
+    font-family: 'Nanum Myeongjo', serif;
+}
+
+.add-btn-info {
+    padding-left: 10px;
+}
+
+.mb0 {
+    margin-bottom: 0px;
+}
+
+.card-surround.card-content {
+    padding: 15px;
+}
+
+.access-level {
+    padding-bottom: 15px;
+}
+
+/* Buttons */
+
+
+.search-mng-btn {
+    color: black;
+    background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+    margin-top: 13px;
+    margin-right: 5px;
+}
+
+.icon-button, .icon-button.btn-small {
+    background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);   
+    width: 32px;
+    height: 32px;
+    color: black;
+    line-height: 32px;
+    padding: 0;
+    margin: 2px;
+}
+
+.fab {
+    right: 15px;
+    top: 15px;
+    background: #e43a15;
+    background: -webkit-linear-gradient(to bottom, #e65245, #e43a15);
+    background: linear-gradient(to bottom, #e65245, #e43a15);
+}
+
+.add-fab {
+    background: #e43a15;
+    background: -webkit-linear-gradient(to bottom, #e65245, #e43a15);
+    background: linear-gradient(to bottom, #e65245, #e43a15);
+}
+
+#view-term .add-fab {
+    position: absolute;
+    top: 22px;
+    right: 15px;
+}
+
+.card-buttons-container {
+    padding: 10px 0 0 10px;
+}
+
+.user-buttons {
+    margin: 5px;
+    padding: 5px;
+}
+
+.button-flex-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-flex-wrap.central {
+    display: flex;
+    justify-content: center;
+}
+
+.button-override {
+font-family: 'Nanum Gothic', sans-serif;
+ background-image: linear-gradient(to bottom, #BDBBBE 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
+ background-blend-mode: normal, lighten, soft-light;
+}
+
+.term-buttons p {
+    position: relative;
+    bottom: 27%;   
+}
+
+.delete-btn {
+    color: white;
+}
+
+.search-buttons {
+    margin-top: 0px;
+}
+
+[type="radio"]:checked+span:after {
+    background-color: rgb(255, 221, 109);
+    border: rgba(252, 223, 130, 0.377);
+
+}
+
+/* Button hover states */
+
+.btn-floating.halfway-fab:hover {
+    box-shadow: none;
+}
+
+.btn-small:hover {
+    box-shadow: none;
+}
+
+/* Headers */
+
+#subheader {
+    margin: 63px 10px 0 10px;
+    height: 60px;
+    border-bottom: 2px double rgb(248, 228, 162);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between; 
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
+    background: inherit;
+}
+
+
+#search-bar {
+    flex: 0 1 66.6%;
+    margin-right: 20px;
+}
+
+#flash-h3-con {
+    margin-top: 13px;
+    align-items: baseline;
+    margin-left: 0;
+    margin-right: 10px;
+    flex: 1 0 33.3%;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+.page-title {
+    font-size: 1.5rem;
+    font-family: 'Nanum Myeongjo', serif;
+}
+
+.page-title {
+    padding: 15px 10px 9px 10px;
+}
+
+.count-notifications {
+    color: red;
+    padding: 0;
+    margin: 0;
+    font-family: 'Nanum Myeongjo', serif;
+
+}
+
+.underline-header {
+    border-bottom: 1px grey ridge;
+    padding-bottom: 10px;
+}
+
+.card-title {
+    font-family: 'Nanum Myeongjo', serif;
+    border-bottom: solid darkgrey 1px;
+    padding: 1px;
+}
+
+.minor-text {
+    font-size: 80%;
+    color: grey;
+    padding-bottom: 0px;
+}
+
+.mt1 {
+    margin-top: 1rem;
+}
+
+.mt0 {
+    margin-top: 0;
+}
+
+.access-select {
+    margin-bottom: 5px;
+}
+
+.updates {
+    display: flex;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+/* Term cards */
+
+.card-content p.term-type{
+    margin-bottom: 20px;
+}
+
+#terms p {
+    margin: 10px;
+}
+
+.term-card-content.card-content, .user-card.card-content {
+    padding: 15px;
+    border-radius: 3px;
+}
+
+/* Term cards & comments */
+
+.comment-wrap-light {
+   background: linear-gradient(to top, rgba(252, 223, 130, 0.377), rgba(248, 228, 162, 0.295)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.comment-wrap-dark {
+   background: linear-gradient(to top, rgba(255, 224, 122, 0.514), rgba(252, 224, 133, 0.418)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.comment-head {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 0.1px dotted grey;
+    padding: 0.3rem 0.3rem 0.1rem 0.5rem;
+}
+
 .comment-width {
     width: 95%;
     padding: 0;
 }
 
-.comment-head {
-    border-bottom: 0.1px dotted grey;
-    padding: 0.3rem 0.3rem 0.1rem 0.3rem;
-}
+
 
 .timestamp {
     font-size: 70%;
@@ -216,95 +480,7 @@ h2 {
     padding: 1rem; 
 }
 
-
-li a:hover::after {
-    content: "*";
-    color: #fff;
-}
-
-
-
-.term-card .card-content {
-    /* font-family: 'Nanum Gothic', sans-serif; */
-
-    padding: 10px 20px;
-    border-radius: 3px;
-}
-
-.term-card .dash-header.card-title {
-    font-family: 'Nanum Myeongjo', serif;
-    border-bottom: solid darkgrey 1px;
-    padding: 1px;
-}
-
-/* .slim-p.card-content {
-    padding: 13px;
-} */
-
-.slim-p .col, .slim-p .input-field {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.updates {
-    display: flex;
-    justify-content: space-between;
-    align-content: space-between;
-}
-
-
-
-
-ul.dropdown-content.select-dropdown li span {
-    font-size: 85%;
-    padding: 10px;
-    margin: 0;
-
-}
-
-
-
-.dropdown-content li {
-    min-height: 7px;
-}
-
-
-
-.updates-hr {
-    margin: 10px 0px;
-}
-
-
-
-.minor-text {
-    font-size: 80%;
-    color: grey;
-    padding-bottom: 0px;
-}
-
-
-.card-subhead {
-    font-size: 1rem;
-    display: inline;
-    margin-left: 10px;
-
-}
-
-.new_reg {
-    display: inline;
-}
-
-#add-term .card-title, #profile .card-title {
-            font-family: 'Nanum Myeongjo', serif;
-
-}
-
-.alts_incs {
-    font-weight: 600;
-    padding-bottom: 10px;
-        font-family: 'Nanum Myeongjo', serif;
-
-}
+/* Chips & Pins */
 
 .chip-style {
     display: inline-block;
@@ -320,204 +496,50 @@ ul.dropdown-content.select-dropdown li span {
     margin-right: 5px;
 }
 
-.narrow-card {
-    display: block;
-    margin: 20px auto;
-    width: 80%;
-    padding: 30px;
+.pin {
+    background: linear-gradient(to top, rgb(252, 223, 130), rgb(248, 228, 162)); 
+}
+
+.content-scroll {
+    margin-top: 70px;
+}
+
+.inline {
+    display: inline;
 }
 
 
 
-.underline-header {
-    border-bottom: 1px grey ridge;
-    padding-bottom: 10px;
-}
-
-.light-underline {
-    border-bottom: 1px grey solid;
-    padding-bottom: 10px;
-}
-
-input.dotted-underline, .new-alts>input.dotted-underline {
-    border-bottom: 1px grey dotted!important;
-    padding-bottom: 10px;
-    width: 50%;
-}
-
-
-
-.term-form {
-    margin-top: 20px;
-}
-
-input.input-box, .alts-incs>input.input-box, input, .input-box { 
-    padding: 0px 0 0 10px;
-    margin-top: 10px;
-    /* font-family: 'Nanum Myeongjo', serif!important; */
-    background-color: #f3f3f3;   
-    border-bottom: 1px grey dotted!important;
-}
-
-
-
-.input-width-half {
-    width: 60%!important;
-}
-
-.input-width-full {
-    width: 100%!important;
-}
-
-.pt1 {
-    margin-top: 1rem;
-}
-
-
-
-::placeholder {
-    color: rgba(0, 0, 0, 0.781);
-}
-
-.red-text {
-    color: red;
-    background: transparent;
-}
-
-.subheader {
-    margin: 63px 0 0 10px;
-    padding-top: 0px;
-}
-
-.page-title {
-    font-size: 1.5rem;
-        font-family: 'Nanum Myeongjo', serif;
-}
-
-.page-title, .count-notifications {
-    padding: 15px 10px 9px 10px;
-}
-
-#flash-h3-con {
+.search-row { 
     display: flex;
     flex-direction: row;
+    align-items: right;
     justify-content: space-between; 
-    align-items: baseline;
 }
 
-/* buttons */
-
-.icon-btn {
-background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
-
-    width: 32px;
-color: black;
-    line-height: 32px;
-    padding: 0;
-    margin: 2px;
-}
-
-.btn-floating.halfway-fab {
-    right: 15px;
-    top: 15px;
-background: #e43a15;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to bottom, #e65245, #e43a15);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to bottom, #e65245, #e43a15); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-}
-
-.btn-floating.halfway-fab:hover {
-    box-shadow: none;
-}
-
-
-.btn-small:hover {
-    box-shadow: none;
-}
-
-.button-override {
-font-family: 'Nanum Gothic', sans-serif;
- background-image: linear-gradient(to bottom, #BDBBBE 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
- background-blend-mode: normal, lighten, soft-light;
-}
-
-.term-buttons {
-    padding: 10px 0 0 10px;
-}
-
-.term-buttons a .btn-small {
- background-image: linear-gradient(to left, #BDBBBE 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
- background-blend-mode: normal, lighten, soft-light;
-}
-
-.term-buttons p {
+#search-input {
+    width: 50%;
+    margin-right: 10px;
+    padding-bottom: 5px;
     position: relative;
-    bottom: 27%;
-    
-    
+    bottom: 5px;
+    border-bottom: 0px;
 }
 
-.term-card .row .btn-small {
-    color: black;
-    font-size: 0.6rem;
-    height: 20px;
-background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
+#terms, #users, #add-term, #manage-term, #notifications, #search-users-card, #add-user, #profile, #view-term, #login, #register {
+    position: relative;
+    top: 121px;
+    z-index: 0;
 }
 
-#search button, #search a {
-    color: black;
-background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
 
 
-}
-
-.pin {
-background: linear-gradient(to top, rgb(252, 223, 130), rgb(248, 228, 162)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+#delete-modal, #logout-modal {
+    position: fixed;
+    top: 30%;
+    z-index: 1000;
 }
 
 
 
 
-
-
-.dash-header.card-title {
-    font-family: 'Nanum Myeongjo', serif;
-    font-size: 18px;
-    padding: 9px 10px 10px 9px;
-    color: #fff;
-}
-
-.dash-header.card-title.term {
-    padding: 9px 10px 0px 0px;
-}
-
-
-.dash-dropdown {
-    margin: 0;
-    padding: 0;
-    background-color: #26a69933;
-}
-
-.grad {
-background: #1e3c72;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to left, #2a5298, #1e3c72);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to left, #2a5298, #1e3c72); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-.card-content.reduce-padding-top {
-    padding: 10px 24px;
-}
-
-.input-field.reduce-padding-top {
-    padding-top: 10px;
-    margin: 0px;
-}
-
-#search-card form .row, .m0 .row {
-    margin-bottom: 0px;
-}
-
-#terms {
-    padding-right: 10px;
-}

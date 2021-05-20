@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="view-term" class="container">
-    <div class="row">
-        <div class="col s12">
-            <div class="card term-card z-depth-1">
+<div class="col m8">
+<div id="view-term" class="">
+            <div class="card z-depth-1">
+                <div class="card-title card-header gradient-light">View term</div>
                 <div class="card-content">
-                    <span class="card-header card-title grey-text text-darken-4">
-                        {% if term.pending == True %}
+                    {% if term.pending == True %}
+                    <span class="card-title grey-text text-darken-4">
+                        
                         This term is <strong>pending approval:</strong>
-                        {% endif %}
+                        
                     </span>
-                    <span class="card-header card-title grey-text text-darken-4">
+                    {% endif %}
+                    <span class="card-title grey-text text-darken-4">
 
                         {{ term.term_name }}
                     </span>
                     {% if term.pending == False %}
-                    <a class="btn-floating halfway-fab waves-effect waves-light corner-fab z-depth-0"
+                    <a class="btn-floating waves-effect waves-light z-depth-0 add-fab"
                         href="{{ url_for('pin_term', term_id=term._id, origin='view') }}"><i
                             class="material-icons">add</i></a>
                     {% endif %}
 
-                    <p><em>{{ term.type_name }}</em></p>
-                    <hr>
-                    <hr>
+                    <p class="term-type"><em>{{ term.type_name }}</em></p>
+                  
+                 
                     <div>
 
                         <span>
@@ -82,15 +84,15 @@
 
                 <div class="container comment-width">
                     {% if loop.index % 2 == 0 %}
-                    <div class="card z-depth-0 teal lighten-4">
+                    <div class="card z-depth-0 comment-wrap-light">
                         {% else %}
-                        <div class="card z-depth-0 teal lighten-5 pad-3">
+                        <div class="card z-depth-0 comment-wrap-dark">
                             {% endif %}
                             <div class="comment-head valign-wrapper">
                                 <div>
-                                    <p class="timestamp vertical-align">{{ term_comment.timestamp }}</p>
+                                    <p class="timestamp">{{ term_comment.timestamp }}</p>
 
-                                    <p class="comment-user vertical-align">
+                                    <p class="comment-user">
                                         {{ find_commenter(term_comment)|capitalize() }}
                                         {% if find_commenter(term_comment) != "" %} said:
                                         {% else %}
@@ -98,7 +100,7 @@
                                         {% endif %}</p>
                                 </div>
                                 {% if access_level == "administrator" %}
-                                <div class=""><a class="delete-btn icon-btn btn-small z-depth-0 button-override"
+                                <div class=""><a class="icon-button btn-small z-depth-0"
                                         href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}"><i
                                             class="material-icons">delete</i>
                                     </a></div>
@@ -108,7 +110,7 @@
                             {% if access_level == "administrator" %}
 
                             {% elif access_level == "read and comment" %}
-                            <a class="flag-btn"
+                            <a class="icon-button btn-small z-depth-0"
                                 href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}"><i
                                     class="material-icons">flag</i></a>
                             {% endif %}
@@ -123,12 +125,15 @@
                                 <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
                                     <textarea name="comment" id="comment" cols="30" rows="10" type="text"
                                         class="materialize-textarea"></textarea>
-                                    <button type="submit" class="btn-small z-depth-0 manage-btn">Add comment</button>
+                                        <div class="button-flex-wrap central">
+                                    
+                                    <button type="submit" class="btn-small z-depth-0 search-mng-btn">Add comment</button>
                                     {% if access_level == 'administrator' %}
-                                    <div>
+                                    <div class="">
                                         <a href="{{ url_for('manage_term', term_id=term._id)  }}"
-                                            class="btn-small z-depth-0 manage-btn">Manage term</a></div>
+                                            class="btn-small z-depth-0 search-mng-btn">Manage term</a></div>
                                     {% endif %}
+                                    </div>
                                 </form>
                             </div>
                         </div>

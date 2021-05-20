@@ -1,50 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="col m8">
 
-<div id="profile" class="container">
-    <div class="row">
-        <div class="col s6">
+    <div id="profile" class="">
+  
             <div class="card z-depth-1">
-                <div class="card-content">
-                    <div class="card-title">{{ user.username|capitalize() }}'s account details</div>
-                    <h6>Your access level is {{ user.access_level|capitalize() }}</h6>
-                </div>
-            </div>
-
-            <div class="card z-depth-1">
-                <div class="card-content">
-                    <div class="card-title grey-text text-darken-4">Update password</div>
-                    <div class="card-content">
-                        <form method="POST" action="{{ url_for('change_password', user_id=user._id) }}">
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="username" name="username" type="text" class="validate">
-                                    <label for="username">Username</label>
+                
+                    <div class="card-title card-header gradient-light">{{ user.username|capitalize() }}'s account details</div>
+                  <div class="card-content">
+                    <h6 class="access-level">Your access level is: {{ user.access_level|capitalize() }}</h6>
+       
+                    <div class="card-header light-underline">Update password</div>
+               
+                        <form class="p10" method="POST" action="{{ url_for('change_password', user_id=user._id) }}">
+                      
+                                <div class="input-field">
+                                    <input placeholder="Username" id="username" name="username" type="text" class="validate">
+                            
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="password" name="password" type="password" class="validate">
-                                    <label for="password">Existing Password</label>
+                 
+                          
+                                <div class="input-field">
+                                    <input placeholder="Existing password" id="password" name="password" type="password" class="validate">
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="new_password" name="new_password" type="password" class="validate">
-                                    <label for="new_password">New Password</label>
+                  
+                            
+                                <div class="input-field">
+                                    <input placeholder="New password" id="new_password" name="new_password" type="password" class="validate">
                                 </div>
-                            </div>
-                            <div class="row">
-                                <button class="submit btn-small button-override z-depth-0">Update
+                       
+                                <button class="search-mng-btn submit btn-small z-depth-0">Update
                                     <i class="fas fa sign-in-alt"></i></button>
-                            </div>
+                           
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+   
+
 
 {% endblock %}

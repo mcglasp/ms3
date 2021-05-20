@@ -140,16 +140,22 @@ def inject_user():
 
     except KeyError:
         g.user = None
-    print(g.user)
+
+    except AttributeError:
+        pass
+
     return dict(user=g.user)
 
 
 @app.context_processor
 def inject_notifications():
+    
     g.new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
     g.flagged_comments = list(mongo.db.comments.find({'flagged': True}))
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
+    g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
+    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
 
     def manage_flagged_comments(flagged):
         term_id = flagged['rel_term_id']
@@ -165,28 +171,7 @@ def inject_notifications():
             suggested_by = ""
 
         return suggested_by
-
-    return dict(manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, notifications=g.notifications, new_registrations=g.new_registrations, suggested_terms=g.suggested_terms, flagged_comments=g.flagged_comments)
-
-
-def get_pinned_terms():
-    user = inject_user()
-
-    try:
-        pinned_terms = user['user']['pinned_terms']
-        pinned_term_ids = list(pinned_terms)
-        pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
-
-    except Exception:
-        pinned_terms = []
-
-    return pinned_terms
-
-
-def dash_updates():
-    term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
-    recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
-
+    
     def term_comment(comment):
         rel_term_id = comment['rel_term_id']
         related_term = mongo.db.terms.find_one({'_id': ObjectId(rel_term_id)})
@@ -197,7 +182,27 @@ def dash_updates():
         else:
             return None
 
-    return term_updates, recent_comments, term_comment
+    return dict(term_comment=term_comment, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, notifications=g.notifications, new_registrations=g.new_registrations, suggested_terms=g.suggested_terms, flagged_comments=g.flagged_comments, term_updates=g.term_updates, recent_comments=g.recent_comments)
+
+
+@app.context_processor
+def get_pinned_terms():
+    user = inject_user()
+
+    try:
+        pinned_terms = user['user']['pinned_terms']
+        pinned_term_ids = list(pinned_terms)
+        g.pinned_terms = list(mongo.db.terms.find({"_id": {"$in": pinned_term_ids}}))
+
+    except Exception:
+        g.pinned_terms = []
+
+    return dict(pinned_terms=g.pinned_terms)
+
+
+
+
+
 
 
 @app.route("/")
@@ -207,39 +212,35 @@ def dashboard():
         get_user = inject_user()
         user_for_header = get_user['user']['username'].capitalize()
         this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-
+        
     except TypeError:
         user_for_header = ""
         this_h3 = page_h3("Dashboard")
     
+    except AttributeError:
+        return redirect(url_for("login"))
+    
+    if get_user['user'] is None:
+        
+        return redirect(url_for("login"))
+
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
     terms = None
-    term_updates = dash_updates()[0]
-    recent_comments = dash_updates()[1]
-    term_comment = dash_updates()[2]
     
-    try:
-        pinned_terms = get_pinned_terms()
-
-    except TypeError:
-        return redirect(url_for('login'))
-
-    return render_template("dashboard.html", this_h3=this_h3, term_comment=term_comment, term_updates=term_updates, recent_comments=recent_comments, pinned_terms=pinned_terms, terms=terms, levels=levels, categories=categories)
+    return render_template("dashboard.html", this_h3=this_h3, terms=terms, levels=levels, categories=categories)
 
 
 @app.route("/get_category/<category>")
 def get_category(category):
     user_for_header = inject_user()['user']['username'].capitalize()
     this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-    pinned_terms = get_pinned_terms()
+
     categories = lets_nums()
-    term_updates = dash_updates()[0]
-    recent_comments = dash_updates()[1]
-    term_comment = dash_updates()[2]
+
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', this_h3=this_h3, term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, pinned_terms=pinned_terms, terms=terms, categories=categories)
+    return render_template('dashboard.html', this_h3=this_h3, terms=terms, categories=categories)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -561,12 +562,10 @@ def search_terms():
     user_for_header = inject_user()['user']['username'].capitalize()
     print(user_for_header)
     this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-    pinned_terms = get_pinned_terms()
+    
     categories = lets_nums()
     query = request.form.get('query')
-    term_updates = dash_updates()[0]
-    recent_comments = dash_updates()[1]
-    term_comment = dash_updates()[2]
+
 
     try:
         terms = text_search(query)
@@ -574,7 +573,7 @@ def search_terms():
     except IndexError:
         terms = None
 
-    return render_template("dashboard.html", this_h3=this_h3, term_updates=term_updates, recent_comments=recent_comments, term_comment=term_comment, terms=terms, categories=categories, pinned_terms=pinned_terms)
+    return render_template("dashboard.html", this_h3=this_h3, terms=terms, categories=categories)
 
 
 @app.route("/go_to_term/<term_id>")
@@ -603,10 +602,11 @@ def manage_users():
 
 @app.route("/search_users", methods=["POST", "GET"])
 def search_users():
+    this_h3 = page_h3("Manage users")
     query = request.form.get("query")
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
     users_list = list(mongo.db.users.find({"$text": {"$search": query}}))
-    return render_template("manage_users.html", users_list=users_list, levels=levels)
+    return render_template("manage_users.html", users_list=users_list, levels=levels, this_h3=this_h3)
 
 
 @app.route("/add_user", methods=["GET", "POST"])

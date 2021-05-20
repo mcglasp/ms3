@@ -9,11 +9,14 @@ $(document).ready(function(){
 $(document).ready(function(){
 
 $("#browse-toggle").click(function(){
-  $("#letters").toggleClass('visibility');
+  $("#letters").toggleClass('hidden');
+  $("#search-input").toggleClass('hidden');
 });
 });
 
-
+  $(document).ready(function(){
+    $('.modal').modal();
+  });
 
 
   $(document).ready(function(){
