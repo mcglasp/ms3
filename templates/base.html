@@ -19,10 +19,12 @@
     <nav class="z-depth-0 gradient white-text">
         <div class="nav-wrapper">
             <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo white-text">myHouse</a>
-            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            {% if session.user %}
+            <a href="#" data-target="sidenav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            {% if to_change_pword == True %}
+            {% else %}
             <ul class="right hide-on-med-and-down">
-                {% if to_change_pword == True %}
-                {% else %}
+
                 {% if not session.user %}
                 <li><a class="white-text" href="{{ url_for('register') }}">Register</a></li>
                 <li><a class="white-text" href="{{ url_for('login') }}">Log in</a></li>
@@ -40,6 +42,7 @@
 
                 {% endif %}
                 {% endif %}
+                {% endif %}
 
 
             </ul>
@@ -47,15 +50,24 @@
 
 
 
-    </nav>
-{% if session.user %}
+        {% if session.user %}
 
-    <ul class="sidenav" id="mobile-demo">
-        <li><a href="">Search</a></li>
-        <li><a href="">Make a suggestion</a></li>
-        <li><a href="{{ url_for('add_term') }}">Add term</a></li>
-        <li><a href="{{ url_for('register') }}">Register</a></li>
-    </ul>
+        <ul class="sidenav" id="sidenav-mobile">
+            {% if access_level == "administrator" %}
+            <li><a class="" href="{{ url_for('add_term') }}">Add terms</a></li>
+            <li><a class="" href="{{ url_for('manage_users') }}">Manage users</a></li>
+            {% elif access_level == "read and comment" %}
+            <li><a class="" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
+            {% endif %}
+            <li><a class="" href="{{ url_for('profile', user=session['user']) }}">Profile</a></li>
+
+            <li><a class="modal-trigger" href="javascript:void(0)" data-target="logout-modal">Log out</a></li>
+
+
+        </ul>
+
+    </nav>
+
     <div id="subheader" class="row valign-wrapper">
         <div id="flash-h3-con" class="">
             <span class="page-title">{{- this_h3 -}}</span>
@@ -98,23 +110,40 @@
 
                 </div>
                 <div class="search-buttons">
+                    <button type="submit" class="icon-button btn-small z-depth-0 material-icons" id="search-btn-mobile">
+                        search
+                    </button>
                     <button type="submit" class="btn-small z-depth-0 search-mng-btn">
                         Search
                     </button>
 
-                    <a href="{{ url_for('dashboard') }}" class="btn-small z-depth-0 search-mng-btn">Reset</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn-small z-depth-0 search-mng-btn"
+                        id="search-btn-desktop">Reset</a>
                     <a href="javascript:void(0)" class="btn-small z-depth-0 search-mng-btn"
                         id="browse-toggle">Browse</a>
                 </div>
-            </div>
+                </div>
+
+
+                <div class="letters row" id="letters-mobile">
+                <div class="col s12">
+
+                    {% for category in categories %}
+                    <div class="letter-chip"><a
+                            href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                </div>
+          
         </form>
     </div>
 
 
 
     <main>
-        <div class="row">
-            <div id="notifications" class="col m4">
+        <div id="notifications-desktop" class="row">
+            <div id="notifications" class="col s12 m4">
                 <div class="card z-depth-1">
                     <div class="card-title card-header gradient white-text">Your pinned terms</div>
                     <div class="card-surround card-content">
@@ -168,7 +197,7 @@
                         <p>No new registrations</p>
 
                         {% endif %}
-<hr>
+                        <hr>
                         {% if flagged_comments|length > 0 %}
                         <p class="minor-text">Flagged comments</p>
                         {% for flagged in flagged_comments %}
@@ -220,7 +249,8 @@
                         {% for update in term_updates %}
                         <div class="mt0 mb0 row">
                             <div class="col s12">
-                                <p class="updates valign-wrapper">"{{ update.term_name }}" was recently updated
+                                <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>was recently
+                                    updated
                                     <a class="btn-small icon-button z-depth-0"
                                         href="{{ url_for('view_term', term_id=update._id) }}"><i
                                             class="small material-icons">keyboard_arrow_right</i></a>
@@ -239,10 +269,11 @@
                     <div class="card-surround card-content">
 
                         {% for comment in recent_comments %}
-                        {% if not term_comment(comment) == None %}
+                        {% if not term_comment(comment) == "" %}
                         <div class="row mb0 mt0">
                             <div class="col s12">
-                                <p class="updates valign-wrapper">{{ term_comment(comment)[0] }}: {{ comment.comment }}
+                                <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
+                                    "{{ comment.comment }}"
                                     <a class="btn-small icon-button z-depth-0"
                                         href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
                                             class="small material-icons">keyboard_arrow_right</i></a>
@@ -256,28 +287,25 @@
                 </div>
                 {% endif %}
             </div>
-{% endif %}
+            {% endif %}
             {% block content %}
             {% endblock %}
 
         </div>
-                              <!-- Modal Trigger -->
 
-    
-
-  <!-- Modal Structure -->
-  <div id="logout-modal" class="modal">
-    <div class="modal-content">
-      <h4>Log out</h4>
-      <p>Do you really want to log out?</p>
-    </div>
-    <div class="modal-footer">
-                            <a href="{{ url_for('logout') }}" class="search-mng-btn btn-small z-depth-0">
-                        Yes, log me out<i class="fas fa-plus-square right"></i>
-                    </a>
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-    </div>
-  </div>
+        <!-- Modal Structure -->
+        <div id="logout-modal" class="modal">
+            <div id="lo-modal-content" class="modal-content">
+                <h4 id="lo-mod-title">Log out</h4>
+                <p>Do you really want to log out?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('logout') }}" class="search-mng-btn btn-small z-depth-0">
+                    Yes, log me out<i class="fas fa-plus-square right"></i>
+                </a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+            </div>
+        </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>

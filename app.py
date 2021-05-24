@@ -155,7 +155,8 @@ def inject_notifications():
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
     g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
-    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
+    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", 1).limit(5))
+    print(g.recent_comments)
 
     def manage_flagged_comments(flagged):
         term_id = flagged['rel_term_id']
@@ -173,14 +174,22 @@ def inject_notifications():
         return suggested_by
     
     def term_comment(comment):
-        rel_term_id = comment['rel_term_id']
-        related_term = mongo.db.terms.find_one({'_id': ObjectId(rel_term_id)})
+        try:
+            rel_term_id = comment['rel_term_id']
+            related_term = mongo.db.terms.find_one({'_id': ObjectId(rel_term_id)})
+            
+            if related_term != "":
+                related_term_name = related_term['term_name']
+                return related_term_name, rel_term_id
+            else:
+                return None
         
-        if not related_term == None:
-            related_term_name = related_term['term_name']
-            return related_term_name, rel_term_id
-        else:
-            return None
+        except TypeError:
+            related_term_name = ""
+
+        except KeyError:
+            related_term_name = ""
+
 
     return dict(term_comment=term_comment, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, notifications=g.notifications, new_registrations=g.new_registrations, suggested_terms=g.suggested_terms, flagged_comments=g.flagged_comments, term_updates=g.term_updates, recent_comments=g.recent_comments)
 
@@ -353,7 +362,7 @@ def add_comment(term_id):
                 }
 
             mongo.db.comments.insert_one(comment)
-            flash("Hooray it worked!")
+            flash("Comment added")
 
     else:
         flash("Please add a comment")

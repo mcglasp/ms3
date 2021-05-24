@@ -62,13 +62,13 @@
                         {% endfor %}
                     </div>
 
-                    <p>Term created by: {{ created_by|capitalize() }}</p>
+                    <p><strong>created by:</strong> {{ created_by|capitalize() }}</p>
                     {% if last_updated_by != "" %}
-                    <p>Last updated by: {{ last_updated_by|capitalize() }}</p>
+                    <p><strong>updated by:</strong> {{ last_updated_by|capitalize() }}</p>
                     {% endif %}
-                    <p>Term added/last updated: {{ term.last_updated }}</p>
+                    <p><strong>added/last updated:</strong> {{ term.last_updated }}</p>
                     {% if term.usage_notes != "" %}
-                    <p>Usage notes: {{ term.usage_notes }}</p>
+                    <p><strong>Usage notes:</strong> {{ term.usage_notes }}</p>
                     {% endif %}
                 </div>
 

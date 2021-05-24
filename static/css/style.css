@@ -41,7 +41,10 @@ background: linear-gradient(to left, #2a5298, #1e3c72);
 }
 
 .gradient-light {
-       background: linear-gradient(to top, rgba(252, 223, 130, 0.623), rgba(248, 228, 162, 0.87));
+background: #FFEC28;
+background: -webkit-radial-gradient(bottom left, #FFEC28, #FFF98F);
+background: -moz-radial-gradient(bottom left, #FFEC28, #FFF98F);
+background: radial-gradient(to top right, #FFEC28, #FFF98F);
 }
 
 .light-underline {
@@ -57,6 +60,8 @@ background: linear-gradient(to left, #2a5298, #1e3c72);
 hr {
     margin: 10px 0;
 }
+
+
 
 /* Navigation */
 
@@ -126,7 +131,7 @@ h2 {
 
 .letters {
     border: solid rgba(128, 128, 128, 0.349) 1px;
-    margin-top: 130px;
+    margin-top: 13px;
     width: 500px;
     height: 100%;
     white-space: nowrap;
@@ -259,6 +264,10 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     line-height: 32px;
     padding: 0;
     margin: 2px;
+}
+
+#search-btn-mobile {
+    display: none;
 }
 
 .fab {
@@ -442,11 +451,13 @@ font-family: 'Nanum Gothic', sans-serif;
 /* Term cards & comments */
 
 .comment-wrap-light {
-   background: linear-gradient(to top, rgba(252, 223, 130, 0.377), rgba(248, 228, 162, 0.295)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background-color: #fcf8c352;
+background-image: linear-gradient(315deg, #fcf8c352 0%rgba(255, 239, 119, 0.315)77 74%);
 }
 
 .comment-wrap-dark {
-   background: linear-gradient(to top, rgba(255, 224, 122, 0.514), rgba(252, 224, 133, 0.418)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background-color: #fff4604b;
+background-image: linear-gradient(315deg, #fff4607c 0%rgba(255, 239, 119, 0.473)77 74%);
 }
 
 .comment-head {
@@ -497,7 +508,10 @@ font-family: 'Nanum Gothic', sans-serif;
 }
 
 .pin {
-    background: linear-gradient(to top, rgb(252, 223, 130), rgb(248, 228, 162)); 
+background: #FFEC28;
+background: -webkit-radial-gradient(bottom left, #FFEC28, #FFF98F);
+background: -moz-radial-gradient(bottom left, #FFEC28, #FFF98F);
+background: radial-gradient(to top right, #FFEC28, #FFF98F);
 }
 
 .content-scroll {
@@ -540,6 +554,123 @@ font-family: 'Nanum Gothic', sans-serif;
     z-index: 1000;
 }
 
+#logout-modal h4, #delete-modal h4 {
+    font-family: 'Nanum Myeongjo', serif;
+}
+
+strong {
+    font-weight: 700;
+}
+
+#letters-mobile {
+    display: none;
+}
 
 
+@media screen and (max-width: 812px) {
 
+    .sidenav-overlay {
+    height: 0px;
+    width: 0px;
+}
+
+#search-btn-mobile {
+    display: inline;
+    margin-top: 46px;
+    position: relative;
+    left: -15px;
+    height: 40px;
+    width: 40px;
+}
+
+#letters-mobile {
+    display: inherit;
+    position: relative;
+    top: -45px;
+    width: 95%;
+    height: fit-content;
+    margin: 15px 5px 15px 0px;
+   border: none;
+    border-bottom: 1px solid darkblue;
+    padding-bottom: 5px;
+}
+
+    .brand-logo {
+        margin-left: 0px;
+    }
+
+    #subheader {
+        display: flex;
+        flex-direction: column-reverse;
+        margin-top: 50px;
+        border-bottom: none;
+        height: 60px;
+    }
+
+#search-bar {
+    display: inline;
+}
+
+
+    #search-bar, #search-row {
+                height: 60px;
+                width: 100%;
+    }
+
+
+.search-info {
+    display: none;
+}
+
+    #search-input {
+         height: 60px;
+                  margin-top: 50px;   
+                width: 80%;
+    }
+
+
+    #search-label {
+        display: none;
+    }
+
+    #terms p {
+        margin: 15px 0;
+    }
+
+    #terms.row>.col {
+       position: relative;
+       top: 35px;
+    }
+
+    .drag-target {
+        width: 1px;
+    }
+
+    .search-mng-btn, #search-btn-desktop {
+        display: none;
+        position: inherit;
+    }
+
+    #flash-h3-con {
+        position: relative;
+        top: 100px;
+    }
+
+    .page-title {
+        display: none;
+    }
+
+    #notifications {
+        padding: 5px;
+    }
+
+    main>div:first-of-type {
+      display: flex;
+  flex-direction: column-reverse;
+  margin-top: 10px;
+    }
+
+
+}
+
+    

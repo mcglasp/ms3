@@ -9,12 +9,12 @@
 <!-- User search and results return -->
 
 <!-- Search bar -->
-<div class="col m8">
+<div class="col s12 m8">
 
     <div id="terms" class="row">
-        <div class="col m8 ">
+        <div class="col s12 m8 ">
             {% if terms == None %}
-            <p>Search for a term or browse the style guide</p>
+            <p class="search-info">Search for a term or browse the style guide</p>
             {% elif terms|length == 0 %}
             <p>Your search returned no results</p>
             {% else %}
@@ -42,16 +42,15 @@
                     {% endif %}
                     <div class="card-buttons-container row mb0">
 
-                        <a class="search-mng-btn btn-small z-depth-0"
-                            href="{{ url_for('view_term', term_id=term._id) }}">
-                            <p>View</p>
+                        <a class="search-mng-btn btn-small z-depth-0" href="{{ url_for('view_term', term_id=term._id) }}">
+                            View
                         </a>
 
                         {% if access_level == "administrator" %}
 
                         <a class="search-mng-btn btn-small z-depth-0"
                             href="{{ url_for('manage_term', term_id=term._id) }}">
-                            <p>Manage</p>
+                            Manage
                         </a>
                         {% endif %}
                     </div>
