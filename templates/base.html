@@ -19,8 +19,14 @@
     <!-- Desktop navigation -->
     <nav id="nav-closed" class="z-depth-0 gradient white-text">
         <div class="nav-wrapper">
-            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo white-text">myHouse</a>
+            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo white-text">myHouse
+            
+            {% if (g.notifications > 0) and (g.access_level == 'administrator') %}
+                       <span class="alert">*</span>
+{% endif %}
+</a>
             {% if session.user %}
+
             <a href="#" data-target="sidenav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             {% if to_change_pword == True %}
             {% else %}
@@ -52,7 +58,7 @@
 
 
         {% if session.user %}
-<!-- Mobile/tablet navigation -->
+        <!-- Mobile/tablet navigation -->
         <ul class="sidenav" id="sidenav-mobile">
             {% if access_level == "administrator" %}
 
@@ -101,25 +107,20 @@
                     <p class="minor-text">New registrations</p>
                     {% for new_reg in new_registrations %}
 
-                    <form class="" method="POST"
-                        action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
-                        <div class="valign-wrapper button-flex-wrap">
-                            <p>{{ new_reg.username|capitalize() }}:</p>
-                            <select id="access_level" name="access_level" class="">
-                                <option value="" disabled selected><span id="dd-placeholder">Set access level</span>
-                                </option>
-                                {% for access_level in levels %}
-                                <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
-                                {% endfor %}
-                            </select>
-                            <button class="icon-button btn-small z-depth-0" type="submit"><i
-                                    class="small material-icons center-align">keyboard_arrow_up</i></button>
-                        </div>
-                    </form>
+              <div class="mt0 mb0 row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">
+                            <span>{{ new_reg.username|capitalize() }}:</span>
+
+                            <a href="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}" class="icon-button btn-small z-depth-0" type="submit"><i
+                                    class="small material-icons center-align">keyboard_arrow_up</i></a>
+                     </p>
+                                </div>
+                     </div>
 
                     {% endfor %}
                     {% else %}
-                    <p class="no-updates">No new registrations</p>
+                    <p class="no-updates valign-wrapper updates">No new registrations</p>
 
                     {% endif %}
                     <hr>
@@ -144,21 +145,21 @@
                     {% if suggested_terms|length > 0 %}
                     <p class="minor-text">Suggested terms</p>
                     {% for suggestion in suggested_terms %}
- 
-                            <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
-                                {% if manage_suggested_terms(suggestion) != "" %}
-                                suggested by: {{ manage_suggested_terms(suggestion) }}
-                                {% endif %}
-                                <a class="btn-small icon-button z-depth-0"
-                                    href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
-                                        class="small material-icons">keyboard_arrow_right</i></a>
-                            </p>
-                     
+
+                    <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
+                        {% if manage_suggested_terms(suggestion) != "" %}
+                        suggested by: {{ manage_suggested_terms(suggestion) }}
+                        {% endif %}
+                        <a class="btn-small icon-button z-depth-0"
+                            href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
+                                class="small material-icons">keyboard_arrow_right</i></a>
+                    </p>
+
                     {% endfor %}
                     {% else %}
-                    
-                            <p class="no-updates">No new term suggestions</p>
-                       
+
+                    <p class="no-updates">No new term suggestions</p>
+
                     {% endif %}
                 </div>
             </div>
@@ -170,7 +171,7 @@
                     {% for update in term_updates %}
                     <div class="mt0 mb0 row">
                         <div class="col s12">
-                            <p class="updates valign-wrapper"><strong >{{ update.term_name }} </strong>
+                            <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>
                                 <a class="btn-small icon-button z-depth-0"
                                     href="{{ url_for('view_term', term_id=update._id) }}"><i
                                         class="small material-icons">keyboard_arrow_right</i></a>
@@ -192,7 +193,8 @@
                     {% if not term_comment(comment) == "" %}
                     <div class="row mb0 mt0">
                         <div class="col s12">
-                            <p class="updates valign-wrapper"><strong class="truncate">{{ term_comment(comment)[0] }}</strong>
+                            <p class="updates valign-wrapper"><strong
+                                    class="truncate">{{ term_comment(comment)[0] }}</strong>
                                 <span class="truncate">{{ comment.comment }}"</span>
                                 <a class="btn-small icon-button z-depth-0"
                                     href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
@@ -211,7 +213,7 @@
         </ul>
 
     </nav>
-<!-- Title (desktop), flash messages (desktop) and search bar -->
+    <!-- Title (desktop), flash messages (desktop) and search bar -->
     <div id="subheader" class="row valign-wrapper">
         <div id="flash-h3-con" class="">
             <span class="page-title">{{- this_h3 -}}</span>
@@ -229,7 +231,8 @@
             {% elif (not messages) and (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
             <span class="count-notifications">You have {{ g.notifications }}
                 notification{% if g.notifications > 1 %}s{% endif %}</span>
-
+{% else %}
+<span class="count-notifications">&nbsp;</span>
 
             {% endif %}
             {% endwith %}
@@ -244,7 +247,7 @@
                     <input class="search-input-box" type="text" name="query" id="query" minlength="3">
                     <label id="search-label" for="query">Search terms</label>
                 </div>
-                <div class="hidden letters left-align" id="letters">
+                <div class="hidden letters left-align hide-on-small-only" id="letters">
 
                     {% for category in categories %}
                     <div class="letter-chip"><a
@@ -253,6 +256,7 @@
                     {% endfor %}
 
                 </div>
+             
                 <div class="search-buttons search">
                     <button type="submit" class="icon-button btn-small z-depth-0 material-icons" id="search-btn-mobile">
                         search
@@ -269,9 +273,8 @@
             </div>
 
 
-            <div class="letters row" id="letters-mobile">
+            <div class="letters row hide-on-med-and-up" id="letters-mobile">
                 <div class="col s12">
-
                     {% for category in categories %}
                     <div class="letter-chip"><a
                             href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
@@ -286,8 +289,8 @@
 
 
     <main>
-        <div id="notifications-desktop" class="row hide-on-med-and-down">
-            <div id="notifications" class="col s0 m4">
+        <div id="notifications-desktop" class="row">
+            <div id="notifications" class="col s0 m4 hide-on-med-and-down">
                 <!-- PINNED TERMS card -->
                 <div class="card z-depth-1">
                     <div class="card-title card-header gradient white-text">Your pinned terms</div>
@@ -317,7 +320,7 @@
                 <div class="card z-depth-1">
                     <div class="card-title card-header gradient white-text">
                         Recent Updates</div>
-                        <!-- New registrations -->
+                    <!-- New registrations -->
                     <div class="card-content card-surround">
                         {% if new_registrations|length > 0 %}
                         <p class="minor-text">New registrations</p>
@@ -412,7 +415,7 @@
 
                 </div>
                 {% endif %}
-            <!-- RECENT COMMENTS (not read-only) card -->
+                <!-- RECENT COMMENTS (not read-only) card -->
                 {% if access_level != 'read only' %}
                 <div class="card z-depth-1">
                     <div class="gradient white-text card-header card-title">Recent Comments</div>

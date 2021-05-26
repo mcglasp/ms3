@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   document
     .querySelector("main")
-    .querySelector("#nav-closed")
+   
     .addEventListener("click", function() {
       var elem = document.querySelector(".sidenav");
       var instance = M.Sidenav.getInstance(elem);

@@ -3,7 +3,7 @@
 {% if not session.user %}
 
 <div id="login" class="row">
-    <div class="col m6 offset-m3">
+    <div class="col m6 offset-m3 s12">
     <div class="card">
         <div class="card-title card-header gradient white-text">Log in</div>
         <div class="card-content">
@@ -28,8 +28,7 @@
 </div>
 <div class="row">
 <div class="col s12">
-    <p class="center-align">
-        New here? <a href="{{ url_for('register') }}" class="blue-text darken-4">Register</a>
+    <p id="login-p" class="center-align">New here? <a href="{{ url_for('register') }}" class="blue-text darken-4">Register</a>
     </p>
 </div>
 </div>
