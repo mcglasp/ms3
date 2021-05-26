@@ -1,6 +1,51 @@
-  $(document).ready(function(){
-    $('.sidenav').sidenav();
-  });
+document.addEventListener("DOMContentLoaded", function() {
+  var elems = document.querySelectorAll(".sidenav");
+  var options = {};
+  var instances = M.Sidenav.init(elems, options);
+
+  document
+    .querySelector(".sidenav")
+    .addEventListener("click", function() {
+      var elem = document.querySelector(".sidenav");
+      var instance = M.Sidenav.getInstance(elem);
+
+      if (instance.isOpen) {
+        instance.close();
+      } else {
+        instance.open();
+      }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  var elems = document.querySelectorAll(".sidenav");
+  var options = {};
+  var instances = M.Sidenav.init(elems, options);
+
+  document
+    .querySelector("main")
+    .querySelector("#nav-closed")
+    .addEventListener("click", function() {
+      var elem = document.querySelector(".sidenav");
+      var instance = M.Sidenav.getInstance(elem);
+
+        instance.close();
+  
+    });
+});
+
+// $(document).ready(function(){
+//     $('.sidenav')
+//         .sidenav()
+//         .on('click tap', 'li a', () => {
+//             $('.sidenav').sidenav('close');
+//         });
+//     $('.sidenav')
+//         .sidenav()
+//         .on('click tap', '#notifications', () => {
+//             $('.sidenav').sidenav('close');
+//         });
+// });
 
 $(document).ready(function(){
     $('select').formSelect();

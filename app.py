@@ -8,6 +8,9 @@ from flask import (
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+import werkzeug.exceptions
+
+
 if os.path.exists("env.py"):
     import env
 
@@ -18,7 +21,11 @@ app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
 
+
+
+
 mongo = PyMongo(app)
+
 
 
 def page_h3(h3):
@@ -131,6 +138,7 @@ def text_search(user_query):
 
 @app.context_processor
 def inject_user():
+    
     try:
         g.user = mongo.db.users.find_one({'username': session['user']})
         user_id = g.user['_id'] if g.user else None
@@ -155,8 +163,9 @@ def inject_notifications():
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
     g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
-    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", 1).limit(5))
-    print(g.recent_comments)
+    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
+ 
+    
 
     def manage_flagged_comments(flagged):
         term_id = flagged['rel_term_id']
@@ -359,6 +368,7 @@ def add_comment(term_id):
                 "user": user_id,
                 "rel_term_id": term_id,
                 "flagged": False
+            
                 }
 
             mongo.db.comments.insert_one(comment)
@@ -569,7 +579,6 @@ def update_term(term_id):
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
     user_for_header = inject_user()['user']['username'].capitalize()
-    print(user_for_header)
     this_h3 = page_h3(f"{user_for_header}'s Dashboard")
     
     categories = lets_nums()
@@ -595,6 +604,7 @@ def go_to_term(term_id):
 @app.route("/delete_term/<term_id>")
 def delete_term(term_id):
     mongo.db.terms.remove({"_id": ObjectId(term_id)})
+    mongo.db.comments.remove({"rel_term_id": term_id})
 
     flash("Term successfully deleted")
     return redirect(url_for("dashboard"))
@@ -660,6 +670,18 @@ def delete_user(each_user_id):
 
     flash("User deleted")
     return redirect(url_for("manage_users"))
+
+
+
+
+
+
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+
+    return render_template('404.html'), 404
 
 
 if __name__ == "__main__":

@@ -92,6 +92,110 @@ li a:hover::after {
     color: #fff;
 }
 
+/* Sidenav */
+
+
+
+.sidenav {
+    font-family: 'Nanum Gothic', sans-serif;
+    color: black;
+    padding-top: 25px;
+}
+
+.sidenav-card-surround .row .col {
+    display: block;
+}
+
+.sidenav li {
+    display: flex;
+    align-content: flex-start;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+li a.sidenav-item {
+    padding-left: 0px;
+}
+
+.sidenav .material-icons {
+    color: black;
+    padding-top: 10px;
+    padding-right: 0px;
+    font-size: 20px;
+    line-height: 28px;
+}
+
+.sidenav .updates a .material-icons, .sidenav .updates {
+    color: black;
+    padding-top: 0px;
+    padding-right: 0px;
+    /* font-size: 20px; */
+    line-height: 28px;
+}
+
+.sidenav-card {
+    width: 93%;
+    border-radius: 0;
+    margin: 10px;
+}
+
+.sidenav-card:first-of-type {
+    margin-top: 45px;
+}
+
+.card-title.sidenav-card-title {
+    border-top-left-radius: 0%;
+    border-top-right-radius: 0%;
+}
+
+nav .sidenav-card-title {
+    line-height: 10px;
+}
+
+.sidenav-card-surround {
+    display: flex;
+    flex-wrap: wrap;
+        border-radius: 0;
+    
+}
+
+.sidenav-card-surround a {
+    padding: 0;
+    margin: 0;
+}
+
+.sidenav-pin {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.sidenav-pin a:first-of-type {
+    display: flex;
+    color: black;
+    
+}
+
+.sidenav-pin a i.material-icons {
+    padding-top: 1px;
+    height: fit-content;
+}
+
+.sidenav .truncate {
+    margin-right: 5px;
+}
+
+.sidenav .no-updates {
+    line-height: 10px;
+}
+
+.sidenav .no-pins {
+    line-height: 20px;
+}
+
+/* .sidenav-card-title {
+    height: 35px;
+} */
+
 /* Base */
 
 h2 {
@@ -540,7 +644,7 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
     border-bottom: 0px;
 }
 
-#terms, #users, #add-term, #manage-term, #notifications, #search-users-card, #add-user, #profile, #view-term, #login, #register {
+#terms, #users, #add-term, #manage-term, #notifications, #search-users-card, #add-user, #profile, #view-term, #login, #register, #error {
     position: relative;
     top: 121px;
     z-index: 0;
@@ -576,7 +680,7 @@ strong {
 
 #search-btn-mobile {
     display: inline;
-    margin-top: 46px;
+    margin-top: 51px;
     position: relative;
     left: -15px;
     height: 40px;
@@ -587,12 +691,16 @@ strong {
     display: inherit;
     position: relative;
     top: -45px;
-    width: 95%;
+    left: -10px;
+    width: 102%;
+
     height: fit-content;
-    margin: 15px 5px 15px 0px;
-   border: none;
+    padding: 5px 0px;
+    border: none;
     border-bottom: 1px solid darkblue;
-    padding-bottom: 5px;
+    background-color: #fff;
+    margin-left: 0px;
+    margin-top: 7px;
 }
 
     .brand-logo {
@@ -605,6 +713,7 @@ strong {
         margin-top: 50px;
         border-bottom: none;
         height: 60px;
+        margin-left: 0px;
     }
 
 #search-bar {
@@ -615,6 +724,7 @@ strong {
     #search-bar, #search-row {
                 height: 60px;
                 width: 100%;
+                background-color: #fff;
     }
 
 
@@ -624,7 +734,8 @@ strong {
 
     #search-input {
          height: 60px;
-                  margin-top: 50px;   
+                  margin-top: 55px; 
+                  margin-left: 14px;  
                 width: 80%;
     }
 
@@ -646,14 +757,17 @@ strong {
         width: 1px;
     }
 
-    .search-mng-btn, #search-btn-desktop {
+    .search .search-mng-btn, .search #search-btn-desktop {
         display: none;
         position: inherit;
     }
 
     #flash-h3-con {
         position: relative;
-        top: 100px;
+    top: 30px;
+    padding-left: 15px;
+    background-color: white;
+    padding-top: 10px;
     }
 
     .page-title {
@@ -667,9 +781,20 @@ strong {
     main>div:first-of-type {
       display: flex;
   flex-direction: column-reverse;
-  margin-top: 10px;
+  margin: 10px 10px;
     }
+#mng-users .card {
+    margin: 0 5px;
+}
 
+main>div:first-of-type .col:nth-child(2) {
+   padding: 5px;
+   margin-top: 15px;
+}
+
+#manage-term {
+   padding: 5px;
+}
 
 }
 

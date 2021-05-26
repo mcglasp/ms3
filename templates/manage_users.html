@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-<div class="col m4">
+<!-- <div id="flex-rev-wrapper"> -->
+<div id="mng-users" class="col m4">
     <div class="row">
         <div id="search-users-card" class="card z-depth-1 mb0">
                             <div class="card-title card-header gradient-light">Search users</div>
@@ -21,6 +21,7 @@
                                 Search
                             </button>
                             <a href="{{ url_for('manage_users') }}" class="search-mng-btn btn-small z-depth-0">Reset</a>
+                            <a href="{{ url_for('manage_users') }}" class="search-mng-btn btn-small z-depth-0">Show All</a>
                    
                     </div>
                 </form>
@@ -73,10 +74,15 @@
 </div>
 <div id="users" class="col m4">
     <!-- User list -->
+                {% if users_list == None %}
+                            <p class="search-info">Search for a user or click 'Show All'</p>
+                                        {% elif terms|length == 0 %}
+            <p class="search-info">Your search returned no results</p>
+            {% else %}
     {% for each_user in users_list %}
     {% set counter = loop.index %}
-    <div class="card z-depth-1">
-        <div class="card-content">
+    <div class="card card-radius z-depth-1">
+        <div class="card-content term-card-content">
             <div class="row">
                 <div class="col s12">
                     <span
@@ -121,7 +127,9 @@
         </div>
     </div>
     {% endfor %}
+    {% endif %}
 </div>
+<!-- </div> -->
 
 
 {% endblock %}
