@@ -113,6 +113,10 @@ li a:hover::after {
     padding-top: 25px;
 }
 
+.sidenav .card-content {
+    line-height: 1rem;
+}
+
 .sidenav-card-surround .row .col {
     display: block;
 }
@@ -772,13 +776,13 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
 
 
 
-#delete-modal, #logout-modal {
+#delete-user-modal {
     position: fixed;
-    top: 30%;
-    z-index: 1000;
+    top: 30%!important;
+    z-index: 1010;
 }
 
-#logout-modal h4, #delete-modal h4 {
+#logout-modal h4, #delete-modal h4, #delete-user-modal h4 {
     font-family: 'Nanum Myeongjo', serif;
 }
 
@@ -789,14 +793,46 @@ strong {
 /* #letters-mobile {
     display: none;
 } */
+    
+.logo-alert {
+    display: inline;
+}
 
-
-@media screen and (max-width: 812px) {
-
+@media screen and (min-width: 993px){
     .alert {
-        color: rgb(255, 35, 6);
-        position: relative;
-        right: 10px;
+    color: rgb(255, 35, 6);
+    position: relative;
+    left: 150px;
+    top: -5px;
+    font-size: 28px;
+    font-weight: 800;
+    -webkit-animation: blinker 3s linear infinite;
+    animation: blinker 3s linear infinite;
+}
+
+@-webkit-keyframes blinker {
+  50% {
+    opacity: 55%;
+  }
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 55%;
+  }
+}
+}
+
+@media screen and (max-width: 993px) {
+    .alert {
+            color: rgb(255, 35, 6);
+    /* position: absolute;
+    left: 60%;
+    top: -5px; */
+    font-size: 28px;
+    font-weight: 800;
+    -webkit-animation: blinker 3s linear infinite;
+    animation: blinker 3s linear infinite;
   
    
   -webkit-animation: blinker 3s linear infinite;
@@ -816,6 +852,11 @@ strong {
     opacity: 55%;
   }
 }
+}
+
+@media screen and (max-width: 812px) {
+
+
 
 #login, #register {
     position: relative;
@@ -830,9 +871,10 @@ strong {
 
 #search-btn-mobile {
     display: inline;
-    margin-top: 51px;
+
     position: relative;
     left: -15px;
+    bottom: 15px;
     height: 40px;
     width: 40px;
 }
@@ -893,7 +935,7 @@ strong {
 
     #search-input {
          height: 60px;
-                  margin-top: 55px; 
+                  
                   margin-left: 14px;  
                 width: 80%;
     }
@@ -922,13 +964,13 @@ strong {
     }
 
     #flash-h3-con {
-        visibility: hidden;
-        position: relative;
-    top: 60px;
-    padding-left: 15px;
-    background-color: white;
-    padding-top: 10px;
+       
+    display: none;
     }
+
+
+   
+
 
     .page-title {
         display: none;
@@ -963,4 +1005,4 @@ main>div:first-of-type .col:nth-child(2) {
 
 }
 
-    
+

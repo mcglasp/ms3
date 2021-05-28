@@ -622,9 +622,9 @@ def manage_users():
 @app.route("/search_users", methods=["POST", "GET"])
 def search_users():
     this_h3 = page_h3("Manage users")
-    query = request.form.get("query")
+    query_user = request.form.get("query_user")
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
-    users_list = list(mongo.db.users.find({"$text": {"$search": query}}))
+    users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
     return render_template("manage_users.html", users_list=users_list, levels=levels, this_h3=this_h3)
 
 
@@ -641,6 +641,7 @@ def add_user():
 
         mongo.db.users.insert_one(new_user)
         flash("New user added")
+        
         return redirect(url_for("manage_users"))
 
 

@@ -19,12 +19,22 @@
     <!-- Desktop navigation -->
     <nav id="nav-closed" class="z-depth-0 gradient white-text">
         <div class="nav-wrapper">
-            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo white-text">myHouse
+            <div class="logo-alert">
+            <a href="{{ url_for('dashboard', user=session['user']) }}" class="brand-logo logo white-text">myHouse</a>
+            {% if (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
+
+            <a id="alert" class="alert" href="#!" onclick="alert()" value="You have {{ g.notifications }}
+                notification{% if g.notifications > 1 %}s{% endif %}">!</a>
             
-            {% if (g.notifications > 0) and (g.access_level == 'administrator') %}
-                       <span class="alert">*</span>
-{% endif %}
-</a>
+            
+
+            {% else %}
+
+            <span class="alert">&nbsp;</span>
+
+            {% endif %}
+            </div>
+
             {% if session.user %}
 
             <a href="#" data-target="sidenav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
@@ -107,16 +117,17 @@
                     <p class="minor-text">New registrations</p>
                     {% for new_reg in new_registrations %}
 
-              <div class="mt0 mb0 row">
+                    <div class="mt0 mb0 row">
                         <div class="col s12">
                             <p class="updates valign-wrapper">
-                            <span>{{ new_reg.username|capitalize() }}:</span>
+                                <span>{{ new_reg.username|capitalize() }}:</span>
 
-                            <a href="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}" class="icon-button btn-small z-depth-0" type="submit"><i
-                                    class="small material-icons center-align">keyboard_arrow_up</i></a>
-                     </p>
-                                </div>
-                     </div>
+                                <a href="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}"
+                                    class="icon-button btn-small z-depth-0" type="submit"><i
+                                        class="small material-icons center-align">keyboard_arrow_up</i></a>
+                            </p>
+                        </div>
+                    </div>
 
                     {% endfor %}
                     {% else %}
@@ -215,7 +226,7 @@
     </nav>
     <!-- Title (desktop), flash messages (desktop) and search bar -->
     <div id="subheader" class="row valign-wrapper">
-        <div id="flash-h3-con" class="">
+        <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
             <span class="page-title">{{- this_h3 -}}</span>
 
             {% with messages = get_flashed_messages() %}
@@ -223,18 +234,13 @@
             <span class="count-notifications">
 
                 {% for message in messages %}
-                <span id="message">{{ message }}</span>
+                <span id="message" value="{{ message }}"></span>
+              
                 {% endfor %}
 
             </span>
-
-            {% elif (not messages) and (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
-            <span class="count-notifications">You have {{ g.notifications }}
-                notification{% if g.notifications > 1 %}s{% endif %}</span>
-{% else %}
-<span class="count-notifications">&nbsp;</span>
-
             {% endif %}
+
             {% endwith %}
 
 
@@ -242,7 +248,7 @@
 
 
         <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
-            <div class="search-row">
+            <div class="search-row valign-wrapper">
                 <div id="search-input" class="input-field right-align">
                     <input class="search-input-box" type="text" name="query" id="query" minlength="3">
                     <label id="search-label" for="query">Search terms</label>
@@ -256,7 +262,7 @@
                     {% endfor %}
 
                 </div>
-             
+
                 <div class="search-buttons search">
                     <button type="submit" class="icon-button btn-small z-depth-0 material-icons" id="search-btn-mobile">
                         search
@@ -284,6 +290,7 @@
             </div>
 
         </form>
+
     </div>
 
 
@@ -448,8 +455,8 @@
 
         <!-- Modal Structure -->
         <div id="logout-modal" class="modal">
-            <div id="lo-modal-content" class="modal-content">
-                <h4 id="lo-mod-title">Log out</h4>
+            <div class="modal-content">
+                <h4>Log out</h4>
                 <p>Do you really want to log out?</p>
             </div>
             <div class="modal-footer">

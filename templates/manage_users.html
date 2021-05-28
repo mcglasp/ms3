@@ -11,8 +11,8 @@
                     <div class="mb0 row">
                         <div class="col s12">
                             <div class="input-field pt10 mb0">
-                                <input type="text" name="query" id="query" minlength="3">
-                                <label for="query">Search users</label>
+                                <input type="text" name="query_user" id="query_user" minlength="3">
+                                <label for="query_user">Search users</label>
                             </div>
                         </div>
                     </div>
@@ -75,12 +75,26 @@
 <div id="users" class="col m4">
     <!-- User list -->
                 {% if users_list == None %}
+                
                             <p class="search-info">Search for a user or click 'Show All'</p>
-                                        {% elif terms|length == 0 %}
+                                        {% elif users_list|length == 0 %}
             <p class="search-info">Your search returned no results</p>
             {% else %}
     {% for each_user in users_list %}
     {% set counter = loop.index %}
+                <!-- Modal Structure -->
+        <div id="delete-user-modal" class="modal">
+            <div class="modal-content">
+                <h4>Delete user?</h4>
+                <p>Are you sure you want to delete this user?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('delete_user', each_user_id=each_user._id) }}" class="search-mng-btn btn-small z-depth-0">
+                    Yes, delete<i class="fas fa-plus-square right"></i>
+                </a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+            </div>
+        </div>
     <div class="card card-radius z-depth-1">
         <div class="card-content term-card-content">
             <div class="row">
@@ -118,18 +132,19 @@
                             <button class="search-mng-btn btn-small z-depth-0 " type="submit">Update</button>
                         </div>
                         <div class="user-buttons row">
-                            <a class="search-mng-btn btn-small z-depth-0"
-                                href="{{ url_for('delete_user', each_user_id=each_user._id) }}">Delete</a>
+                            <a class="search-mng-btn btn-small z-depth-0 modal-trigger"
+                                data-target="delete-user-modal" href="javascript:void(0)">Delete</a>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
     {% endfor %}
     {% endif %}
 </div>
-<!-- </div> -->
+
 
 
 {% endblock %}

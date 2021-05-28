@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
   var elems = document.querySelectorAll(".sidenav");
   var options = {};
@@ -34,18 +37,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// $(document).ready(function(){
-//     $('.sidenav')
-//         .sidenav()
-//         .on('click tap', 'li a', () => {
-//             $('.sidenav').sidenav('close');
-//         });
-//     $('.sidenav')
-//         .sidenav()
-//         .on('click tap', '#notifications', () => {
-//             $('.sidenav').sidenav('close');
-//         });
-// });
 
 $(document).ready(function(){
     $('select').formSelect();
@@ -99,4 +90,10 @@ $("#browse-toggle").click(function(){
     add_to.appendChild(to_add)
   }
 
+function alert(){
+    let toastAlert = document.getElementById('alert').getAttribute('value')
+    M.toast({html: toastAlert})
+}
 
+let toastInfo = document.getElementById('message').getAttribute('value')
+M.toast({html: toastInfo})
