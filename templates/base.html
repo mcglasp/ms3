@@ -38,31 +38,30 @@
             {% if session.user %}
 
             <a href="#" data-target="sidenav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-            {% if to_change_pword == True %}
-            {% else %}
+
             <ul class="right hide-on-med-and-down">
-
-                {% if not session.user %}
-                <li><a class="white-text" href="{{ url_for('register') }}">Register</a></li>
-                <li><a class="white-text" href="{{ url_for('login') }}">Log in</a></li>
-
-                {% else %}
+        
                 {% if access_level == "administrator" %}
                 <li><a class="" href="{{ url_for('add_term') }}">Add terms</a></li>
                 <li><a class="" href="{{ url_for('manage_users') }}">Manage users</a></li>
                 {% elif access_level == "read and comment" %}
                 <li><a class="" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
                 {% endif %}
+
                 <li><a class="modal-trigger" href="javascript:void(0)" data-target="logout-modal">Log out</a></li>
                 <li><a class="" href="{{ url_for('profile', user=session['user']) }}">Profile</a></li>
 
+           
 
-                {% endif %}
-                {% endif %}
-                {% endif %}
+                {% elif not session.user %}
+                <li><a class="white-text" href="{{ url_for('register') }}">Register</a></li>
+                <li><a class="white-text" href="{{ url_for('login') }}">Log in</a></li>
 
-
+           
+                
+        
             </ul>
+              {% endif %}
         </div>
 
 
@@ -70,6 +69,8 @@
         {% if session.user %}
         <!-- Mobile/tablet navigation -->
         <ul class="sidenav" id="sidenav-mobile">
+            {% if user.to_change_pword == True %}
+            {% else %}
             {% if access_level == "administrator" %}
 
             <li><a class="sidenav-item" href="{{ url_for('add_term') }}">Add terms</a><a class="material-icons"
@@ -79,6 +80,7 @@
             {% elif access_level == "read and comment" %}
             <li><a class="sidenav-item" href="{{ url_for('add_term') }}">Make a suggestion</a><a class="material-icons"
                     href="{{ url_for('add_term') }}">keyboard_arrow_right</a></li>
+            {% endif %}
             {% endif %}
             <li><a class="sidenav-item" href="{{ url_for('profile', user=session['user']) }}">Profile</a><a
                     class="material-icons"
@@ -224,6 +226,9 @@
         </ul>
 
     </nav>
+    {% if user.to_change_pword == True %}
+<p>Looks like you're new here, please <a href="{{ url_for('profile', user=user) }}">change your password.</a></p>
+{% else %}
     <!-- Title (desktop), flash messages (desktop) and search bar -->
     <div id="subheader" class="row valign-wrapper">
         <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
@@ -248,7 +253,7 @@
 
 
         <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
-            <div class="search-row valign-wrapper">
+            <div class="search-row">
                 <div id="search-input" class="input-field right-align">
                     <input class="search-input-box" type="text" name="query" id="query" minlength="3">
                     <label id="search-label" for="query">Search terms</label>
@@ -447,6 +452,7 @@
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
             {% endif %}
             {% block content %}
             {% endblock %}

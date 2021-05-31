@@ -159,6 +159,7 @@ def inject_user():
 def inject_notifications():
     
     g.new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
+    print(g.new_registrations)
     g.flagged_comments = list(mongo.db.comments.find({'flagged': True}))
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
@@ -219,11 +220,6 @@ def get_pinned_terms():
     return dict(pinned_terms=g.pinned_terms)
 
 
-
-
-
-
-
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
@@ -238,10 +234,12 @@ def dashboard():
     
     except AttributeError:
         return redirect(url_for("login"))
-    
+ 
     if get_user['user'] is None:
-        
+            
         return redirect(url_for("login"))
+
+    
 
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
@@ -419,7 +417,7 @@ def register():
             "username": request.form.get("username").lower(),
             "password": generate_password_hash(request.form.get("password")),
             "access_level": "requested",
-            "to_change_pword": True
+            "to_change_pword": False
         }
         mongo.db.users.insert_one(register)
 
@@ -554,6 +552,7 @@ def update_term(term_id):
 
         incorrect = get_fields("incorrect_terms")
         alternatives = get_fields("alt_terms")
+        
         try:
             created_by = term['created_by']
         except KeyError:
@@ -638,6 +637,8 @@ def add_user():
             "access_level": request.form.get("access_level_add"),
             "to_change_pword": True
         }
+
+        print(new_user)
 
         mongo.db.users.insert_one(new_user)
         flash("New user added")
