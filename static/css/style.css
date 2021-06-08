@@ -1,24 +1,14 @@
-/*
-* Prefixed by https://autoprefixer.github.io
-* PostCSS: v7.0.29,
-* Autoprefixer: v9.7.6
-* Browsers: last 4 version
-*/
-
 * {
     margin: 0;
     padding: 0;
 }
 
-html {
+
+body {
     scroll-behavior: smooth;
     background: -webkit-gradient(linear, left top, right top, from(#ffffff), to(#f7f7f7));
     background: -o-linear-gradient(left, #ffffff 0%, #f7f7f7 100%);
     background: linear-gradient(to right, #ffffff 0%, #f7f7f7 100%);
-}
-
-body {
-    background-color: #FEFEFE;
     font-family: 'Nanum Gothic', sans-serif;
 }
 
@@ -267,11 +257,12 @@ h2 {
     margin-left: 10px;
 }
 
+
+
 .letters {
     border: solid rgba(128, 128, 128, 0.349) 1px;
     margin-top: 13px;
-    width: 500px;
-    height: 100%;
+    width: 500.75px;
     white-space: nowrap;
     overflow: scroll;
 }
@@ -421,8 +412,8 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     background: -webkit-gradient(linear,left bottom, left top,from(#dcdddf), to(#ebebeb));
     background: -o-linear-gradient(bottom,#dcdddf 0%, #ebebeb 100%);
     background: linear-gradient(to top,#dcdddf 0%, #ebebeb 100%);
-    margin-top: 13px;
-    margin-right: 5px;
+    /* margin-top: 13px;
+    margin-right: 5px; */
 }
 
 .icon-button, .icon-button.btn-small {
@@ -435,10 +426,6 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     line-height: 32px;
     padding: 0;
     margin: 2px;
-}
-
-#search-btn-mobile {
-    display: none;
 }
 
 .fab {
@@ -508,13 +495,17 @@ font-family: 'Nanum Gothic', sans-serif;
 }
 
 .search-buttons {
-    margin-top: 0px;
+    position: relative;
+    top: 12px;
 }
 
 [type="radio"]:checked+span:after {
     background-color: rgb(255, 221, 109);
     border: rgba(252, 223, 130, 0.377);
+}
 
+.icon-button.flag-btn {
+    margin: 0 0 5px 5px;
 }
 
 /* Button hover states */
@@ -560,7 +551,7 @@ font-family: 'Nanum Gothic', sans-serif;
     -webkit-box-flex: 0;
         -ms-flex: 0 1 66.6%;
             flex: 0 1 66.6%;
-    margin-right: 20px;
+            margin: 0 20px 0 5px;
 }
 
 #flash-h3-con {
@@ -754,25 +745,33 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
 #search-input {
     width: 50%;
     margin-right: 10px;
-    padding-bottom: 5px;
     position: relative;
     bottom: 5px;
     border-bottom: 0px;
+    flex-grow: 2;
 }
 
-#users, #add-term, #manage-term, #notifications, #profile, #view-term, #login, #register, #error-card, #mng-users, #result-row {
+#users, #add-term, #manage-term, #notifications, #profile, #view-term, #login, #register, #error, #mng-users, #result-row, #change-pword {
     position: relative;
     top: 121px;
     z-index: 0;
     margin-top: 2.2rem;
 }
 
-/* #terms {
-        position: relative;
-    top: 80px;
+#profile-change-pword {
+    position: relative;
+    top: -20px;
     z-index: 0;
     margin-top: 2.2rem;
-} */
+}
+#change-pword {
+text-align: center;
+}
+
+#change-pword a {
+font-weight: 900;
+
+}
 
 
 
@@ -826,9 +825,7 @@ strong {
 @media screen and (max-width: 993px) {
     .alert {
             color: rgb(255, 35, 6);
-    /* position: absolute;
-    left: 60%;
-    top: -5px; */
+
     font-size: 28px;
     font-weight: 800;
     -webkit-animation: blinker 3s linear infinite;
@@ -852,11 +849,12 @@ strong {
     opacity: 55%;
   }
 }
+
+#search-input {
+    position: relative;
+    bottom: 0px;
+
 }
-
-@media screen and (max-width: 812px) {
-
-
 
 #login, #register {
     position: relative;
@@ -869,15 +867,15 @@ strong {
     width: 0px;
 }
 
-#search-btn-mobile {
+#search-btn-mobile, #a-z {
     display: inline;
 
     position: relative;
-    left: -15px;
-    bottom: -7px;
     height: 40px;
     width: 40px;
 }
+
+
 
 #letters-mobile {
     display: inherit;
@@ -924,7 +922,7 @@ strong {
 
     #search-bar, #search-row {
                 height: 60px;
-                width: 100%;
+                width: 99%;
                 background-color: #fff;
     }
 
@@ -980,29 +978,23 @@ strong {
         padding: 5px;
     }
 
-    main>div:first-of-type {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: column-reverse;
-          flex-direction: column-reverse;
-  margin: 10px 10px;
-    }
+
+
 #mng-users .card {
     margin: 0 5px;
 }
 
 main>div:first-of-type .col:nth-child(2) {
    padding: 5px;
-   margin-top: 15px;
+   /* margin-top: 15px; */
 }
 
 #manage-term {
    padding: 5px;
 }
-
 }
 
-
+#awaiting-approval {
+    display: block;
+    margin: 10px auto;
+}

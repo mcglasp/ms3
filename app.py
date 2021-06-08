@@ -69,8 +69,9 @@ def get_fields(find):
             name = self.list
 
             items = request.form.getlist(name)
-
+            print(items)
             made_list = []
+            print(made_list)
             for item in items:
                 if item != "":
                     made_list.append(item)
@@ -79,7 +80,7 @@ def get_fields(find):
 
     get_list = Field_name(find)
     return_list = get_list.make_list()
-
+    print(return_list)
     return return_list
 
 
@@ -92,45 +93,44 @@ def text_search(user_query):
         return terms
 
     terms = standard_search(user_query)
+    print(len(terms))
+    print(terms[0]['pending'])
+    if (len(terms) == 1) and (terms[0]['pending'] == True):
+        
+            # strip punctuation
+        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+            input_stripped = re.sub("[\s'&/\-.]", '', user_query)
+            print('4', input_stripped)
+            terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
 
+            # regex search
+        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+            print('5', user_query)
 
+            pattern = f"({input_stripped[0]})[{input_stripped[1:]}]"+"{2,}"
+            print(pattern)
+            terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
+        
+            # number change
+        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+            print('1', user_query)
+            numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
+            for num, dig in numbers.items():
+                if num in user_query:
+                    num_change = re.sub(num, dig, user_query)
+                    user_query = num_change
+                    print('2', user_query)
+                    terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                    return terms
 
-        # strip punctuation
-    if terms == []:
-        to_remove = "[\s'&/\-.]"
-        input_stripped = re.sub(to_remove, '', user_query)
-        print('4', user_query)
-        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
+                elif dig in user_query:
+                    num_change = re.sub(dig, num, user_query)
+                    user_query = num_change
+                    terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                    print('3', user_query)
+                    return terms
 
-        print('here, terms is []')
-        # regex search
-    if terms == []:
-        print('5', user_query)
-
-        pattern = f"({user_query[0]})[{user_query[1:]}]"+"{3,}"
-        print(pattern)
-        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
-    
-        # number change
-    if terms == []:
-        print('1', user_query)
-        numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
-        for num, dig in numbers.items():
-            if num in user_query:
-                num_change = re.sub(num, dig, user_query)
-                user_query = num_change
-                print('2', user_query)
-                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                return terms
-
-            elif dig in user_query:
-                num_change = re.sub(dig, num, user_query)
-                user_query = num_change
-                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                print('3', user_query)
-                return terms
-
-        return terms
+            return terms
 
     print('6', user_query)
     return terms
@@ -143,29 +143,34 @@ def inject_user():
         g.user = mongo.db.users.find_one({'username': session['user']})
         user_id = g.user['_id'] if g.user else None
         g.access_level = mongo.db.users.find_one({"_id": ObjectId(user_id)})['access_level'].lower() if user_id else 'requested'
+
+        try:
+            user_for_header = g.user['username'].capitalize()
+            g.this_h3 = page_h3(f"{user_for_header}'s Account")
         
-        return dict(user=g.user, access_level=g.access_level)
+        except TypeError:
+            user_for_header = ""
+            this_h3 = page_h3("Dashboard")
+        
+        return dict(user=g.user, access_level=g.access_level, this_h3=g.this_h3)
 
     except KeyError:
         g.user = None
 
     except AttributeError:
         pass
-
+    
     return dict(user=g.user)
 
 
 @app.context_processor
 def inject_notifications():
-    
     g.new_registrations = list(mongo.db.users.find({'access_level': 'requested'}))
-    print(g.new_registrations)
     g.flagged_comments = list(mongo.db.comments.find({'flagged': True}))
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
     g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
     g.recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
- 
     g.categories = lets_nums()
     
 
@@ -225,39 +230,29 @@ def get_pinned_terms():
 def dashboard():
     try:
         get_user = inject_user()
-        user_for_header = get_user['user']['username'].capitalize()
-        this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-        
-    except TypeError:
-        user_for_header = ""
-        this_h3 = page_h3("Dashboard")
-    
+
     except AttributeError:
         return redirect(url_for("login"))
  
     if get_user['user'] is None:
-            
         return redirect(url_for("login"))
 
+    print(get_user)
     
 
     categories = lets_nums()
     levels = list(get_collection('access_levels').sort("level_name", 1))
     terms = None
     
-    return render_template("dashboard.html", this_h3=this_h3, terms=terms, levels=levels, categories=categories)
+    return render_template("dashboard.html", terms=terms, levels=levels, categories=categories)
 
 
 @app.route("/get_category/<category>")
 def get_category(category):
-    user_for_header = inject_user()['user']['username'].capitalize()
-    this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-
     categories = lets_nums()
-
     terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', this_h3=this_h3, terms=terms, categories=categories)
+    return render_template('dashboard.html', terms=terms, categories=categories)
 
 
 @app.route("/delete_flag/<comment_id>")
@@ -312,6 +307,9 @@ def manage_term(term_id):
     return render_template("manage_term.html", term=term, types=types)
 
 
+
+
+
 @app.route("/pin_term/<term_id>")
 def pin_term(term_id):
     origin = request.args['origin']
@@ -326,7 +324,7 @@ def pin_term(term_id):
     if user_record_field > 0:
         flash("Sorry, you've already pinned this term")
         if origin == 'dash':
-            return redirect(url_for("dashboard", term=term))
+            return redirect(url_for("dashboard", term_id=term_id))
         else:
             return redirect(url_for("view_term", term_id=term_id))
 
@@ -335,7 +333,7 @@ def pin_term(term_id):
         flash("Term pinned to your dashboard")
 
     if origin == 'dash':
-        return redirect(url_for("dashboard", term=term))
+        return redirect(url_for("dashboard", term_id=term_id))
     else:
         return redirect(url_for("view_term", term_id=term_id))
 
@@ -440,15 +438,22 @@ def change_password(user_id):
 
     if request.method == "POST":
         new_password = request.form.get("new_password")
+        get_repeat = request.form.get("repeat_new_password")
 
         if existing_user:
             if check_password_hash(existing_user["password"], request.form.get("password")):
                 to_update = {"_id": existing_user["_id"]}
-                if to_change_pword == True:
-                    updated_password = {"$set": {"password": generate_password_hash(new_password), 'to_change_pword': False}}
- 
+                if new_password == get_repeat:
+
+                    if to_change_pword == True:
+                        updated_password = {"$set": {"password": generate_password_hash(new_password), 'to_change_pword': False}}
+    
+                    else:
+                        updated_password = {"$set": {"password": generate_password_hash(new_password)}}
+                
                 else:
-                    updated_password = {"$set": {"password": generate_password_hash(new_password)}}
+                    flash("New password and repeat password must match")
+                    return redirect(url_for("profile", user=user))                   
 
                 users.update_one(to_update, updated_password)
                 flash("Password successfully updated")
@@ -473,7 +478,6 @@ def login():
         # check if username exists in db
         existing_user = mongo.db.users.find_one(
             {"username": request.form.get("username").lower()})
-
         if existing_user:
             # ensure hashed password matches user input
             if check_password_hash(existing_user["password"], request.form.get("password")):
@@ -552,6 +556,7 @@ def update_term(term_id):
 
         incorrect = get_fields("incorrect_terms")
         alternatives = get_fields("alt_terms")
+        print('update', incorrect, alternatives)
         
         try:
             created_by = term['created_by']
@@ -577,12 +582,8 @@ def update_term(term_id):
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
-    user_for_header = inject_user()['user']['username'].capitalize()
-    this_h3 = page_h3(f"{user_for_header}'s Dashboard")
-    
     categories = lets_nums()
     query = request.form.get('query')
-
 
     try:
         terms = text_search(query)
@@ -590,7 +591,7 @@ def search_terms():
     except IndexError:
         terms = None
 
-    return render_template("dashboard.html", this_h3=this_h3, terms=terms, categories=categories)
+    return render_template("dashboard.html", terms=terms, categories=categories)
 
 
 @app.route("/go_to_term/<term_id>")
@@ -602,29 +603,43 @@ def go_to_term(term_id):
 
 @app.route("/delete_term/<term_id>")
 def delete_term(term_id):
-    mongo.db.terms.remove({"_id": ObjectId(term_id)})
+    # find pins related to term
+    find_pins_users = list(mongo.db.users.find({"pinned_terms": {"$in": [ObjectId(term_id)]}}))
+    # delete pin references from user accounts
+    for pin_user in find_pins_users:
+        mongo.db.users.update_one(pin_user, {"$pull": {"pinned_terms": ObjectId(term_id)}})
+    # find and delete comments relating to term
     mongo.db.comments.remove({"rel_term_id": term_id})
+
+    mongo.db.terms.remove({"_id": ObjectId(term_id)})
+
 
     flash("Term successfully deleted")
     return redirect(url_for("dashboard"))
 
 
-@app.route("/manage_users", methods=["POST", "GET"])
+@app.route("/manage_users")
 def manage_users():
-    this_h3 = page_h3("Manage users")
+    users_list = None
+    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+
+    return render_template("manage_users.html", users_list=users_list, levels=levels)
+
+
+@app.route("/show_all_users")
+def show_all_users():
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
     users_list = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
 
-    return render_template("manage_users.html", users_list=users_list, levels=levels, this_h3=this_h3)
+    return render_template("manage_users.html", users_list=users_list, levels=levels)
 
 
 @app.route("/search_users", methods=["POST", "GET"])
 def search_users():
-    this_h3 = page_h3("Manage users")
     query_user = request.form.get("query_user")
     levels = list(mongo.db.access_levels.find().sort("level_name", 1))
     users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
-    return render_template("manage_users.html", users_list=users_list, levels=levels, this_h3=this_h3)
+    return render_template("manage_users.html", users_list=users_list, levels=levels)
 
 
 @app.route("/add_user", methods=["GET", "POST"])
@@ -638,7 +653,6 @@ def add_user():
             "to_change_pword": True
         }
 
-        print(new_user)
 
         mongo.db.users.insert_one(new_user)
         flash("New user added")
@@ -652,7 +666,7 @@ def update_user(each_user_id):
 
     if request.method == "POST":
         user_to_update = get_record('users', '_id', ObjectId(each_user_id))
-        acc_level = request.form["access_level"]
+        acc_level = request.form.get("access_level")
         mongo.db.users.update_one({"_id": user_to_update["_id"]}, {"$set": {"access_level": acc_level}})
 
         flash("User's access level updated")
@@ -661,10 +675,18 @@ def update_user(each_user_id):
             return redirect(url_for("dashboard"))
         else:
             return redirect(url_for("manage_users", user_to_update=user_to_update))
- 
-    flash("User's access level was not updated")
-    return redirect(url_for("manage_users", user_to_update=user_to_update))
 
+    flash("Sorry, looks like there's been an error updating this user")
+    return redirect(url_for("manage_users"))
+
+
+@app.route("/manage_user_sidenav/<each_user_id>")
+def manage_user_sidenav(each_user_id):
+    user_to_find = mongo.db.users.find_one({'_id': ObjectId(each_user_id)})
+    query_user = user_to_find['username']
+    users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
+    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+    return render_template("manage_users.html", users_list=users_list, levels=levels)
 
 @app.route("/delete_user/<each_user_id>")
 def delete_user(each_user_id):

@@ -17,7 +17,7 @@
 
                         {{ term.term_name }}
                     </span>
-                    {% if term.pending == False %}
+                    {% if term.pending != True %}
                     <a class="btn-floating waves-effect waves-light z-depth-0 add-fab"
                         href="{{ url_for('pin_term', term_id=term._id, origin='view') }}"><i
                             class="material-icons">add</i></a>
@@ -32,6 +32,7 @@
                             {% if term.alt_terms %}
                             <strong>Also: </strong>
                             {% endif %}
+                            
                             {% for alt_term in term.alt_terms %}
                             <a href="#">{{ alt_term }}</a></span>
                         {%- if loop.length > 1 and not loop.last -%}
@@ -110,7 +111,7 @@
                             {% if access_level == "administrator" %}
 
                             {% elif access_level == "read and comment" %}
-                            <a class="icon-button btn-small z-depth-0"
+                            <a class="flag-btn icon-button btn-small z-depth-0"
                                 href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}"><i
                                     class="material-icons">flag</i></a>
                             {% endif %}

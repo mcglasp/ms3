@@ -1,32 +1,24 @@
-document.addEventListener("DOMContentLoaded", function() {
-  var elems = document.querySelectorAll(".sidenav");
-  var options = {};
-  var instances = M.Sidenav.init(elems, options);
 
-  document
-    .querySelector(".sidenav")
-    .addEventListener("click", function() {
-      var elem = document.querySelector(".sidenav");
-      var instance = M.Sidenav.getInstance(elem);
 
-      if (instance.isOpen) {
-        instance.close();
-      } else {
-        instance.open();
-      }
+$(document).ready(function(){
+    $("#delete-user-modal").on("show.bs.modal", function(event){
+        // Get the button that triggered the modal
+        var button = $(event.relatedTarget);
+
+        // Extract value from the custom data-* attribute
+        var url = button.data("url");
+        $(this).find('#confirm-delete').attr('href', url)
     });
 });
 
 
-
-
 document.addEventListener("DOMContentLoaded", function() {
   var elems = document.querySelectorAll(".sidenav");
   var options = {};
   var instances = M.Sidenav.init(elems, options);
 
   document
-    .querySelector("main")
+    .querySelector("#subheader")
    
     .addEventListener("click", function() {
       var elem = document.querySelector(".sidenav");
@@ -47,6 +39,7 @@ $(document).ready(function(){
 $("#browse-toggle").click(function(){
   $("#letters").toggleClass('hidden');
   $("#search-input").toggleClass('hidden');
+  $("#search-btn-desktop").toggleClass('hidden');
 });
 });
 

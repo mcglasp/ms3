@@ -1,8 +1,16 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<div id="profile" class="col m8">
+
+
+    {% if user.to_change_pword == True %}
+<div id="profile-change-pword" class="row">
+<div class="col m8 l8 offset-m2 offset-l2">
+    {% else %}
     <div class="row">
+<div id="profile" class="col m8">
+    {% endif %}
         <div class="card z-depth-1">
             <div class="card-title card-header gradient-light">{{ user.username|capitalize() }}'s account details</div>
             <div class="card-content">
@@ -18,14 +26,15 @@
                     <div class="input-field">
                         <input placeholder="New password" id="new_password" name="new_password" type="password" class="validate">
                     </div>
+                    <div class="input-field">
+                        <input placeholder="Repeat new password" id="repeat_new_password" name="repeat_new_password" type="password" class="validate">
+                    </div>
                     <button class="search-mng-btn submit btn-small z-depth-0">Update
                         <i class="fas fa sign-in-alt"></i></button>
                 </form>             
             </div>
         </div>
     </div>
-</div>
-   
-
+    
 
 {% endblock %}
