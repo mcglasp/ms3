@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var instances = M.Sidenav.init(elems, options);
 
   document
-    .querySelector("#subheader")
+    .querySelector(".sidenav-close")
    
     .addEventListener("click", function() {
       var elem = document.querySelector(".sidenav");
@@ -35,6 +35,9 @@ $(document).ready(function(){
   });
 
 $(document).ready(function(){
+    $('.tooltipped').tooltip();
+  });
+$(document).ready(function(){
 
 $("#browse-toggle").click(function(){
   $("#letters").toggleClass('hidden');
@@ -44,7 +47,11 @@ $("#browse-toggle").click(function(){
 });
 
   $(document).ready(function(){
-    $('.modal').modal();
+    $('.modal').modal({
+        // Rohan Kumar of Stack Overflow gave the code necessary to prevent the modal from appearing underneath other page elements
+        startingTop: '30%',
+        endingTop: '40%'
+    });
   });
 
 

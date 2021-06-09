@@ -523,7 +523,8 @@ font-family: 'Nanum Gothic', sans-serif;
 /* Headers */
 
 #subheader {
-    margin: 63px 10px 0 10px;
+    margin: 63px 10px 0 0;
+    padding-left: 10px;
     height: 60px;
     border-bottom: 2px double rgb(248, 228, 162);
     display: -webkit-box;
@@ -645,7 +646,12 @@ font-family: 'Nanum Gothic', sans-serif;
     border-radius: 3px;
 }
 
-/* Term cards & comments */
+.card-info-container {
+    margin-left: 10px;
+}
+
+
+/* Term comments */
 
 .comment-wrap-light {
 background-color: #fcf8c352;
@@ -753,7 +759,7 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
 
 #users, #add-term, #manage-term, #notifications, #profile, #view-term, #login, #register, #error, #mng-users, #result-row, #change-pword {
     position: relative;
-    top: 121px;
+    top: 150px;
     z-index: 0;
     margin-top: 2.2rem;
 }
@@ -771,14 +777,6 @@ text-align: center;
 #change-pword a {
 font-weight: 900;
 
-}
-
-
-
-#delete-user-modal {
-    position: fixed;
-    top: 30%!important;
-    z-index: 1010;
 }
 
 #logout-modal h4, #delete-modal h4, #delete-user-modal h4 {
@@ -875,6 +873,11 @@ strong {
     width: 40px;
 }
 
+#disabled-btn {
+    cursor: none;
+    pointer-events: none;
+}
+
 
 
 #letters-mobile {
@@ -913,11 +916,14 @@ strong {
         border-bottom: none;
         height: 60px;
         margin-left: 0px;
+        width: 100%;
     }
 
 #search-bar {
     display: inline;
 }
+
+
 
 
     #search-bar, #search-row {
@@ -926,10 +932,6 @@ strong {
                 background-color: #fff;
     }
 
-
-.search-info {
-    display: none;
-}
 
     #search-input {
          height: 60px;
@@ -950,10 +952,6 @@ strong {
     #terms.row>.col {
        position: relative;
        top: 35px;
-    }
-
-    .drag-target {
-        width: 1px;
     }
 
     .search .search-mng-btn, .search #search-btn-desktop {
@@ -998,3 +996,21 @@ main>div:first-of-type .col:nth-child(2) {
     display: block;
     margin: 10px auto;
 }
+
+    .drag-target {
+        width: 0px;
+        position: relative;
+        left: -30px!important;
+        z-index: -10;
+    }
+
+    @media screen and (max-width: 600px) {
+        #user-row-col {
+            display: flex;
+            flex-direction: column-reverse;
+        }
+    }
+
+    .sidenav-wrap {
+        height: 100vh;
+    }

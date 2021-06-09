@@ -1,158 +1,169 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-<div id="mng-users" class="col s12 m6 l4">
-    <div class="row">
-        <div id="search-users-card" class="card z-depth-1 mb0">
-                            <div class="card-title card-header gradient-light">Search users</div>
-            <div class="mb0 mt0 p10">
-                <form method="POST" action="{{ url_for('search_users') }}">
-                    <div class="mb0 row">
-                        <div class="col s12">
-                            <div class="input-field pt10 mb0">
-                                <input type="text" name="query_user" id="query_user" minlength="3">
-                                <label for="query_user">Search users</label>
+<div id="user-row-col" class="row">
+    <div id="mng-users" class="col s12 m6 l4">
+        <div class="row">
+            <div id="search-users-card" class="card z-depth-1 mb0">
+                <div class="card-title card-header gradient-light">Search users</div>
+                <div class="mb0 mt0 p10">
+                    <form method="POST" action="{{ url_for('search_users') }}">
+                        <div class="mb0 row">
+                            <div class="col s12">
+                                <div class="input-field pt10 mb0">
+                                    <input type="text" name="query_user" id="query_user" minlength="3">
+                                    <label for="query_user">Search users</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb0 mt0">
-                   <button type="submit" class="search-mng-btn btn-small z-depth-0">
+                        <div class="row mb0 mt0">
+                            <button type="submit" class="search-mng-btn btn-small z-depth-0">
                                 Search
                             </button>
                             <a href="{{ url_for('manage_users') }}" class="search-mng-btn btn-small z-depth-0">Reset</a>
-                            <a href="{{ url_for('show_all_users') }}" class="search-mng-btn btn-small z-depth-0">Show All</a>
-                   
-                    </div>
-                </form>
+                            <a href="{{ url_for('show_all_users') }}" class="search-mng-btn btn-small z-depth-0">Show
+                                All</a>
+
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
-    </div>
-
-    <div class="row">
-        <div id="add-user" class="card z-depth-1">
-            
+        <div class="row">
+            <div id="add-user" class="card z-depth-1">
                 <div class="card-title card-header gradient-light">Add user</div>
                 <div class="card-content">
-                <form method="POST" action="{{ url_for('add_user') }}">
-                    
-                    <div class="row mb0">
-                        <div class="input-field">
-                            <div class="col m6">
-                                <input id="username" name="username" type="text" class="validate">
-                                <label for="username">Username</label>
+                    <form method="POST" action="{{ url_for('add_user') }}">
+                        <div class="row mb0">
+                            <div class="input-field">
+                                <div class="col s12 m6">
+                                    <input id="username" name="username" type="text" class="validate">
+                                    <label for="username">Username</label>
+                                </div>
+                            </div>
+                            <div class="input-field">
+                                <div class="col s12 m6">
+                                    <input id="password" name="password" type="text" class="validate">
+                                    <label for="password">Password</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="input-field">
-                            <div class="col m6">
-                                <input id="password" name="password" type="text" class="validate">
-                                <label for="password">Password</label>
+                        <div class="row valign-wrapper">
+                            <div class="input-field col s8 m8">
+                                {% for access_level in levels %}
+                                <p>
+                                    <label for="{{ access_level.level_name }}_add">
+                                        <input id="{{ access_level.level_name }}_add" name="access_level_add"
+                                            value="{{ access_level.level_name }}" type="radio" />
+                                        <span>{{ access_level.level_name }}</span>
+                                    </label>
+                                </p>
+                                {% endfor %}
+                            </div>
+                            <div class="input-field col s4 m4">
+                                <button type="submit" class="search-mng-btn btn-small">Add user</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="row valign-wrapper">
-                        <div class="input-field col m8">
-                            {% for access_level in levels %}
-                            <p>
-                                <label for="{{ access_level.level_name }}_add">
-                                    <input id="{{ access_level.level_name }}_add" name="access_level_add"
-                                        value="{{ access_level.level_name }}" type="radio" />
-                                    <span>{{ access_level.level_name }}</span>
-                                </label>
-                            </p>
-                            {% endfor %}
-                        </div>
-                        <div class="input-field col m4">
-                            <button type="submit" class="search-mng-btn btn-small">Add user</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div id="users" class="col s12 m6 l4">
-    <!-- User list -->
-                {% if users_list == None %}
-                
-                            <p class="search-info">Search for a user or click 'Show All'</p>
-                                        {% elif users_list|length == 0 %}
-            <p class="search-info">Your search returned no results</p>
-            {% else %}
-    {% for each_user in users_list %}
+    <div id="users" class="col s12 m6 l4">
+        <!-- User list -->
+        {% if users_list == None %}
+        <p class="search-info">Search for a user or click 'Show All'</p>
+        {% elif users_list|length == 0 %}
+        <p class="search-info">Your search returned no results</p>
+        {% else %}
+        {% for each_user in users_list %}
 
-  
-   
-    {% set counter = loop.index %}
-                <!-- Modal Structure -->
+        {% set counter = loop.index %}
+        <!-- Modal Structure -->
         <div id="delete-user-modal_{{ each_user._id }}" class="modal">
             <div class="modal-content">
                 <h4>Delete user?</h4>
                 <p>Are you sure you want to delete user {{ each_user.username|capitalize }}?</p>
             </div>
             <div class="modal-footer">
-                <a href="{{ url_for('delete_user', each_user_id=each_user._id) }}" class="search-mng-btn btn-small z-depth-0">
+                <a href="{{ url_for('delete_user', each_user_id=each_user._id) }}"
+                    class="search-mng-btn btn-small z-depth-0">
                     Yes, delete<i class="fas fa-plus-square right"></i>
                 </a>
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
             </div>
         </div>
-    <div class="card card-radius z-depth-1">
-        <div class="card-content term-card-content">
-            <div class="row">
-                <div class="col s12">
-                    <span
-                        class="card-title grey-text text-darken-4"><strong>{{ each_user.username|capitalize() }}:</strong>
-                        <p class="subtitle">{{ each_user.access_level|capitalize() }}</p>
-                    </span>
+        <div class="card card-radius z-depth-1">
+            <div class="card-content term-card-content">
+                <div class="row">
+                    <div class="col s12">
+                        <span
+                            class="card-title grey-text text-darken-4"><strong>{{ each_user.username|capitalize() }}:</strong>
+                            <p class="subtitle">{{ each_user.access_level|capitalize() }}</p>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <form method="POST"
-                action="{{ url_for('update_user', each_user_id=each_user._id, origin='manage_users') }}">
-                <div class="row access-select">
-                    <div class="col m8">
-                        {% for access_level in levels %}
+                <form method="POST"
+                    action="{{ url_for('update_user', each_user_id=each_user._id, origin='manage_users') }}">
+                    <div class="row access-select">
+                        <div class="col m8">
+                            {% for access_level in levels %}
 
-                        <p>
-                            <label for="{{ access_level.level_name }}_{{ counter }}">
-                                {% if access_level.level_name == each_user.access_level %}
-                                <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio" name="access_level"
-                                    value="{{ access_level.level_name }}" type="radio" checked
-                                    />
-                                 {% elif each_user._id == user._id %}
-                                  <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio" name="access_level"
-                                    value="{{ access_level.level_name }}" type="radio" disabled />
-                                
+                            <p>
+                                <label for="{{ access_level.level_name }}_{{ counter }}">
+                                    {% if access_level.level_name == each_user.access_level %}
+                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
+                                        name="access_level" value="{{ access_level.level_name }}" type="radio"
+                                        checked />
+                                    {% elif each_user._id == user._id %}
+
+                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
+                                        name="access_level" value="{{ access_level.level_name }}" type="radio"
+                                        disabled />
+
+                                    {% else %}
+                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
+                                        name="access_level" value="{{ access_level.level_name }}" type="radio" />
+                                    {% endif %}
+
+                                    <span class="blue-radio">{{ access_level.level_name }}</span>
+                                </label>
+                            </p>
+
+                            {% endfor %}
+                        </div>
+
+                        <div class="col m4">
+                            <div class="user-buttons row">
+                                {% if each_user._id == user._id %}
+                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped" data-position="bottom"
+                                    data-tooltip="You cannot change your own access level">Update</div>
                                 {% else %}
-                                <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio" name="access_level"
-                                    value="{{ access_level.level_name }}" type="radio" />
+                                <button class="search-mng-btn btn-small z-depth-0" type="submit">Update</button>
                                 {% endif %}
-
-                                <span class="blue-radio">{{ access_level.level_name }}</span>
-                            </label>
-                        </p>
-
-                        {% endfor %}
-                    </div>
-
-                    <div class="col m4">
-                        <div class="user-buttons row">
-                            <button class="search-mng-btn btn-small z-depth-0 " type="submit">Update</button>
-                        </div>
-                        <div class="user-buttons row">
-                            <a class="search-mng-btn btn-small z-depth-0 modal-trigger" data-target="delete-user-modal_{{ each_user._id }}" href="javascript:void(0)">Delete</a>
+                            </div>
+                            <div class="user-buttons row">
+                                {% if each_user._id == user._id %}
+                                <a class="search-mng-btn btn-small z-depth-0 modal-trigger"
+                                    data-target="delete-user-modal_{{ each_user._id }}" href="javascript:void(0)"
+                                    disabled>Delete</a>
+                                {% else %}
+                                <a class="search-mng-btn btn-small z-depth-0 modal-trigger"
+                                    data-target="delete-user-modal_{{ each_user._id }}"
+                                    href="javascript:void(0)">Delete</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
+
+        {% endfor %}
+        {% endif %}
     </div>
-
-    {% endfor %}
-    {% endif %}
 </div>
-
 
 
 {% endblock %}

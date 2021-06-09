@@ -50,39 +50,48 @@ In my role as Production Editor for Sound On Sound magazine I have been unable t
 
 At its most basic, however, our simple, word document was a worthy competitor for many years and as such there has been a reluctance to move away from this. However, as working practices have changed beyond recognition, house style management has suffered and it is no longer sufficient to update users via email or phone of every single change.
 
-
+----
 ## Scope
-    Possible features to include
-    Matrix
-    Graph
-    What is realistic for MVP?
 
-Structure
+### Potential features to include
 
-    There are three access levels which determine what is available to each user:
-        - Administrator
-        - Read & Comment (Mainly staff editors)
-        - Read-only (Mainly external authors)
+<img src="/static/readme-assets/importance_feasibility_table.png" alt="Potential features for inclusion" width="50%" height="100%">
+<img src="/static/readme-assets/importance_feasibility_graph.png" alt="Feasibility/Importance matrix" width="50%" height="100%">
 
-    After logging in all users will be directed to a dashboard with relevant notifications and a search bar at the top of the main content, below navigation. They will be able to search for a specific term or browse from an alphanumeric list.
-    The search and browse functionality will be available across all pages, so users will be able to perform a search from any part of the application.
 
-    Space to search and view results is the absolute priority for this tool and therefore, on the mobile view, notifications will be accessed via a sidenav component. 
-    
-    'Pinned' terms will be available alongside notifications, whether in mobile or desktop view. These terms will be selected by the individual user depending on which terms they most regularly search for. The user will be able to click through to the full term usage from the 'pin'.
+### What is realistic for a minimum viable product?
 
-    Administrators will be able to access a user-management page, from which they can search for a user, change that user's access level, or delete the user account entirely. They will be also be able to create a new user from here. There is a slight structural compromise with this section of the tool, as described later in the Readme.
+Looking at the Importance/Feasibility matrix show here, we can see a cluster of essential features, mainly related to basic CRUD (Create, Read, Update, Delete) functionaility, as you'd expect. 
+Other features of high importance for inclusion relate to essential management of such an application. Namely, the ability to control who is able to register and view content, which in many cases (and in the case of Sound On Sound) is confidential. 
+Also of high importance is the capacity for non-admin users to suggest terms for inclusion, or to comment on existing usage.
 
-    From the main navigation Administrators will be able to add a term, while will change to 'Suggest term' for Read & Comment users. Neither functionality will be available to Read-only users.
+----
+## Structure
 
-    MongoDB will be used to store the data. It will be necessary to divide storage into at least the following listed Collections:
+There are three access levels which determine what is available to each user:
+- Administrator
+- Read & Comment (Mainly staff editors)
+- Read-only (Mainly external authors)
 
-    - Terms [term name, alternative usage, incorrect usage, usage notes, type, pending approval, created by, last updated by]
-    - Users [username, password (encrypted), access level, pinned terms]
-    - Comments [Related term ID, commenter, flagged?]
-    - Access Levels [Level name]
-    - Types [type name (verb, noun etc)]
+After logging in all users will be directed to a dashboard with relevant notifications and a search bar at the top of the main content, below navigation. They will be able to search for a specific term or browse from an alphanumeric list.
+The search and browse functionality will be available across all pages, so users will be able to perform a search from any part of the application.
 
+Space to search and view results is the absolute priority for this tool and therefore, on the mobile view, notifications will be accessed via a sidenav component. 
+
+'Pinned' terms will be available alongside notifications, whether in mobile or desktop view. These terms will be selected by the individual user depending on which terms they most regularly search for. The user will be able to click through to the full term usage from the 'pin'.
+
+Administrators will be able to access a user-management page, from which they can search for a user, change that user's access level, or delete the user account entirely. They will be also be able to create a new user from here. There is a slight structural compromise with this section of the tool, as described later in the Readme.
+
+From the main navigation Administrators will be able to add a term, while will change to 'Suggest term' for Read & Comment users. Neither functionality will be available to Read-only users.
+
+MongoDB will be used to store the data. It will be necessary to divide storage into at least the following listed Collections:
+
+- Terms [term name, alternative usage, incorrect usage, usage notes, type, pending approval, created by, last updated by]
+- Users [username, password (encrypted), access level, pinned terms]
+- Comments [Related term ID, commenter, flagged?]
+- Access Levels [Level name]
+- Types [type name (verb, noun etc)]
+----
 ## Skeleton
 
 ### Wireframes
@@ -257,9 +266,9 @@ Once their password is changed all access-level-appropriate content becomes avai
 
 Worked as expected. However, see 'future development' section for more detail.
 
-- Navigate through notifications
+- Display and navigate through notifications
 
-Worked as expected.
+Found behaviour: Recent comments are not displaying correctly.
 
 - Check for suitable 404 handling where appropriate (a dummy, incomplete, record will be manually created for this purpose and deleted prior to project submission)
 
@@ -279,15 +288,8 @@ If I hadn't included that when adding the term to the database, however, I'd pro
 To improve matters I have written a more comprehensive text search function, which takes the user's search query through several iterations, testing to see if it can finding any matches along the way. 
 Key inclusions in this function are punctuation-stripping, a regex pattern, string-to-digit number replacement (and vice versa) and the ability to ignore 'Pending: true' results and continue the search after discounting them.
 
+Future development
 
-
-Test findings:
-
-
-
-
-    Existing bugs
-    Future development
     Deployment
     Resources and credits
     Acknowledgments

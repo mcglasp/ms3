@@ -197,6 +197,7 @@
             {% endif %}
         </ul>
     </nav>
+    <div class="sidenav-close sidenav-wrap">
     {% if user.to_change_pword == True %}
     <div id="change-pword" class="row">
         <div class="col s12 m8 l8 offset-m2 offset-l2">
@@ -248,7 +249,7 @@
                     <a href="javascript:void(0)" class="btn-small z-depth-0 search-mng-btn" id="browse-toggle">A-Z</a>
                 </div>
             </div>
-            <div class="letters row hide-on-med-and-up" id="letters-mobile">
+            <div class="letters row hide-on-large-only" id="letters-mobile">
                 <div class="col s12">
                     {% for category in categories %}
                     <div class="letter-chip"><a
@@ -260,7 +261,7 @@
         </form>
     
     </div>
-    <main id="main-content">
+    <main id="main-content" class="sidenav-close">
         <div id="notifications-desktop" class="row">
             <div id="notifications" class="col l4 hide-on-med-and-down">
                 <!-- PINNED TERMS card -->
@@ -367,20 +368,28 @@
                 <!-- NON-ADMIN (read & comment/read-only) TERM UPDATES card -->
                 {% if access_level != 'administrator' %}
                 <div class="card z-depth-1">
-                    <div class="gradient white-text card-header card-title">Recent Updates</div>
+                    <div class="gradient white-text card-header card-title">Term Updates</div>
                     <div class="card-surround card-content">
-                        {% for update in term_updates %}
-                        <div class="mt0 mb0 row">
+                        {% if term_updates|length > 0%}
+                            {% for update in term_updates %}
+                            <div class="mt0 mb0 row">
+                                <div class="col s12">
+                                    <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>was recently
+                                        updated
+                                        <a class="btn-small icon-button z-depth-0"
+                                            href="{{ url_for('view_term', term_id=update._id) }}"><i
+                                                class="small material-icons">keyboard_arrow_right</i></a>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="row">
                             <div class="col s12">
-                                <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>was recently
-                                    updated
-                                    <a class="btn-small icon-button z-depth-0"
-                                        href="{{ url_for('view_term', term_id=update._id) }}"><i
-                                            class="small material-icons">keyboard_arrow_right</i></a>
-                                </p>
+                                <p>No new term updates</p>
                             </div>
                         </div>
-                        {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
@@ -389,22 +398,28 @@
                 <div class="card z-depth-1">
                     <div class="gradient white-text card-header card-title">Recent Comments</div>
                     <div class="card-surround card-content">
-
-                        {% for comment in recent_comments %}
-                        {% if not term_comment(comment) == "" %}
-                        <div class="row mb0 mt0">
+                        {% if recent_comments|length > 0 %}
+                            {% for comment in recent_comments %}
+                                {% if not term_comment(comment) == "" %}
+                                <div class="row mb0 mt0">
+                                    <div class="col s12">
+                                        <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
+                                            "{{ comment.comment }}"
+                                            <a class="btn-small icon-button z-depth-0"
+                                                href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
+                                                    class="small material-icons">keyboard_arrow_right</i></a>
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                        <div class="row">
                             <div class="col s12">
-                                <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
-                                    "{{ comment.comment }}"
-                                    <a class="btn-small icon-button z-depth-0"
-                                        href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
-                                            class="small material-icons">keyboard_arrow_right</i></a>
-                                </p>
+                                <p>No new comments</p>
                             </div>
-
                         </div>
                         {% endif %}
-                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -428,7 +443,8 @@
                     </a>
                     <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
                 </div>
-            </div>     
+            </div>   
+            </div>  
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>

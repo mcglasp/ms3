@@ -69,9 +69,9 @@ def get_fields(find):
             name = self.list
 
             items = request.form.getlist(name)
-            print(items)
+            
             made_list = []
-            print(made_list)
+            
             for item in items:
                 if item != "":
                     made_list.append(item)
@@ -80,59 +80,53 @@ def get_fields(find):
 
     get_list = Field_name(find)
     return_list = get_list.make_list()
-    print(return_list)
+    
     return return_list
 
 
 def text_search(user_query):
-
-    def standard_search(input_text):
-        terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-        print('0', user_query)
-
-        return terms
-
+    
+    def standard_search(user_query):
+        found = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+        print(1, 'standard', user_query)
+        return found
+    
     terms = standard_search(user_query)
-    print(len(terms))
-    print(terms[0]['pending'])
-    if (len(terms) == 1) and (terms[0]['pending'] == True):
+    
+        # strip punctuation
+    if (terms == []) or (len(terms) < 2) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+        input_stripped = re.sub("[\s'&/\-.]", '', user_query)
+        print(5)
+        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
+
+        # regex search
+    if (terms == []) or (len(terms) < 1) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+        print(6)
+
+        pattern = f"({input_stripped[0]})[{input_stripped[1:]}]"+"{2,}"
+        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
+    
+        # number change
+    if (terms == []) or (len(terms) < 2) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
+        numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
         
-            # strip punctuation
-        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
-            input_stripped = re.sub("[\s'&/\-.]", '', user_query)
-            print('4', input_stripped)
-            terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
+        for num, dig in numbers.items():
+            if num in user_query:
+                num_change = re.sub(num, dig, user_query)
+                user_query = num_change
+                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                print('numbers', user_query)
+                return terms
 
-            # regex search
-        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
-            print('5', user_query)
-
-            pattern = f"({input_stripped[0]})[{input_stripped[1:]}]"+"{2,}"
-            print(pattern)
-            terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
-        
-            # number change
-        if (terms == []) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
-            print('1', user_query)
-            numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
-            for num, dig in numbers.items():
-                if num in user_query:
-                    num_change = re.sub(num, dig, user_query)
-                    user_query = num_change
-                    print('2', user_query)
-                    terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                    return terms
-
-                elif dig in user_query:
-                    num_change = re.sub(dig, num, user_query)
-                    user_query = num_change
-                    terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                    print('3', user_query)
-                    return terms
-
-            return terms
-
-    print('6', user_query)
+            elif dig in user_query:
+                num_change = re.sub(dig, num, user_query)
+                user_query = num_change
+                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
+                print('numbers', user_query)
+                return terms
+        print(7)
+        return terms
+      
     return terms
 
 
@@ -170,7 +164,7 @@ def inject_notifications():
     g.suggested_terms = list(mongo.db.terms.find({'pending': True}))
     g.notifications = len(g.suggested_terms) + len(g.flagged_comments) + len(g.new_registrations)
     g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
-    g.recent_comments = list(mongo.db.comments.find().sort("timestamp", -1).limit(5))
+    g.recent_comments = list(mongo.db.comments.find().sort("_id", -1).limit(5))
     g.categories = lets_nums()
     
 
@@ -236,8 +230,6 @@ def dashboard():
  
     if get_user['user'] is None:
         return redirect(url_for("login"))
-
-    print(get_user)
     
 
     categories = lets_nums()
@@ -525,13 +517,16 @@ def add_term():
         alternatives = get_fields("alt_terms")
         incorrect = get_fields("incorrect_terms")
         term_name = request.form.get("term_name")
+        type_name = request.form.get("type_name")
+        type_suggest = 'What type of term is this? Suggest something.'
+
 
         term = {
             "term_name": term_name,
             "alt_terms": alternatives,
             "incorrect_terms": incorrect,
             "usage_notes": request.form.get("usage_notes"),
-            "type_name": request.form.get("type_name"),
+            "type_name": type_name if type_name != None else type_suggest,
             "pending": False if access_level == 'administrator' else True,
             "created_by": ObjectId(user_id),
             "last_updated": now.strftime("%d/%m/%Y")
@@ -556,7 +551,6 @@ def update_term(term_id):
 
         incorrect = get_fields("incorrect_terms")
         alternatives = get_fields("alt_terms")
-        print('update', incorrect, alternatives)
         
         try:
             created_by = term['created_by']
