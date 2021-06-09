@@ -48,7 +48,7 @@ In discussion with other editors and external authors, and based on my own exper
 ### Competitors
 In my role as Production Editor for Sound On Sound magazine I have been unable to find an existing tool that does what we require, even in a more basic form. I have tried using Wiki software with varying results, and have found nothing with the advanced levels of functionality as listed above.
 
-At its most basic, however, our simple, word document was a worthy competitor for many years and as such there has been a reluctance to move away from this. However, as working practices have changed beyond recognition, house style management has suffered and it is no longer sufficient to update users via email or phone of every single change.
+At its most basic, however, our simple word document was a worthy competitor for many years and as such there has been a reluctance to move away from this. However, as working practices have changed beyond recognition, house style management has suffered and it is no longer sufficient to update users via email or phone of every single change.
 
 ----
 ## Scope
@@ -96,10 +96,10 @@ MongoDB will be used to store the data. It will be necessary to divide storage i
 
 ### Wireframes
 
-<img src="/static/wireframes/desktop_view.jpg" alt="Desktop view wireframe" align="left" width="47%" height="100%">
-<img src="/static/wireframes/mobile_view.jpg" alt="Mobile view wireframe" align="right" width="47%" height="100%">
+<img src="/static/readme-assets/wireframes/desktop_view.jpg" alt="Desktop view wireframe" align="left" width="47%" height="100%">
+<img src="/static/readme-assets/wireframes/mobile_view.jpg" alt="Mobile view wireframe" align="right" width="47%" height="100%">
 -----
-<img src="/static/wireframes/sitemap.jpg" alt="Initial sitemap" width="100%">
+<img src="/static/readme-assets/wireframes/sitemap.jpg" alt="Initial sitemap" width="100%">
 
 
 ## Surface

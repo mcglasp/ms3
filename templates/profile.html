@@ -18,13 +18,13 @@
                 <div class="card-header light-underline">Update password</div>
                 <form class="p10" method="POST" action="{{ url_for('change_password', user_id=user._id) }}">
                     <div class="input-field">
-                        <input placeholder="Existing password" id="password" name="password" type="password" class="validate">
+                        <input placeholder="Existing password" id="password" name="password" type="password" class="validate" required>
                     </div>
                     <div class="input-field">
-                        <input placeholder="New password" id="new_password" name="new_password" type="password" class="validate">
+                        <input placeholder="New password" id="new_password" name="new_password" type="password" class="validate" required>
                     </div>
                     <div class="input-field">
-                        <input placeholder="Repeat new password" id="repeat_new_password" name="repeat_new_password" type="password" class="validate">
+                        <input placeholder="Repeat new password" id="repeat_new_password" name="repeat_new_password" type="password" class="validate" required>
                     </div>
                     <button class="search-mng-btn submit btn-small z-depth-0">Update
                         <i class="fas fa sign-in-alt"></i></button>

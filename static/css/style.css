@@ -339,6 +339,11 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
 #search-bar #search-input input.search-input-box#query {
     border-bottom: none!important;
     background-color: #f3f3f3;
+    padding-left: 7px;
+}
+
+.search-input-box {
+    
 }
 
 
@@ -468,6 +473,10 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
             justify-content: space-between;
 }
 
+.button-flex-wrap button {
+    margin: 0 3px;
+}
+
 .button-flex-wrap.central {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -524,7 +533,6 @@ font-family: 'Nanum Gothic', sans-serif;
 
 #subheader {
     margin: 63px 10px 0 0;
-    padding-left: 10px;
     height: 60px;
     border-bottom: 2px double rgb(248, 228, 162);
     display: -webkit-box;

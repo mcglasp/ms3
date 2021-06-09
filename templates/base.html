@@ -234,7 +234,7 @@
             <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
                 <div class="search-row">
                     <div id="search-input" class="input-field right-align">
-                        <input class="search-input-box" type="text" name="query" id="query" minlength="2">
+                        <input class="search-input-box" type="text" name="query" id="query" minlength="2" required>
                         <label id="search-label" for="query">Search terms</label>
                     </div>
                     <div class="letters-container">

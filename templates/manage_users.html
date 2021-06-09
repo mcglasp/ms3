@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-
+        <!-- Add a new user -->
         <div class="row">
             <div id="add-user" class="card z-depth-1">
                 <div class="card-title card-header gradient-light">Add user</div>
@@ -55,7 +55,7 @@
                                 <p>
                                     <label for="{{ access_level.level_name }}_add">
                                         <input id="{{ access_level.level_name }}_add" name="access_level_add"
-                                            value="{{ access_level.level_name }}" type="radio" />
+                                            value="{{ access_level.level_name }}" type="radio" required/>
                                         <span>{{ access_level.level_name }}</span>
                                     </label>
                                 </p>

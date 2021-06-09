@@ -157,7 +157,7 @@ def inject_notifications():
     g.term_updates = list(mongo.db.terms.find().sort("last_updated", -1).limit(5))
     g.recent_comments = list(mongo.db.comments.find().sort("_id", -1).limit(5))
     g.categories = lets_nums()
-    
+    g.levels = list(get_collection('access_levels').sort("level_name", 1))
 
     def manage_flagged_comments(flagged):
         term_id = flagged['rel_term_id']
@@ -192,7 +192,7 @@ def inject_notifications():
             related_term_name = ""
 
 
-    return dict(categories=g.categories, term_comment=term_comment, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, notifications=g.notifications, new_registrations=g.new_registrations, suggested_terms=g.suggested_terms, flagged_comments=g.flagged_comments, term_updates=g.term_updates, recent_comments=g.recent_comments)
+    return dict(categories=g.categories, term_comment=term_comment, manage_flagged_comments=manage_flagged_comments, manage_suggested_terms=manage_suggested_terms, notifications=g.notifications, new_registrations=g.new_registrations, suggested_terms=g.suggested_terms, flagged_comments=g.flagged_comments, term_updates=g.term_updates, recent_comments=g.recent_comments, levels=g.levels)
 
 
 @app.context_processor
@@ -224,7 +224,6 @@ def dashboard():
         if get_user['user'] is None:
             return redirect(url_for("login"))
         
-
         categories = lets_nums()
         levels = list(get_collection('access_levels').sort("level_name", 1))
         terms = None
@@ -555,6 +554,8 @@ def update_term(term_id):
         user_id = user_record['user']['_id']
         access_level = user_record['user']['access_level']
         term = get_record('terms', '_id', ObjectId(term_id))
+        type_name = request.form.get("type_name")
+        type_suggest = 'What type of term is this? Suggest something.'
 
         if request.method == "POST":
 
@@ -571,7 +572,7 @@ def update_term(term_id):
                 "alt_terms": alternatives,
                 "incorrect_terms": incorrect,
                 "usage_notes": request.form.get("usage_notes"),
-                "type_name": request.form.get("type_name"),
+                "type_name": type_name if type_name != None else type_suggest,
                 "pending": False if access_level == 'administrator' else True,
                 "created_by": created_by,
                 "last_updated_by": ObjectId(user_id)
@@ -655,20 +656,31 @@ def search_users():
 @app.route("/add_user", methods=["GET", "POST"])
 def add_user():
     if check_user_login() is True:
+
         if request.method == "POST":
+            
+            existing_user = mongo.db.users.find_one(
+            {"username": request.form.get("username").lower()})
+
+            if existing_user:
+                flash("Username already exists! Please try a different one.")
+                return redirect(url_for("manage_users"))
 
             new_user = {
                 "username": request.form.get("username").lower(),
                 "password": generate_password_hash(request.form.get("password")),
                 "access_level": request.form.get("access_level_add"),
                 "to_change_pword": True
-            }
-
+            } 
 
             mongo.db.users.insert_one(new_user)
             flash("New user added")
-            
-            return redirect(url_for("manage_users"))
+            new_username = new_user['username']
+            users_list = list(mongo.db.users.find({"$text": {"$search": new_username}}))
+            levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+
+            return render_template("manage_users.html", users_list=users_list, levels=levels)
+
     return redirect(url_for("login"))
 
 @app.route("/update_user/<each_user_id>", methods=["POST", "GET"])
@@ -695,11 +707,14 @@ def update_user(each_user_id):
 @app.route("/manage_user_sidenav/<each_user_id>")
 def manage_user_sidenav(each_user_id):
     if check_user_login() is True:
+
         user_to_find = mongo.db.users.find_one({'_id': ObjectId(each_user_id)})
         query_user = user_to_find['username']
         users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
         levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+
         return render_template("manage_users.html", users_list=users_list, levels=levels)
+
     return redirect(url_for("login"))
 
 @app.route("/delete_user/<each_user_id>")
