@@ -27,6 +27,13 @@ app.secret_key = os.environ.get("SECRET_KEY")
 mongo = PyMongo(app)
 
 
+def check_user_login():
+    try:
+        if session["user"] is not None:
+            return True
+    except:
+        return False
+
 
 def page_h3(h3):
     return h3
@@ -85,49 +92,33 @@ def get_fields(find):
 
 
 def text_search(user_query):
+
+    terms = []
+    found = None
     
     def standard_search(user_query):
         found = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-        print(1, 'standard', user_query)
-        return found
+        if found != None:
+            terms.extend(found)
+
+        return terms
     
     terms = standard_search(user_query)
-    
-        # strip punctuation
+
     if (terms == []) or (len(terms) < 2) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
         input_stripped = re.sub("[\s'&/\-.]", '', user_query)
-        print(5)
-        terms = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
-
-        # regex search
-    if (terms == []) or (len(terms) < 1) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
-        print(6)
-
-        pattern = f"({input_stripped[0]})[{input_stripped[1:]}]"+"{2,}"
-        terms = list(mongo.db.terms.find({'term_name': {"$regex": pattern, "$options": 'gmi'}}))
-    
-        # number change
-    if (terms == []) or (len(terms) < 2) or ((len(terms) == 1) and (terms[0]['pending'] == True)):
-        numbers = {'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'}
         
-        for num, dig in numbers.items():
-            if num in user_query:
-                num_change = re.sub(num, dig, user_query)
-                user_query = num_change
-                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                print('numbers', user_query)
-                return terms
+        found = list(mongo.db.terms.find({"$text": {"$search": input_stripped}}))
+        terms.extend(found)
 
-            elif dig in user_query:
-                num_change = re.sub(dig, num, user_query)
-                user_query = num_change
-                terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
-                print('numbers', user_query)
-                return terms
-        print(7)
-        return terms
-      
+
+
+
+   
     return terms
+
+
+@app.context_processor
 
 
 @app.context_processor
@@ -222,175 +213,187 @@ def get_pinned_terms():
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
-    try:
-        get_user = inject_user()
+    if check_user_login() is True:
+        try:
+            get_user = inject_user()
 
-    except AttributeError:
-        return redirect(url_for("login"))
- 
-    if get_user['user'] is None:
-        return redirect(url_for("login"))
+        except AttributeError:
+            
+            return redirect(url_for("login"))
     
+        if get_user['user'] is None:
+            return redirect(url_for("login"))
+        
 
-    categories = lets_nums()
-    levels = list(get_collection('access_levels').sort("level_name", 1))
-    terms = None
+        categories = lets_nums()
+        levels = list(get_collection('access_levels').sort("level_name", 1))
+        terms = None
+        
+        return render_template("dashboard.html", terms=terms, levels=levels, categories=categories)
     
-    return render_template("dashboard.html", terms=terms, levels=levels, categories=categories)
+    return redirect(url_for("login"))
 
 
 @app.route("/get_category/<category>")
 def get_category(category):
-    categories = lets_nums()
-    terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
+    if check_user_login() is True:
+        categories = lets_nums()
+        terms = list(mongo.db.terms.find({'term_name': {"$regex": '^' + category, "$options": 'i'}}))
 
-    return render_template('dashboard.html', terms=terms, categories=categories)
+        return render_template('dashboard.html', terms=terms, categories=categories)
 
+    return redirect(url_for("login"))
 
 @app.route("/delete_flag/<comment_id>")
 def delete_flag(comment_id):
-    flagged_comment = get_record('comments', '_id', ObjectId(comment_id))
-    update = {"$set": {"flagged": False}}
-    mongo.db.comments.update_one(flagged_comment, update)
+    if check_user_login() is True:
+        flagged_comment = get_record('comments', '_id', ObjectId(comment_id))
+        update = {"$set": {"flagged": False}}
+        mongo.db.comments.update_one(flagged_comment, update)
 
-    flash("Flag removed")
-    return redirect(url_for("dashboard"))
+        flash("Flag removed")
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
 
 @app.route("/view_term/<term_id>")
 def view_term(term_id):
-    term = get_record('terms', '_id', ObjectId(term_id))
-    term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
+    if check_user_login() is True:
+        term = get_record('terms', '_id', ObjectId(term_id))
+        term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
 
-    def find_commenter(term_comment):
+        def find_commenter(term_comment):
+
+            try:
+                term_comment_user = mongo.db.users.find_one({'_id': ObjectId(term_comment['user'])})
+                commenter = term_comment_user['username']
+            except TypeError:
+                commenter = ""
+    
+            return commenter
 
         try:
-            term_comment_user = mongo.db.users.find_one({'_id': ObjectId(term_comment['user'])})
-            commenter = term_comment_user['username']
+            term_creator_user = get_record('users', '_id', term['created_by'])
+            term['created_by'] = term_creator_user['username']
+            created_by = term['created_by']
+
         except TypeError:
-            commenter = ""
- 
-        return commenter
+            created_by = ""
+    
+        try:
+            term_updated_by = get_record('users', '_id', term['last_updated_by'])
+            term['last_updated_by'] = term_updated_by['username']
+            last_updated_by = term['last_updated_by']
 
-    try:
-        term_creator_user = get_record('users', '_id', term['created_by'])
-        term['created_by'] = term_creator_user['username']
-        created_by = term['created_by']
+        except Exception:
+            last_updated_by = ""
 
-    except TypeError:
-        created_by = ""
- 
-    try:
-        term_updated_by = get_record('users', '_id', term['last_updated_by'])
-        term['last_updated_by'] = term_updated_by['username']
-        last_updated_by = term['last_updated_by']
-
-    except Exception:
-        last_updated_by = ""
-
-    return render_template("view_term.html", term=term, term_comments=term_comments, find_commenter=find_commenter, created_by=created_by, last_updated_by=last_updated_by)
-
+        return render_template("view_term.html", term=term, term_comments=term_comments, find_commenter=find_commenter, created_by=created_by, last_updated_by=last_updated_by)
+    return redirect(url_for("login"))
 
 @app.route("/manage_term/<term_id>")
 def manage_term(term_id):
-    term = get_record('terms', '_id', ObjectId(term_id))
-    types = get_collection('types')
- 
-    return render_template("manage_term.html", term=term, types=types)
-
-
-
-
+    if check_user_login() is True:
+        term = get_record('terms', '_id', ObjectId(term_id))
+        types = get_collection('types')
+    
+        return render_template("manage_term.html", term=term, types=types)
+    return redirect(url_for("login"))
 
 @app.route("/pin_term/<term_id>")
 def pin_term(term_id):
-    origin = request.args['origin']
-    term = get_record('terms', '_id', ObjectId(term_id))
-    user_record = inject_user()
-    user = user_record['user']
-    user_id = user_record['user']['_id']
-    term_to_pin = {"$push": {"pinned_terms": ObjectId(term_id)}}
-    user_query = {'_id': ObjectId(user_id)}
-    user_record_field = mongo.db.users.count_documents({"$and":  [user_query, {"pinned_terms": ObjectId(term_id)}]})
+    if check_user_login() is True:
+        origin = request.args['origin']
+        term = get_record('terms', '_id', ObjectId(term_id))
+        user_record = inject_user()
+        user = user_record['user']
+        user_id = user_record['user']['_id']
+        term_to_pin = {"$push": {"pinned_terms": ObjectId(term_id)}}
+        user_query = {'_id': ObjectId(user_id)}
+        user_record_field = mongo.db.users.count_documents({"$and":  [user_query, {"pinned_terms": ObjectId(term_id)}]})
 
-    if user_record_field > 0:
-        flash("Sorry, you've already pinned this term")
+        if user_record_field > 0:
+            flash("Sorry, you've already pinned this term")
+            if origin == 'dash':
+                return redirect(url_for("dashboard", term_id=term_id))
+            else:
+                return redirect(url_for("view_term", term_id=term_id))
+
+        else:
+            mongo.db.users.update_one(user, term_to_pin)
+            flash("Term pinned to your dashboard")
+
         if origin == 'dash':
             return redirect(url_for("dashboard", term_id=term_id))
         else:
             return redirect(url_for("view_term", term_id=term_id))
-
-    else:
-        mongo.db.users.update_one(user, term_to_pin)
-        flash("Term pinned to your dashboard")
-
-    if origin == 'dash':
-        return redirect(url_for("dashboard", term_id=term_id))
-    else:
-        return redirect(url_for("view_term", term_id=term_id))
-
+    return redirect(url_for("login"))
 
 @app.route("/remove_pin/<pinned_term>")
 def remove_pin(pinned_term):
-    user_record = inject_user()
-    username = user_record['user']['username']
+    if check_user_login() is True:
+        user_record = inject_user()
+        username = user_record['user']['username']
 
-    mongo.db.users.update_one({"username": username}, {"$pull": {"pinned_terms": ObjectId(pinned_term)}})
-    flash("Pin successfully deleted")
-    return redirect(url_for("dashboard"))
-
+        mongo.db.users.update_one({"username": username}, {"$pull": {"pinned_terms": ObjectId(pinned_term)}})
+        flash("Pin successfully deleted")
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
 @app.route("/add_comment/<term_id>", methods=["GET", "POST"])
 def add_comment(term_id):
-    user_record = inject_user()
-    user_id = user_record['user']['_id']
+    if check_user_login() is True:
+        user_record = inject_user()
+        user_id = user_record['user']['_id']
 
-    comment_field = request.form.get("comment")
-    if comment_field != "":
+        comment_field = request.form.get("comment")
+        if comment_field != "":
 
-        if request.method == "POST":
-            now = datetime.now()
-        
-            comment = {
-                "timestamp": now.strftime("%d/%m/%Y, %H:%M:%S"),
-                "comment": request.form.get("comment"),
-                "user": user_id,
-                "rel_term_id": term_id,
-                "flagged": False
+            if request.method == "POST":
+                now = datetime.now()
             
-                }
+                comment = {
+                    "timestamp": now.strftime("%d/%m/%Y, %H:%M:%S"),
+                    "comment": request.form.get("comment"),
+                    "user": user_id,
+                    "rel_term_id": term_id,
+                    "flagged": False
+                
+                    }
 
-            mongo.db.comments.insert_one(comment)
-            flash("Comment added")
+                mongo.db.comments.insert_one(comment)
+                flash("Comment added")
 
-    else:
-        flash("Please add a comment")
+        else:
+            flash("Please add a comment")
 
-    return redirect(url_for("view_term", term_id=term_id))
-
+        return redirect(url_for("view_term", term_id=term_id))
+    return redirect(url_for("login"))
 
 @app.route("/delete_comment/<comment_id>/<term_id>")
 def delete_comment(comment_id, term_id):
-    mongo.db.comments.remove({"_id": ObjectId(comment_id)})
-    flash("Comment successfully deleted")
-    return redirect(url_for("view_term", term_id=term_id))
-
+    if check_user_login() is True:
+        mongo.db.comments.remove({"_id": ObjectId(comment_id)})
+        flash("Comment successfully deleted")
+        return redirect(url_for("view_term", term_id=term_id))
+    return redirect(url_for("login"))
 
 @app.route("/flag_comment/<comment_id>/<term_id>")
 def flag_comment(comment_id, term_id):
-    flag_attempt = get_record('comments', '_id', ObjectId(comment_id))
-    flag_status = flag_attempt['flagged']
+    if check_user_login() is True:
+        flag_attempt = get_record('comments', '_id', ObjectId(comment_id))
+        flag_status = flag_attempt['flagged']
 
-    if flag_status:
-        flash("This comment has already been flagged to an administrator")
-        return redirect(url_for("view_term", term_id=term_id))
-    else:
-        flag_update = {"$set": {"flagged": True}}
-        mongo.db.comments.update_one(flag_attempt, flag_update)
+        if flag_status:
+            flash("This comment has already been flagged to an administrator")
+            return redirect(url_for("view_term", term_id=term_id))
+        else:
+            flag_update = {"$set": {"flagged": True}}
+            mongo.db.comments.update_one(flag_attempt, flag_update)
 
-        flash("You have flagged this comment")
-        return redirect(url_for("view_term", term_id=term_id, comment_id=comment_id))
- 
+            flash("You have flagged this comment")
+            return redirect(url_for("view_term", term_id=term_id, comment_id=comment_id))
+    return redirect(url_for("login"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -411,8 +414,6 @@ def register():
         }
         mongo.db.users.insert_one(register)
 
-        # Put the new user into 'session' cookie
-        session["user"] = request.form.get("username").lower()
         flash("Your registration request has been sent to the administrator")
         return redirect(url_for("register"))
 
@@ -421,48 +422,47 @@ def register():
 
 @app.route("/change_password/<user_id>", methods=["GET", "POST"])
 def change_password(user_id):
-    user_record = inject_user()
-    user = user_record['user']
-    users = mongo.db["users"]
-    existing_user = users.find_one(
-        {"username": request.form.get("username").lower()}) 
-    to_change_pword = existing_user['to_change_pword']
+    if check_user_login() is True:
+        user_record = inject_user()
+        user = user_record['user']
+        users = mongo.db["users"]
+        to_change_pword = user['to_change_pword']
 
-    if request.method == "POST":
-        new_password = request.form.get("new_password")
-        get_repeat = request.form.get("repeat_new_password")
+        if request.method == "POST":
+            new_password = request.form.get("new_password")
+            get_repeat = request.form.get("repeat_new_password")
 
-        if existing_user:
-            if check_password_hash(existing_user["password"], request.form.get("password")):
-                to_update = {"_id": existing_user["_id"]}
-                if new_password == get_repeat:
+            if user:
+                if check_password_hash(user["password"], request.form.get("password")):
+                    to_update = {"_id": user["_id"]}
+                    if new_password == get_repeat:
 
-                    if to_change_pword == True:
-                        updated_password = {"$set": {"password": generate_password_hash(new_password), 'to_change_pword': False}}
-    
+                        if to_change_pword == True:
+                            updated_password = {"$set": {"password": generate_password_hash(new_password), 'to_change_pword': False}}
+        
+                        else:
+                            updated_password = {"$set": {"password": generate_password_hash(new_password)}}
+                    
                     else:
-                        updated_password = {"$set": {"password": generate_password_hash(new_password)}}
-                
-                else:
-                    flash("New password and repeat password must match")
-                    return redirect(url_for("profile", user=user))                   
+                        flash("New password and repeat password must match")
+                        return redirect(url_for("profile", user=user))                   
 
-                users.update_one(to_update, updated_password)
-                flash("Password successfully updated")
-                return redirect(url_for("profile", user=user))
+                    users.update_one(to_update, updated_password)
+                    flash("Password successfully updated")
+                    return redirect(url_for("profile", user=user))
+
+                else:
+                    # invalid password match
+                    flash("Incorrect current password")
+                    return redirect(url_for("profile", user=user))
 
             else:
-                # invalid password match
+                # username doesn't exist
                 flash("Incorrect Username and/or Current Password")
-                return redirect(url_for("profile", user=user))
+                return redirect(url_for('profile', user=user))
 
-        else:
-            # username doesn't exist
-            flash("Incorrect Username and/or Current Password")
-            return redirect(url_for('profile', user=user))
-
-    return render_template("profile.html", user=user)
-
+        return render_template("profile.html", user=user)
+    return redirect(url_for("login"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -479,25 +479,29 @@ def login():
 
             else:
                 # invalid password match
+                
                 flash("Incorrect Username and/or Password")
                 return redirect(url_for("login"))
 
         else:
             # username doesn't exist
+            
             flash("Incorrect Username and/or Password")
             return redirect(url_for('login'))
 
     return render_template("login.html")
-
+    
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
 def profile(user):
-    user_record = inject_user()
-    user = user_record['user']
-    to_change_pword = user['to_change_pword']
+    if check_user_login() is True:
+        user_record = inject_user()
+        user = user_record['user']
+        to_change_pword = user['to_change_pword']
 
-    return render_template("profile.html", to_change_pword=to_change_pword)
+        return render_template("profile.html", to_change_pword=to_change_pword)
 
+    return redirect(url_for('login'))
 
 @app.route("/logout")
 def logout():
@@ -508,192 +512,210 @@ def logout():
 
 @app.route("/add_term", methods=["GET", "POST"])
 def add_term():
-    user_record = inject_user()
-    user_id = user_record['user']['_id']
-    access_level = user_record['access_level']
+    if check_user_login() is True:
+        user_record = inject_user()
+        user_id = user_record['user']['_id']
+        access_level = user_record['access_level']
 
-    if request.method == "POST":
-        now = datetime.now()
-        alternatives = get_fields("alt_terms")
-        incorrect = get_fields("incorrect_terms")
-        term_name = request.form.get("term_name")
-        type_name = request.form.get("type_name")
-        type_suggest = 'What type of term is this? Suggest something.'
+        if request.method == "POST":
+            now = datetime.now()
+            alternatives = get_fields("alt_terms")
+            incorrect = get_fields("incorrect_terms")
+            term_name = request.form.get("term_name")
+            type_name = request.form.get("type_name")
+            type_suggest = 'What type of term is this? Suggest something.'
 
 
-        term = {
-            "term_name": term_name,
-            "alt_terms": alternatives,
-            "incorrect_terms": incorrect,
-            "usage_notes": request.form.get("usage_notes"),
-            "type_name": type_name if type_name != None else type_suggest,
-            "pending": False if access_level == 'administrator' else True,
-            "created_by": ObjectId(user_id),
-            "last_updated": now.strftime("%d/%m/%Y")
-            }
+            term = {
+                "term_name": term_name,
+                "alt_terms": alternatives,
+                "incorrect_terms": incorrect,
+                "usage_notes": request.form.get("usage_notes"),
+                "type_name": type_name if type_name != None else type_suggest,
+                "pending": False if access_level == 'administrator' else True,
+                "created_by": ObjectId(user_id),
+                "last_updated": now.strftime("%d/%m/%Y")
+                }
 
-        mongo.db.terms.insert_one(term)
-        flash("Term added")
-        return redirect(url_for("add_term"))
+            mongo.db.terms.insert_one(term)
+            if access_level == 'administrator':
+                flash("Term added")
+            else:
+                flash("Your suggestion has been sent to the Administrator")
+            return redirect(url_for("add_term"))
 
-    types = mongo.db.types.find().sort("types", 1)
-    return render_template("add_term.html", types=types)
-
+        types = mongo.db.types.find().sort("types", 1)
+        return render_template("add_term.html", types=types)
+    return redirect(url_for("login"))
 
 @app.route("/update_term/<term_id>", methods=["GET", "POST"])
 def update_term(term_id):
-    user_record = inject_user()
-    user_id = user_record['user']['_id']
-    access_level = user_record['user']['access_level']
-    term = get_record('terms', '_id', ObjectId(term_id))
+    if check_user_login() is True:
+        user_record = inject_user()
+        user_id = user_record['user']['_id']
+        access_level = user_record['user']['access_level']
+        term = get_record('terms', '_id', ObjectId(term_id))
 
-    if request.method == "POST":
+        if request.method == "POST":
 
-        incorrect = get_fields("incorrect_terms")
-        alternatives = get_fields("alt_terms")
-        
-        try:
-            created_by = term['created_by']
-        except KeyError:
-            created_by = 'Creator not recorded'
+            incorrect = get_fields("incorrect_terms")
+            alternatives = get_fields("alt_terms")
+            
+            try:
+                created_by = term['created_by']
+            except KeyError:
+                created_by = 'Creator not recorded'
 
-        update_term = {
-            "term_name": request.form.get("term_name"),
-            "alt_terms": alternatives,
-            "incorrect_terms": incorrect,
-            "usage_notes": request.form.get("usage_notes"),
-            "type_name": request.form.get("type_name"),
-            "pending": False if access_level == 'administrator' else True,
-            "created_by": created_by,
-            "last_updated_by": ObjectId(user_id)
-            }
+            update_term = {
+                "term_name": request.form.get("term_name"),
+                "alt_terms": alternatives,
+                "incorrect_terms": incorrect,
+                "usage_notes": request.form.get("usage_notes"),
+                "type_name": request.form.get("type_name"),
+                "pending": False if access_level == 'administrator' else True,
+                "created_by": created_by,
+                "last_updated_by": ObjectId(user_id)
+                }
 
-        mongo.db.terms.update({"_id": ObjectId(term_id)}, update_term)
+            mongo.db.terms.update({"_id": ObjectId(term_id)}, update_term)
 
-    flash("Term successfully updated")
-    return redirect(url_for("dashboard"))
-
+        flash("Term successfully updated")
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
 @app.route("/search_terms", methods=["POST", "GET"])
 def search_terms():
-    categories = lets_nums()
-    query = request.form.get('query')
+    if check_user_login() is True:
+        categories = lets_nums()
+        query = request.form.get('query')
 
-    try:
-        terms = text_search(query)
+        try:
+            terms = text_search(query)
+            print(type(terms))
 
-    except IndexError:
-        terms = None
+        except IndexError:
+            terms = None
 
-    return render_template("dashboard.html", terms=terms, categories=categories)
-
+        return render_template("dashboard.html", terms=terms, categories=categories)
+    return redirect(url_for("login"))
 
 @app.route("/go_to_term/<term_id>")
 def go_to_term(term_id):
-    mongo.db.terms.find_one({'_id': ObjectId(term_id)})
+    if check_user_login() is True:
+        mongo.db.terms.find_one({'_id': ObjectId(term_id)})
 
-    return redirect(url_for("view_term", term_id=term_id))
-
+        return redirect(url_for("view_term", term_id=term_id))
+    return redirect(url_for("login"))
 
 @app.route("/delete_term/<term_id>")
 def delete_term(term_id):
-    # find pins related to term
-    find_pins_users = list(mongo.db.users.find({"pinned_terms": {"$in": [ObjectId(term_id)]}}))
-    # delete pin references from user accounts
-    for pin_user in find_pins_users:
-        mongo.db.users.update_one(pin_user, {"$pull": {"pinned_terms": ObjectId(term_id)}})
-    # find and delete comments relating to term
-    mongo.db.comments.remove({"rel_term_id": term_id})
+    if check_user_login() is True:
+        # find pins related to term
+        find_pins_users = list(mongo.db.users.find({"pinned_terms": {"$in": [ObjectId(term_id)]}}))
+        # delete pin references from user accounts
+        for pin_user in find_pins_users:
+            mongo.db.users.update_one(pin_user, {"$pull": {"pinned_terms": ObjectId(term_id)}})
+        # find and delete comments relating to term
+        mongo.db.comments.remove({"rel_term_id": term_id})
 
-    mongo.db.terms.remove({"_id": ObjectId(term_id)})
+        mongo.db.terms.remove({"_id": ObjectId(term_id)})
 
 
-    flash("Term successfully deleted")
-    return redirect(url_for("dashboard"))
-
+        flash("Term successfully deleted")
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
 @app.route("/manage_users")
 def manage_users():
-    users_list = None
-    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+    if check_user_login() is True:
+        users_list = None
+        levels = list(mongo.db.access_levels.find().sort("level_name", 1))
 
-    return render_template("manage_users.html", users_list=users_list, levels=levels)
-
+        return render_template("manage_users.html", users_list=users_list, levels=levels)
+    return redirect(url_for("login"))
 
 @app.route("/show_all_users")
 def show_all_users():
-    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
-    users_list = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
+    if check_user_login() is True:
+        levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+        users_list = list(mongo.db.users.find().sort([("access_level", 1), ("username", 1)]))
 
-    return render_template("manage_users.html", users_list=users_list, levels=levels)
-
+        return render_template("manage_users.html", users_list=users_list, levels=levels)
+    return redirect(url_for("login"))
 
 @app.route("/search_users", methods=["POST", "GET"])
 def search_users():
-    query_user = request.form.get("query_user")
-    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
-    users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
-    return render_template("manage_users.html", users_list=users_list, levels=levels)
-
+    if check_user_login() is True:
+        query_user = request.form.get("query_user")
+        levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+        users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
+        return render_template("manage_users.html", users_list=users_list, levels=levels)
+    return redirect(url_for("login"))
 
 @app.route("/add_user", methods=["GET", "POST"])
 def add_user():
-    if request.method == "POST":
+    if check_user_login() is True:
+        if request.method == "POST":
 
-        new_user = {
-            "username": request.form.get("username").lower(),
-            "password": generate_password_hash(request.form.get("password")),
-            "access_level": request.form.get("access_level_add"),
-            "to_change_pword": True
-        }
+            new_user = {
+                "username": request.form.get("username").lower(),
+                "password": generate_password_hash(request.form.get("password")),
+                "access_level": request.form.get("access_level_add"),
+                "to_change_pword": True
+            }
 
 
-        mongo.db.users.insert_one(new_user)
-        flash("New user added")
-        
-        return redirect(url_for("manage_users"))
-
+            mongo.db.users.insert_one(new_user)
+            flash("New user added")
+            
+            return redirect(url_for("manage_users"))
+    return redirect(url_for("login"))
 
 @app.route("/update_user/<each_user_id>", methods=["POST", "GET"])
 def update_user(each_user_id):
-    origin = request.args['origin']
+    if check_user_login() is True:
+        origin = request.args['origin']
 
-    if request.method == "POST":
-        user_to_update = get_record('users', '_id', ObjectId(each_user_id))
-        acc_level = request.form.get("access_level")
-        mongo.db.users.update_one({"_id": user_to_update["_id"]}, {"$set": {"access_level": acc_level}})
+        if request.method == "POST":
+            user_to_update = get_record('users', '_id', ObjectId(each_user_id))
+            acc_level = request.form.get("access_level")
+            mongo.db.users.update_one({"_id": user_to_update["_id"]}, {"$set": {"access_level": acc_level}})
 
-        flash("User's access level updated")
+            flash("User's access level updated")
 
-        if origin == 'dash':
-            return redirect(url_for("dashboard"))
-        else:
-            return redirect(url_for("manage_users", user_to_update=user_to_update))
+            if origin == 'dash':
+                return redirect(url_for("dashboard"))
+            else:
+                return redirect(url_for("manage_users", user_to_update=user_to_update))
 
-    flash("Sorry, looks like there's been an error updating this user")
-    return redirect(url_for("manage_users"))
-
+        flash("Sorry, looks like there's been an error updating this user")
+        return redirect(url_for("manage_users"))
+    return redirect(url_for("login"))
 
 @app.route("/manage_user_sidenav/<each_user_id>")
 def manage_user_sidenav(each_user_id):
-    user_to_find = mongo.db.users.find_one({'_id': ObjectId(each_user_id)})
-    query_user = user_to_find['username']
-    users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
-    levels = list(mongo.db.access_levels.find().sort("level_name", 1))
-    return render_template("manage_users.html", users_list=users_list, levels=levels)
+    if check_user_login() is True:
+        user_to_find = mongo.db.users.find_one({'_id': ObjectId(each_user_id)})
+        query_user = user_to_find['username']
+        users_list = list(mongo.db.users.find({"$text": {"$search": query_user}}))
+        levels = list(mongo.db.access_levels.find().sort("level_name", 1))
+        return render_template("manage_users.html", users_list=users_list, levels=levels)
+    return redirect(url_for("login"))
 
 @app.route("/delete_user/<each_user_id>")
 def delete_user(each_user_id):
-    mongo.db.users.remove({"_id": ObjectId(each_user_id)})
+    if check_user_login() is True:
+        mongo.db.users.remove({"_id": ObjectId(each_user_id)})
 
-    flash("User deleted")
-    return redirect(url_for("manage_users"))
-
+        flash("User deleted")
+        return redirect(url_for("manage_users"))
+    return redirect(url_for("login"))
 
 @app.errorhandler(404)
 def page_not_found(e):
-
-    return render_template('404.html'), 404
+    session_user = inject_user()
+    print(session_user)
+    return render_template('404.html', session_user=session_user), 404
 
 
 if __name__ == "__main__":

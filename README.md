@@ -288,7 +288,11 @@ If I hadn't included that when adding the term to the database, however, I'd pro
 To improve matters I have written a more comprehensive text search function, which takes the user's search query through several iterations, testing to see if it can finding any matches along the way. 
 Key inclusions in this function are punctuation-stripping, a regex pattern, string-to-digit number replacement (and vice versa) and the ability to ignore 'Pending: true' results and continue the search after discounting them.
 
-Future development
+Future development & Existing Bugs
+
+The most useful feature for future development would be a bulk-upload tool accessible from the front-end. This would likely require some kind of CSV-to-JSON conversion. This is one reason I have deliberately left most of the term fields as optional; this increases flexibility and allows users to input their existing data as quickly as possible, without having to fill it out first with fields they may not previously have needed.
+
+Flash messages behaviour across different browsers.
 
     Deployment
     Resources and credits

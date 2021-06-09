@@ -544,7 +544,7 @@ font-family: 'Nanum Gothic', sans-serif;
     top: 0px;
     width: 100%;
     z-index: 1;
-    background: inherit;
+    background: #fff;
 }
 
 
@@ -648,6 +648,18 @@ font-family: 'Nanum Gothic', sans-serif;
 
 .card-info-container {
     margin-left: 10px;
+}
+
+#error-no-user, #login, #register {
+    color: black;
+    position: relative;
+    top: 70px;
+    z-index: 0;
+    margin-top: 2.2rem;
+}
+
+#error-no-user {
+    line-height: 2;
 }
 
 
@@ -757,7 +769,7 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
     flex-grow: 2;
 }
 
-#users, #add-term, #manage-term, #notifications, #profile, #view-term, #login, #register, #error, #mng-users, #result-row, #change-pword {
+#users, #add-term, #manage-term, #notifications, #profile, #view-term, #error, #mng-users, #result-row, #change-pword {
     position: relative;
     top: 150px;
     z-index: 0;

@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
     <link
         href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
         rel="stylesheet">
@@ -39,9 +43,9 @@
                 {% elif (access_level == "read and comment") and (user.to_change_pword != True) %}
                 <li><a class="" href="{{ url_for('add_term') }}">Make a suggestion</a></li>
                 {% endif %}
-                
+
                 <li><a class="modal-trigger" href="javascript:void(0)" data-target="logout-modal">Log out</a></li>
-                            {% if user.access_level != 'requested' %}
+                {% if user.access_level != 'requested' %}
 
                 <li><a class="" href="{{ url_for('profile', user=session['user']) }}">Profile</a></li>
                 {% endif %}
@@ -53,7 +57,7 @@
             </ul>
             {% endif %}
         </div>
-    {% if session.user %}
+        {% if session.user %}
         <!-- Mobile/tablet navigation -->
         <ul class="sidenav" id="sidenav-mobile">
             {% if (access_level == "administrator") and (user.to_change_pword != True) %}
@@ -94,147 +98,165 @@
                 </div>
             </div>
             <!-- Admin updates -->
-                {% if access_level == 'administrator' %}
-                <div class="sidenav-card card z-depth-1">
-                    <div class="sidenav-card-title card-title card-header gradient white-text">
-                        Recent Updates</div>
-                    <div class="card-content card-surround">
-                        {% if new_registrations|length > 0 %}
-                        <p class="minor-text">New registrations</p>
-                        {% for new_reg in new_registrations %}
-                        <div class="mt0 mb0 row">
-                            <div class="col s12">
-                                <p class="updates valign-wrapper">
-                                    <span>{{ new_reg.username|capitalize() }}:</span>
-                                    <a href="{{ url_for('manage_user_sidenav', each_user_id=new_reg._id) }}"
-                                        class="icon-button btn-small z-depth-0" type="submit"><i
-                                            class="small material-icons center-align">keyboard_arrow_up</i></a>
-                                </p>
-                            </div>
+            {% if access_level == 'administrator' %}
+            <div class="sidenav-card card z-depth-1">
+                <div class="sidenav-card-title card-title card-header gradient white-text">
+                    Recent Updates</div>
+                <div class="card-content card-surround">
+                    {% if new_registrations|length > 0 %}
+                    <p class="minor-text">New registrations</p>
+                    {% for new_reg in new_registrations %}
+                    <div class="mt0 mb0 row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">
+                                <span>{{ new_reg.username|capitalize() }}:</span>
+                                <a href="{{ url_for('manage_user_sidenav', each_user_id=new_reg._id) }}"
+                                    class="icon-button btn-small z-depth-0" type="submit"><i
+                                        class="small material-icons center-align">keyboard_arrow_up</i></a>
+                            </p>
                         </div>
-                        {% endfor %}
-                        {% else %}
-                        <p class="no-updates valign-wrapper updates">No new registrations</p>
-                        {% endif %}
-                        <hr>
-                        {% if flagged_comments|length > 0 %}
-                        <p class="minor-text">Flagged comments</p>
-                        {% for flagged in flagged_comments %}
-                        <div class="mt0 mb0 row">
-                            <div class="col s12">
-                                <p class="updates valign-wrapper">
-                                    <span class="truncate">{{ manage_flagged_comments(flagged) }}:
-                                        "{{ flagged.comment }}"</span> <a class="btn-small icon-button z-depth-0"
-                                        href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
-                                            class="keyboard material-icons">close</i></a>
-                                </p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <p class="no-updates">No new flagged comments</p>
-                        {% endif %}
-                        <hr>
-                        {% if suggested_terms|length > 0 %}
-                        <p class="minor-text">Suggested terms</p>
-                        {% for suggestion in suggested_terms %}
-                        <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
-                            {% if manage_suggested_terms(suggestion) != "" %}
-                            suggested by: {{ manage_suggested_terms(suggestion) }}
-                            {% endif %}
-                            <a class="btn-small icon-button z-depth-0"
-                                href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
-                                    class="small material-icons">keyboard_arrow_right</i></a>
-                        </p>
-                        {% endfor %}
-                        {% else %}
-                        <p class="no-updates">No new term suggestions</p>
-                        {% endif %}
                     </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="no-updates valign-wrapper updates">No new registrations</p>
+                    {% endif %}
+                    <hr>
+                    {% if flagged_comments|length > 0 %}
+                    <p class="minor-text">Flagged comments</p>
+                    {% for flagged in flagged_comments %}
+                    <div class="mt0 mb0 row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper">
+                                <span class="truncate">{{ manage_flagged_comments(flagged) }}:
+                                    "{{ flagged.comment }}"</span> <a class="btn-small icon-button z-depth-0"
+                                    href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
+                                        class="keyboard material-icons">close</i></a>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="no-updates">No new flagged comments</p>
+                    {% endif %}
+                    <hr>
+                    {% if suggested_terms|length > 0 %}
+                    <p class="minor-text">Suggested terms</p>
+                    {% for suggestion in suggested_terms %}
+                    <p class="updates valign-wrapper">"{{ suggestion.term_name }}"
+                        {% if manage_suggested_terms(suggestion) != "" %}
+                        suggested by: {{ manage_suggested_terms(suggestion) }}
+                        {% endif %}
+                        <a class="btn-small icon-button z-depth-0"
+                            href="{{ url_for('manage_term', term_id=suggestion._id) }}"><i
+                                class="small material-icons">keyboard_arrow_right</i></a>
+                    </p>
+                    {% endfor %}
+                    {% else %}
+                    <p class="no-updates">No new term suggestions</p>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% if access_level != 'administrator' %}
-                <div class="sidenav-card card z-depth-1">
-                    <div class="sidenav-card-title gradient white-text card-header card-title">Recent Updates</div>
-                    <div class="card-surround card-content">
-                        {% for update in term_updates %}
-                        <div class="mt0 mb0 row">
-                            <div class="col s12">
-                                <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>
-                                    <a class="btn-small icon-button z-depth-0"
-                                        href="{{ url_for('view_term', term_id=update._id) }}"><i
-                                            class="small material-icons">keyboard_arrow_right</i></a>
-                                </p>
-                            </div>
+            </div>
+            {% endif %}
+            {% if access_level != 'administrator' %}
+            <div class="sidenav-card card z-depth-1">
+                <div class="sidenav-card-title gradient white-text card-header card-title">Recent Updates</div>
+                <div class="card-surround card-content">
+                    {% for update in term_updates %}
+                    <div class="mt0 mb0 row">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>
+                                <a class="btn-small icon-button z-depth-0"
+                                    href="{{ url_for('view_term', term_id=update._id) }}"><i
+                                        class="small material-icons">keyboard_arrow_right</i></a>
+                            </p>
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
+                </div>
 
-                </div>
-                {% endif %}
-                {% if access_level != 'read only' %}
-                <div class="sidenav-card card z-depth-1">
-                    <div class="sidenav-card-title gradient white-text card-header card-title">Recent Comments</div>
-                    <div class="card-surround card-content">
-                        {% for comment in recent_comments %}
-                            {% if not term_comment(comment) == "" %}
-                            <div class="row mb0 mt0">
-                                <div class="col s12">
-                                    <p class="updates valign-wrapper"><strong
-                                            class="truncate">{{ term_comment(comment)[0] }}</strong>
-                                        <span class="truncate">{{ comment.comment }}"</span>
-                                        <a class="btn-small icon-button z-depth-0"
-                                            href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
-                                                class="small material-icons">keyboard_arrow_right</i></a>
-                                    </p>
-                                </div>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
+            </div>
+            {% endif %}
+            {% if access_level != 'read only' %}
+            <div class="sidenav-card card z-depth-1">
+                <div class="sidenav-card-title gradient white-text card-header card-title">Recent Comments</div>
+                <div class="card-surround card-content">
+                    {% for comment in recent_comments %}
+                    {% if not term_comment(comment) == "" %}
+                    <div class="row mb0 mt0">
+                        <div class="col s12">
+                            <p class="updates valign-wrapper"><strong
+                                    class="truncate">{{ term_comment(comment)[0] }}</strong>
+                                <span class="truncate">{{ comment.comment }}"</span>
+                                <a class="btn-small icon-button z-depth-0"
+                                    href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
+                                        class="small material-icons">keyboard_arrow_right</i></a>
+                            </p>
+                        </div>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
-                {% endif %}
+            </div>
+            {% endif %}
             {% endif %}
         </ul>
     </nav>
     <div class="sidenav-close sidenav-wrap">
-    {% if user.to_change_pword == True %}
-    <div id="change-pword" class="row">
-        <div class="col s12 m8 l8 offset-m2 offset-l2">
-            <div class="card z-depth-1 mb0 show-on-medium-and-down">
-                <div class="card-content card-surround gradient-light">
-                    <p>Looks like you're new here, please <a href="{{ url_for('profile', user=user) }}">change your
-                            password.</a></p>
+        {% if user.to_change_pword == True %}
+        <div id="change-pword" class="row">
+            <div class="col s12 m8 l8 offset-m2 offset-l2">
+                <div class="card z-depth-1 mb0 show-on-medium-and-down">
+                    <div class="card-content card-surround gradient-light">
+                        <p>Looks like you're new here, please <a href="{{ url_for('profile', user=user) }}">change your
+                                password.</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% else %}
-    <!-- Title (desktop), flash messages (desktop) and search bar -->
-    <div id="subheader" class="row valign-wrapper">
-                    {% if user.access_level == 'requested' %}
-                <p id="awaiting-approval">Account awaiting admin approval</p>
-                {% else %}
-        <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
-            <span class="page-title">{{- this_h3 -}}</span>
+        {% else %}
+        <!-- Title (desktop), flash messages (desktop) and search bar -->
+        <div id="subheader" class="row valign-wrapper">
+            {% if user.access_level == 'requested' %}
+            <p id="awaiting-approval">Account awaiting admin approval</p>
+            {% else %}
+            <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
+                <span class="page-title">{{- this_h3 -}}</span>
                 {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <span class="count-notifications">
-                        {% for message in messages %}
-                        <span id="message" value="{{ message }}"></span>
-                        {% endfor %}
-                    </span>
-                    {% endif %}
+                {% if messages %}
+                <span class="count-notifications">
+                    {% for message in messages %}
+                    <span id="message" value="{{ message }}"></span>
+                    {% endfor %}
+                </span>
+                {% endif %}
                 {% endwith %}
             </div>
-        <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
-            <div class="search-row">
-                <div id="search-input" class="input-field right-align">
-                    <input class="search-input-box" type="text" name="query" id="query" minlength="2">
-                    <label id="search-label" for="query">Search terms</label>
+            <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
+                <div class="search-row">
+                    <div id="search-input" class="input-field right-align">
+                        <input class="search-input-box" type="text" name="query" id="query" minlength="2">
+                        <label id="search-label" for="query">Search terms</label>
+                    </div>
+                    <div class="letters-container">
+                        <div class="hidden letters left-align hide-on-small-only" id="letters">
+                            {% for category in categories %}
+                            <div class="letter-chip"><a
+                                    href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="search-buttons search">
+                        <button type="submit" class="icon-button btn-small z-depth-0 material-icons"
+                            id="search-btn-mobile">
+                            search
+                        </button>
+                        <a href="javascript:void(0)" class="btn-small z-depth-0 search-mng-btn"
+                            id="browse-toggle">A-Z</a>
+                    </div>
                 </div>
-                <div class="letters-container">
-                    <div class="hidden letters left-align hide-on-small-only" id="letters">
+                <div class="letters row hide-on-large-only" id="letters-mobile">
+                    <div class="col s12">
                         {% for category in categories %}
                         <div class="letter-chip"><a
                                 href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
@@ -242,71 +264,57 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="search-buttons search">
-                    <button type="submit" class="icon-button btn-small z-depth-0 material-icons" id="search-btn-mobile">
-                        search
-                    </button>
-                    <a href="javascript:void(0)" class="btn-small z-depth-0 search-mng-btn" id="browse-toggle">A-Z</a>
-                </div>
-            </div>
-            <div class="letters row hide-on-large-only" id="letters-mobile">
-                <div class="col s12">
-                    {% for category in categories %}
-                    <div class="letter-chip"><a
-                            href="{{ url_for('get_category', category=category) }}">{{ category }}</a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </form>
-    
-    </div>
-    <main id="main-content" class="sidenav-close">
-        <div id="notifications-desktop" class="row">
-            <div id="notifications" class="col l4 hide-on-med-and-down">
-                <!-- PINNED TERMS card -->
-                <div class="card z-depth-1">
-                    <div class="card-title card-header gradient white-text">Your pinned terms</div>
-                    <div class="card-surround card-content">
-                        <div class="row">
-                            {% if pinned_terms|length > 0 %}
-                            {% for pinned_term in pinned_terms %}
-                            <div class="col mt0">
-                                <div class="pin chip">
-                                    <a class="link"
-                                        href="{{ url_for('go_to_term', term_id=pinned_term._id) }}">{{ pinned_term.term_name }}</a><a
-                                        href="{{ url_for('remove_pin', pinned_term=pinned_term._id) }}"><i
-                                            class="close material-icons">close</i></a>
+            </form>
+
+        </div>
+        <main id="main-content" class="sidenav-close">
+            <div id="notifications-desktop" class="row">
+                <div id="notifications" class="col l4 hide-on-med-and-down">
+                    <!-- PINNED TERMS card -->
+                    <div class="card z-depth-1">
+                        <div class="card-title card-header gradient white-text">Your pinned terms</div>
+                        <div class="card-surround card-content">
+                            <div class="row">
+                                {% if pinned_terms|length > 0 %}
+                                {% for pinned_term in pinned_terms %}
+                                <div class="col mt0">
+                                    <div class="pin chip">
+                                        <a class="link"
+                                            href="{{ url_for('go_to_term', term_id=pinned_term._id) }}">{{ pinned_term.term_name }}</a><a
+                                            href="{{ url_for('remove_pin', pinned_term=pinned_term._id) }}"><i
+                                                class="close material-icons">close</i></a>
+                                    </div>
                                 </div>
+                                {% endfor %}
+                                {% else %}
+                                <div class="col">
+                                    <p>Pin your most searched-for terms here!</p>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% endfor %}
-                            {% else %}
-                            <div class="col">
-                                <p>Pin your most searched-for terms here!</p>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
-                </div>
-                {% if access_level == 'administrator' %}
-                <!-- ADMIN ALL UPDATES (not comments) card -->
-                <div class="card z-depth-1">
-                    <div class="card-title card-header gradient white-text">
-                        Recent Updates</div>
-                    <!-- New registrations -->
-                    <div class="card-content card-surround">
-                        {% if new_registrations|length > 0 %}
-                        <p class="minor-text">New registrations</p>
+                    {% if access_level == 'administrator' %}
+                    <!-- ADMIN ALL UPDATES (not comments) card -->
+                    <div class="card z-depth-1">
+                        <div class="card-title card-header gradient white-text">
+                            Recent Updates</div>
+                        <!-- New registrations -->
+                        <div class="card-content card-surround">
+                            {% if new_registrations|length > 0 %}
+                            <p class="minor-text">New registrations</p>
                             {% for new_reg in new_registrations %}
                             <form class="" method="POST"
                                 action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
                                 <div class="valign-wrapper button-flex-wrap">
                                     <p>{{ new_reg.username|capitalize() }}:</p>
                                     <select id="access_level" name="access_level" class="">
-                                        <option value="" disabled selected><span id="dd-placeholder">Set access level</span>
+                                        <option value="" disabled selected><span id="dd-placeholder">Set access
+                                                level</span>
                                         </option>
                                         {% for access_level in levels %}
-                                        <option value="{{ access_level.level_name }}">{{ access_level.level_name }}</option>
+                                        <option value="{{ access_level.level_name }}">{{ access_level.level_name }}
+                                        </option>
                                         {% endfor %}
                                     </select>
                                     <button class="icon-button btn-small z-depth-0" type="submit"><i
@@ -314,33 +322,33 @@
                                 </div>
                             </form>
                             {% endfor %}
-                        {% else %}
-                        <p>No new registrations</p>
-                        {% endif %}
-                        <hr>
-                        <!-- Flagged comments -->
-                        {% if flagged_comments|length > 0 %}
-                        <p class="minor-text">Flagged comments</p>
+                            {% else %}
+                            <p>No new registrations</p>
+                            {% endif %}
+                            <hr>
+                            <!-- Flagged comments -->
+                            {% if flagged_comments|length > 0 %}
+                            <p class="minor-text">Flagged comments</p>
                             {% for flagged in flagged_comments %}
                             <div class="mt0 mb0 row">
                                 <div class="col s12">
                                     <p class="updates valign-wrapper">
                                         <span class="truncate">{{ manage_flagged_comments(flagged) }}:
-                                            "{{ flagged.comment }}"</span> 
-                                            <a class="btn-small icon-button z-depth-0"
+                                            "{{ flagged.comment }}"</span>
+                                        <a class="btn-small icon-button z-depth-0"
                                             href="{{ url_for('delete_flag', comment_id=flagged._id) }}"><i
                                                 class="keyboard material-icons">close</i></a>
                                     </p>
                                 </div>
                             </div>
                             {% endfor %}
-                        {% else %}
-                        <p>No new flagged comments</p>
-                        {% endif %}
-                        <hr>
-                        <!-- Suggested terms -->
-                        {% if suggested_terms|length > 0 %}
-                        <p class="minor-text">Suggested terms</p>
+                            {% else %}
+                            <p>No new flagged comments</p>
+                            {% endif %}
+                            <hr>
+                            <!-- Suggested terms -->
+                            {% if suggested_terms|length > 0 %}
+                            <p class="minor-text">Suggested terms</p>
                             {% for suggestion in suggested_terms %}
                             <div class="row">
                                 <div class="col s12">
@@ -355,26 +363,27 @@
                                 </div>
                             </div>
                             {% endfor %}
-                        {% else %}
-                        <div class="row">
-                            <div class="col s12">
-                                <p>No new term suggestions</p>
+                            {% else %}
+                            <div class="row">
+                                <div class="col s12">
+                                    <p>No new term suggestions</p>
+                                </div>
                             </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
-                </div>
-                {% endif %}
-                <!-- NON-ADMIN (read & comment/read-only) TERM UPDATES card -->
-                {% if access_level != 'administrator' %}
-                <div class="card z-depth-1">
-                    <div class="gradient white-text card-header card-title">Term Updates</div>
-                    <div class="card-surround card-content">
-                        {% if term_updates|length > 0%}
+                    {% endif %}
+                    <!-- NON-ADMIN (read & comment/read-only) TERM UPDATES card -->
+                    {% if access_level != 'administrator' %}
+                    <div class="card z-depth-1">
+                        <div class="gradient white-text card-header card-title">Term Updates</div>
+                        <div class="card-surround card-content">
+                            {% if term_updates|length > 0%}
                             {% for update in term_updates %}
                             <div class="mt0 mb0 row">
                                 <div class="col s12">
-                                    <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>was recently
+                                    <p class="updates valign-wrapper"><strong>{{ update.term_name }} </strong>was
+                                        recently
                                         updated
                                         <a class="btn-small icon-button z-depth-0"
                                             href="{{ url_for('view_term', term_id=update._id) }}"><i
@@ -383,72 +392,73 @@
                                 </div>
                             </div>
                             {% endfor %}
-                        {% else %}
-                        <div class="row">
-                            <div class="col s12">
-                                <p>No new term updates</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-                <!-- RECENT COMMENTS (not read-only) card -->
-                {% if access_level != 'read only' %}
-                <div class="card z-depth-1">
-                    <div class="gradient white-text card-header card-title">Recent Comments</div>
-                    <div class="card-surround card-content">
-                        {% if recent_comments|length > 0 %}
-                            {% for comment in recent_comments %}
-                                {% if not term_comment(comment) == "" %}
-                                <div class="row mb0 mt0">
-                                    <div class="col s12">
-                                        <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
-                                            "{{ comment.comment }}"
-                                            <a class="btn-small icon-button z-depth-0"
-                                                href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
-                                                    class="small material-icons">keyboard_arrow_right</i></a>
-                                        </p>
-                                    </div>
+                            {% else %}
+                            <div class="row">
+                                <div class="col s12">
+                                    <p>No new term updates</p>
                                 </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                        <div class="row">
-                            <div class="col s12">
-                                <p>No new comments</p>
                             </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
+                    {% endif %}
+                    <!-- RECENT COMMENTS (not read-only) card -->
+                    {% if access_level != 'read only' %}
+                    <div class="card z-depth-1">
+                        <div class="gradient white-text card-header card-title">Recent Comments</div>
+                        <div class="card-surround card-content">
+                            {% if recent_comments|length > 0 %}
+                            {% for comment in recent_comments %}
+                            {% if not term_comment(comment) == "" %}
+                            <div class="row mb0 mt0">
+                                <div class="col s12">
+                                    <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
+                                        "{{ comment.comment }}"
+                                        <a class="btn-small icon-button z-depth-0"
+                                            href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
+                                                class="small material-icons">keyboard_arrow_right</i></a>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                            <div class="row">
+                                <div class="col s12">
+                                    <p>No new comments</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
+                {% endif %}
+                {% endif %}
+                {% if user.access_level != 'requested' %}
+                {% block content %}
+                {% endblock %}
+                {% endif %}
+                <!-- Modal Structure -->
+                <div id="logout-modal" class="modal">
+                    <div class="modal-content">
+                        <h4>Log out</h4>
+                        <p>Do you really want to log out?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('logout') }}" class="search-mng-btn btn-small z-depth-0">
+                            Yes, log me out<i class="fas fa-plus-square right"></i>
+                        </a>
+                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                    </div>
+                </div>
             </div>
-    {% endif %}  
-    {% endif %}
-    {% endif %}
-    {% if user.access_level != 'requested' %}
-        {% block content %}
-        {% endblock %}
-    {% endif %}
-            <!-- Modal Structure -->
-            <div id="logout-modal" class="modal">
-                <div class="modal-content">
-                    <h4>Log out</h4>
-                    <p>Do you really want to log out?</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="{{ url_for('logout') }}" class="search-mng-btn btn-small z-depth-0">
-                        Yes, log me out<i class="fas fa-plus-square right"></i>
-                    </a>
-                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-                </div>
-            </div>   
-            </div>  
-    </main>
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        </main>
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+            integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>

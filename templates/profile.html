@@ -18,9 +18,6 @@
                 <div class="card-header light-underline">Update password</div>
                 <form class="p10" method="POST" action="{{ url_for('change_password', user_id=user._id) }}">
                     <div class="input-field">
-                        <input placeholder="Username" id="username" name="username" type="text" class="validate">
-                    </div>
-                    <div class="input-field">
                         <input placeholder="Existing password" id="password" name="password" type="password" class="validate">
                     </div>
                     <div class="input-field">

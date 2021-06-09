@@ -11,7 +11,6 @@
                     <input id="username" name="username" type="text" class="" minlength="3" maxlength="15" pattern="^[a-zA-Z0-9]{3,15}$" required>
                     <label for="username">Username</label>
                 </div>
-           
                 <div class="input-field col s12">
                     <input id="password" name="password" type="password" pattern="^[a-zA-Z0-9]{3,15}$" class="" minlength="3" maxlength="15" required>
                     <label for="password">Password</label>
@@ -34,7 +33,17 @@
     </p>
 </div>
 </div>
+
 {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <span class="count-notifications">
+            {% for message in messages %}
+            <span id="message" value="{{ message }}"></span>
+            {% endfor %}
+        </span>
+        {% endif %}
+    {% endwith %}
 {% endblock %}
 
 

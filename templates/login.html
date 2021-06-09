@@ -32,5 +32,13 @@
     </p>
 </div>
 </div>
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <span class="count-notifications">
+            {% for message in messages %}
+            <span id="message" value="{{ message }}"></span>
+            {% endfor %}
+        </span>
+        {% endif %}
+    {% endwith %}
 {% endblock %}
