@@ -97,10 +97,10 @@
             <div class="card-content term-card-content">
                 <div class="row">
                     <div class="col s12">
-                        <span
+                        <p
                             class="card-title grey-text text-darken-4"><strong>{{ each_user.username|capitalize() }}:</strong>
-                            <p class="subtitle">{{ each_user.access_level|capitalize() }}</p>
-                        </span>
+                            <span class="subtitle">{{ each_user.access_level|capitalize() }}</span>
+                    </p>
                     </div>
                 </div>
                 <form method="POST"

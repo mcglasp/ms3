@@ -25,7 +25,7 @@
                         <strong>Also: </strong>
                         {% endif %}
                             {% for alt_term in term.alt_terms %}
-                            <a href="#">{{ alt_term }}</a></span>
+                            <a href="#">{{ alt_term }}</a>
                             {%- if loop.length > 1 and not loop.last -%}
                                 {%- if loop.revindex0 == 1 -%}
                                 <span> and </span>
@@ -34,6 +34,7 @@
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
+                    </span>
                 </div>
                 <div>
                     <span>
@@ -41,7 +42,7 @@
                         <strong>Not: </strong>
                         {% endif %}
                         {% for incorrect_term in term.incorrect_terms %}
-                        <a href="#">{{ incorrect_term }}</a></span>
+                        <a href="#">{{ incorrect_term }}</a>
                         {%- if loop.length > 1 and not loop.last -%}
                             {%- if loop.revindex0 == 1 -%}
                             <span> or </span>
@@ -50,6 +51,7 @@
                             {% endif %}
                         {% endif %}
                     {% endfor %}
+                    </span>
                 </div>
                 {% if created_by != "" %}
                 <p><strong>created by:</strong> {{ created_by|capitalize() }}</p>
@@ -103,7 +105,7 @@
                         <div class="input-field comment-width">
                             <p class="comment-username">Comment as {{ user.username|capitalize() }}</p>
                             <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
-                                <textarea name="comment" id="comment" cols="30" rows="10" type="text"
+                                <textarea name="comment" id="comment" cols="30" rows="10"
                                     class="materialize-textarea"></textarea>
                                 <div class="button-flex-wrap central">
                                     <button type="submit" class="btn-small z-depth-0 search-mng-btn">Add
