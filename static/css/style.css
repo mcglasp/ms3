@@ -45,7 +45,7 @@ background: linear-gradient(to left, #2a5298, #1e3c72);
 .gradient-light {
 background: #FFEC28;
 background: -o-radial-gradient(bottom left, #FFEC28, #FFF98F);
-background: radial-gradient(to top right, #FFEC28, #FFF98F);
+background: radial-gradient(top right, #FFEC28, #FFF98F);
 }
 
 .light-underline {
@@ -594,7 +594,10 @@ font-family: 'Nanum Gothic', sans-serif;
     position: relative;
     top: 10px;
     font-family: 'Nanum Myeongjo', serif;
+}
 
+.truncate {
+    max-width: 150px;
 }
 
 .underline-header {
@@ -673,14 +676,14 @@ font-family: 'Nanum Gothic', sans-serif;
 
 .comment-wrap-light {
 background-color: #fcf8c352;
-background-image: -o-linear-gradient(135deg, #fcf8c352 0%rgba(255, 239, 119, 0.315)77 74%);
-background-image: linear-gradient(315deg, #fcf8c352 0%rgba(255, 239, 119, 0.315)77 74%);
+background: -o-linear-gradient(135deg, #fcf8c352 0%rgba(255, 239, 119, 0.315)77 74%);
+background: linear-gradient(315deg, #fcf8c352 0%rgba(255, 239, 119, 0.315)77 74%);
 }
 
 .comment-wrap-dark {
 background-color: #fff4604b;
-background-image: -o-linear-gradient(135deg, #fff4607c 0%rgba(255, 239, 119, 0.473)77 74%);
-background-image: linear-gradient(315deg, #fff4607c 0%rgba(255, 239, 119, 0.473)77 74%);
+background: -o-linear-gradient(135deg, #fff4607c 0%rgba(255, 239, 119, 0.473)77 74%);
+background: linear-gradient(315deg, #fff4607c 0%rgba(255, 239, 119, 0.473)77 74%);
 }
 
 .comment-head {
@@ -736,8 +739,7 @@ background-image: linear-gradient(315deg, #fff4607c 0%rgba(255, 239, 119, 0.473)
 
 .pin {
 background: #FFEC28;
-background: -o-radial-gradient(bottom left, #FFEC28, #FFF98F);
-background: radial-gradient(to top right, #FFEC28, #FFF98F);
+background: radial-gradient(#FFEC28, #FFF98F);
 }
 
 .content-scroll {
@@ -747,8 +749,6 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
 .inline {
     display: inline;
 }
-
-
 
 .search-row { 
     display: -webkit-box; 
@@ -760,7 +760,6 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
             flex-direction: row;
     -webkit-box-align: right;
         -ms-flex-align: right;
-            align-items: right;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between; 

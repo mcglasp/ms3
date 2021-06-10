@@ -123,18 +123,30 @@ I looked to existing online dictionaries for inspiration and was surprised by th
 
 - As a user I want to be able to search for and read terms directly from the dashboard
 
+<img src="/static/readme-assets/search_bar.png" alt="The search field" width="100%" height="100%">
+<img src="/static/readme-assets/browse_bar.png" alt="The browse bar" width="100%" height="100%">
+
 The search field is always accessible at the top of every page in both desktop and mobile views.
 
 - As a user I want to pin terms to my personal dashboard, and delete those pinned terms from the dashboard with a single click
+<img src="/static/readme-assets/pinned_terms.png" alt="Pinned terms" width="50%" height="100%">
 
 The user's homepage (their 'dashboard') is the first page loaded after login and displays their personally 'pinned' terms. 
 The term itself is a link to more information on that term's usage and the cross deletes the pin from the dashboard and removes it from the user account in MongoDB.
 
+
 - As a user I want to be able to change my password easily
+
+<img src="/static/readme-assets/update_password.png" alt="Update password" width="50%" height="100%">
 
 A single click takes the user to their Profile page, where they can immediately access the Update Password form.
 
 - As an administrator I want to be able to create, update and delete terms and user accounts from within two clicks of the dashboard
+
+<img src="/static/readme-assets/add_terms_btn.png" alt="Add terms" width="50%" height="100%">
+<img src="/static/readme-assets/manage_term.png" alt="Manage terms" width="50%" height="100%">
+<img src="/static/readme-assets/manage_users.png" alt="Manage users" width="50%" height="100%">
+
 
 To create a term, the user clicks 'Add term' from the navigation page. To update a term they search for that term, click on it, then click the 'Manage term' button. From here they can also delete that term.
 To access the same CRUD functionality for user accounts, the user accesses all these functions from a single 'Manage users' page, accessible via the navbar.
@@ -142,11 +154,20 @@ To access the same CRUD functionality for user accounts, the user accesses all t
 - As an administrator I want activity notifications to appear on my dashboard
 
 Administrators have a dedicated notifications panel, which shows new user registrations (and the option to set their access level), new term suggestions, and flagged comments.
+
 - As an administrator I want to be able to access and deal with relevant activity directly from the notification
 
 Administrators can click straight through to the relevant data from the notification, rather than have to search for it.
 
+<img src="/static/readme-assets/recent_comments.png" alt="Recent comments" width="50%" height="100%">
+<img src="/static/readme-assets/recent_updates.png" alt="Recent updates" width="50%" height="100%">
+
+
 - The Sound On Sound style guide is a confidential document, as an Administrator I want it to be password protected and only available to approved users
+
+<img src="/static/readme-assets/login.png" alt="Login page" width="50%" height="100%">
+<img src="/static/readme-assets/locked_out_alert.png" alt="Locked-out alert" width="50%" height="100%">
+<img src="/static/readme-assets/change_alert.png" alt="Change alert" width="50%" height="100%">
 
 The login and registration pages are all that is accessible to those not yet registered. Those who wish to view the style guide must register and wait for their account to be verified by an administrator. 
 The administrator sets the new user's level (or deletes their registration, if applicable). If the user account was created manually by the administrator themselves, the new user is directed to change their password. 
@@ -155,15 +176,24 @@ Until they do so, for their own security they are not allowed full access to the
 - As a staff member I want to be able to view recently updated terms from my dashboard [also applicable to external authors]
 Editorial staff (read & comment) and external authors (read-only) are shown a 'recent updates' panel on their dashboard, which lists any recently updated or created terms. They can click through to the terms from the dashboard.
 
+<img src="/static/readme-assets/recent_updates.png" alt="Recent term updates" width="50%" height="100%">
+
 - As a staff member I want to be able to view recent comments from my dashboard and click through to them to make comments myself
+
+<img src="/static/readme-assets/recent_comments.png" alt="Recent comments" width="50%" height="100%">
 
 Read & comment users can see recent comments made by other users and the terms about which those comments were made. They are able to click through to the term to leave their own comment.
 
 - As a staff member I want to be able to comment on existing terms within a single click of searching for that term
 
+<img src="/static/readme-assets/comments.png" alt="Comments section" width="50%" height="100%">
+
 Read & comment users can view the term they have searched for by either clicking on the search result's header or clicking the 'View term' button. They then have the option to leave a comment directly below the term in the comment box.
 
 - As a staff member I want to be able to easily suggest new terms for inclusion to the administrators
+
+<img src="/static/readme-assets/suggestion_btn.png" alt="Suggestion button" width="50%" height="100%">
+<img src="static/readme-assets/suggestion_form.png" alt="Suggestion form" width="50%" height="100%">
 
 Read & comment users have the option to 'Make a suggestion' from the navbar. This is a duplicate of the 'Add term' function available to administrators, but displayed under a different name for read & comment users. 
 It uses the same function to interact with MongoDB but, if the entry is made by a non-admin user, it is given the 'Pending' status of 'True' and displayed to an administrator as a suggested term. 
