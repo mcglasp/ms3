@@ -1,42 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
- <!-- Modal Structure -->
-  <div id="delete-modal" class="modal">
+<!-- Modal Structure -->
+<div id="delete-modal" class="modal">
     <div class="modal-content">
-      <h4>Delete term</h4>
-      <p>Are you sure you want to delete this term?</p>
+        <h4>Delete term</h4>
+        <p>Are you sure you want to delete this term?</p>
     </div>
     <div class="modal-footer">
-                            <a href="{{ url_for('delete_term', term_id=term._id) }}" class="search-mng-btn btn-small z-depth-0">
-                        Delete term <i class="fas fa-plus-square right"></i>
-                    </a>
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        <a href="{{ url_for('delete_term', term_id=term._id) }}" class="search-mng-btn btn-small z-depth-0">
+            Delete term <i class="fas fa-plus-square right"></i>
+        </a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
     </div>
-  </div>
+</div>
 <div id="manage-term" class="col s12 l8 m8 offset-m2">
     <div>
         <div class="card z-depth-1">
-
             <div class="card-title card-header gradient-light">
                 Manage term</div>
             <div class="card-content p10 mt0 mb0 pt0">
-
                 <form class="" method="POST" action="{{ url_for('update_term', term_id=term._id) }}">
-
                     <div class="input-field">
                         <input value="{{ term.term_name }}" id="term_name" name="term_name" type="text"
                             class="validate input-box input-width-half">
                     </div>
-
-
                     <div class="input-field" id="alts">
                         <p class="alts-incs light-underline">Alternative usage </p>
                         {% for alt_term in term.alt_terms %}
-                        {% if term.alt_terms|length > 0 %}
-                        <input class="input-box input-width-half" name="alt_terms" value="{{ alt_term }}">
-                        {% else %}
-                        <p>No alternative terms have been added yet</p>
-                        {% endif %}
+                            {% if term.alt_terms|length > 0 %}
+                            <input class="input-box input-width-half" name="alt_terms" value="{{ alt_term }}">
+                            {% else %}
+                            <p>No alternative terms have been added yet</p>
+                            {% endif %}
                         {% endfor %}
                         <p>Add new alternative terms below</p>
                         <div id="new-alts">
@@ -46,71 +41,51 @@
                             class="btn-floating btn-small waves-effect waves-light mt1 z-depth-0 add-fab"><i
                                 class="material-icons">add</i></a>
                     </div>
-       
-
-
-        
-                <div class="input-field" id="incs">
-                    <p class="alts-incs light-underline">Incorrect usage </p>
-
-                    {% for incorrect_term in term.incorrect_terms %}
-                    {% if term.incorrect_terms|length > 0 %}
-                    <input class="input-box input-width-half" name="incorrect_terms" value="{{ incorrect_term }}">
-                    {% else %}
-                    <p>No incorrect terms have been added yet</p>
-                    {% endif %}
-                    {% endfor %}
-
-
-                    <p>Add new incorrect terms below</p>
-                    <div id="new-incs">
-                    </div>
-                    <a href="javascript:void(0);"
-                        onclick="add_field('incorrect_terms', 'new-incs', 'input-box input-width-half')" id="add_inc"
-                        class="z-depth-0 btn-floating btn-small waves-effect waves-light mt1 add-fab"><i
-                            class="material-icons">add</i></a>
-                </div>
-        
-
-
-    
-                <div class="input-field">
-                    <div class="form-outline">
-                        <select class="input-width-half validate" id="type_name" name="type_name" required>
-                            {% for type in types %}
-                            {% if term.type_name == type.type_name %}
-                            <option class="" value="{{ type.type_name }}" disabled selected>{{ type.type_name }}
-                            </option>
+                    <div class="input-field" id="incs">
+                        <p class="alts-incs light-underline">Incorrect usage </p>
+                        {% for incorrect_term in term.incorrect_terms %}
+                            {% if term.incorrect_terms|length > 0 %}
+                            <input class="input-box input-width-half" name="incorrect_terms" value="{{ incorrect_term }}">
                             {% else %}
-                            <option class="" value="{{ type.type_name }}">{{ type.type_name }}</option>
+                            <p>No incorrect terms have been added yet</p>
                             {% endif %}
-                            {% endfor %}
-                        </select>
+                        {% endfor %}
+                        <p>Add new incorrect terms below</p>
+                        <div id="new-incs">
+                        </div>
+                        <a href="javascript:void(0);"
+                            onclick="add_field('incorrect_terms', 'new-incs', 'input-box input-width-half')"
+                            id="add_inc"
+                            class="z-depth-0 btn-floating btn-small waves-effect waves-light mt1 add-fab"><i
+                                class="material-icons">add</i></a>
                     </div>
-                </div>
-      
-          
-                <div class="input-field">
-                    <input placeholder="Usage notes" value="{{ term.usage_notes }}" id="usage_notes" name="usage_notes" type="text"
-                        class="input-box input-width-full validate">
-                </div>
-       
-       <div class="button-flex-wrap central">
-            
-                    <button type="submit" class="search-mng-btn btn-small z-depth-0">Update term
-                        <i class="fas fa-plus-square right"></i>
-                    </button>
-       
-
-  <button data-target="delete-modal" class="btn modal-trigger search-mng-btn btn-small z-depth-0">Delete</button>
-                </div>
-         
-            </form>
+                    <div class="input-field">
+                        <div class="form-outline">
+                            <select class="input-width-half validate" id="type_name" name="type_name" required>
+                                {% for type in types %}
+                                    {% if term.type_name == type.type_name %}
+                                    <option class="" value="{{ type.type_name }}" disabled selected>{{ type.type_name }}
+                                    </option>
+                                    {% else %}
+                                    <option class="" value="{{ type.type_name }}">{{ type.type_name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-field">
+                        <input placeholder="Usage notes" value="{{ term.usage_notes }}" id="usage_notes"
+                            name="usage_notes" type="text" class="input-box input-width-full validate">
+                    </div>
+                    <div class="button-flex-wrap central">
+                        <button type="submit" class="search-mng-btn btn-small z-depth-0">Update term
+                            <i class="fas fa-plus-square right"></i>
+                        </button>
+                        <button data-target="delete-modal"
+                            class="btn modal-trigger search-mng-btn btn-small z-depth-0">Delete</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
-
-
-
-  {% endblock %}
+    {% endblock %}

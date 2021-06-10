@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div id="add-term" class="col s12 m8 l8 offset-m2">
-
     <div class="card z-depth-1">
-
         <div class="gradient-light card-header card-title">
             {% if access_level == "administrator" %}
             Add term
@@ -17,10 +15,8 @@
                     <input placeholder="Principle term" id="term_name" name="term_name" type="text"
                         class="validate input-box input-width-half" required>
                 </div>
-
                 <div class="input-field" id="alts">
                     <p class="alts-incs light-underline">Alternative usage </p>
-
                     <div id="new-alts">
                     </div>
                     <div class="valign-wrapper">
@@ -31,40 +27,28 @@
                         <span class="add-btn-info">Click to add alternative terms</span>
                     </div>
                 </div>
-
                 <div class="input-field" id="incs">
                     <p class="alts-incs light-underline">Incorrect usage </p>
-
                     <div id="new-incs">
                     </div>
-
                     <div class="valign-wrapper">
                         <a href="javascript:void(0);"
                             onclick="add_field('incorrect_terms', 'new-incs', 'input-box input-width-half')"
                             class="btn-floating btn-small waves-effect waves-light mt1 z-depth-0 add-fab"><i
                                 class="material-icons">add</i></a>
-
-
                         <span class="add-btn-info">Click to add incorrect terms</span>
                     </div>
                 </div>
-
-
-
-
-
                 <div class="input-field">
                     <div class="form-outline">
                         <select class="input-width-half validate" id="type_name" name="type_name" required>
                             <option class="left-align" selected disabled>Select term type</option>
                             {% for type in types %}
                             <option class="" value="{{ type.type_name }}">{{ type.type_name }}</option>
-
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-
                 <div class="input-field">
                     <input placeholder="Usage notes" id="usage_notes" name="usage_notes" type="text"
                         class="input-box input-width-full validate">
@@ -78,16 +62,10 @@
                         {% endif %}
                         <i class="fas fa-plus-square right"></i>
                     </button>
-
                     <a href="{{ url_for('add_term') }}" class="btn-small left z-depth-0 search-mng-btn">Reset</a>
                 </div>
-
-
             </form>
         </div>
     </div>
 </div>
-
-
-
 {% endblock %}

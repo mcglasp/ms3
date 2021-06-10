@@ -1,149 +1,126 @@
 {% extends "base.html" %}
 {% block content %}
-
 <div id="view-term" class="col s12 l8 m8 offset-m2">
-<div class="row">
-            <div class="card z-depth-1">
-                <div class="card-title card-header gradient-light">View term</div>
-                <div class="card-content">
-                    {% if term.pending == True %}
-                    <span class="card-title grey-text text-darken-4">
-                        
-                        This term is <strong>pending approval:</strong>
-                        
-                    </span>
-                    {% endif %}
-                    <span class="card-title grey-text text-darken-4">
-
-                        {{ term.term_name }}
-                    </span>
-                    {% if term.pending != True %}
-                    <a class="btn-floating waves-effect waves-light z-depth-0 add-fab"
-                        href="{{ url_for('pin_term', term_id=term._id, origin='view') }}"><i
-                            class="material-icons">add</i></a>
-                    {% endif %}
-
-                    <p class="term-type"><em>{{ term.type_name }}</em></p>
-                  
-                 
-                    <div>
-
-                        <span>
-                            {% if term.alt_terms %}
-                            <strong>Also: </strong>
-                            {% endif %}
-                            
+    <div class="row">
+        <div class="card z-depth-1">
+            <div class="card-title card-header gradient-light">View term</div>
+            <div class="card-content">
+                {% if term.pending == True %}
+                <span class="card-title grey-text text-darken-4">
+                    This term is <strong>pending approval:</strong>
+                </span>
+                {% endif %}
+                <span class="card-title grey-text text-darken-4">
+                    {{ term.term_name }}
+                </span>
+                {% if term.pending != True %}
+                <a class="btn-floating waves-effect waves-light z-depth-0 add-fab"
+                    href="{{ url_for('pin_term', term_id=term._id, origin='view') }}"><i
+                        class="material-icons">add</i></a>
+                {% endif %}
+                <p class="term-type"><em>{{ term.type_name }}</em></p>
+                <div>
+                    <span>
+                        {% if term.alt_terms %}
+                        <strong>Also: </strong>
+                        {% endif %}
                             {% for alt_term in term.alt_terms %}
                             <a href="#">{{ alt_term }}</a></span>
-                        {%- if loop.length > 1 and not loop.last -%}
-                        {%- if loop.revindex0 == 1 -%}
-                        <span> and </span>
-                        {%- else -%}
-                        <span>, </span>
-                        {% endif %}
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <div>
-
-                        <span>
-                            {% if term.incorrect_terms %}
-                            <strong>Not: </strong>
-                            {% endif %}
-                            {% for incorrect_term in term.incorrect_terms %}
-                            <a href="#">{{ incorrect_term }}</a></span>
-                        {%- if loop.length > 1 and not loop.last -%}
-                        {%- if loop.revindex0 == 1 -%}
-                        <span> or </span>
-                        {%- else -%}
-                        <span>, </span>
-                        {% endif %}
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <p><strong>created by:</strong> {{ created_by|capitalize() }}</p>
-                    {% if last_updated_by != "" %}
-                    <p><strong>updated by:</strong> {{ last_updated_by|capitalize() }}</p>
-                    {% endif %}
-                    <p><strong>added/last updated:</strong> {{ term.last_updated }}</p>
-                    {% if term.usage_notes != "" %}
-                    <p><strong>Usage notes:</strong> {{ term.usage_notes }}</p>
-                    {% endif %}
-                </div>
-
-
-
-
-
-                <!-- Comments -->
-                {% if access_level != 'read only' %}
-
-                {% for term_comment in term_comments %}
-
-
-                <div class="container comment-width">
-                    {% if loop.index % 2 == 0 %}
-                    <div class="card z-depth-0 comment-wrap-light">
-                        {% else %}
-                        <div class="card z-depth-0 comment-wrap-dark">
-                            {% endif %}
-                            <div class="comment-head valign-wrapper">
-                                <div>
-                                    <p class="timestamp">{{ term_comment.timestamp }}</p>
-
-                                    <p class="comment-user">
-                                        {{ find_commenter(term_comment)|capitalize() }}
-                                        {% if find_commenter(term_comment) != "" %} said:
-                                        {% else %}
-                                        Anon
-                                        {% endif %}</p>
-                                </div>
-                                {% if access_level == "administrator" %}
-                                <div class=""><a class="icon-button btn-small z-depth-0"
-                                        href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}"><i
-                                            class="material-icons">delete</i>
-                                    </a></div>
+                            {%- if loop.length > 1 and not loop.last -%}
+                                {%- if loop.revindex0 == 1 -%}
+                                <span> and </span>
+                                {%- else -%}
+                                <span>, </span>
                                 {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                </div>
+                <div>
+                    <span>
+                        {% if term.incorrect_terms %}
+                        <strong>Not: </strong>
+                        {% endif %}
+                        {% for incorrect_term in term.incorrect_terms %}
+                        <a href="#">{{ incorrect_term }}</a></span>
+                        {%- if loop.length > 1 and not loop.last -%}
+                            {%- if loop.revindex0 == 1 -%}
+                            <span> or </span>
+                            {%- else -%}
+                            <span>, </span>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% if created_by != "" %}
+                <p><strong>created by:</strong> {{ created_by|capitalize() }}</p>
+                {% endif %}
+                {% if last_updated_by != "" %}
+                <p><strong>updated by:</strong> {{ last_updated_by|capitalize() }}</p>
+                {% endif %}
+                <p><strong>added/last updated:</strong> {{ term.last_updated }}</p>
+                {% if term.usage_notes != "" %}
+                <p><strong>Usage notes:</strong> {{ term.usage_notes }}</p>
+                {% endif %}
+            </div>
+            <!-- Comments -->
+            {% if access_level != 'read only' %}
+            {% for term_comment in term_comments %}
+            <div class="container comment-width">
+                {% if loop.index % 2 == 0 %}
+                <div class="card z-depth-0 comment-wrap-light">
+                    {% else %}
+                    <div class="card z-depth-0 comment-wrap-dark">
+                        {% endif %}
+                        <div class="comment-head valign-wrapper">
+                            <div>
+                                <p class="timestamp">{{ term_comment.timestamp }}</p>
+                                <p class="comment-user">
+                                    {{ find_commenter(term_comment)|capitalize() }}
+                                    {% if find_commenter(term_comment) != "" %} said:
+                                    {% else %}
+                                    Anon
+                                    {% endif %}</p>
                             </div>
-                            <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
                             {% if access_level == "administrator" %}
-
-                            {% elif access_level == "read and comment" %}
-                            <a class="flag-btn icon-button btn-small z-depth-0"
-                                href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}"><i
-                                    class="material-icons">flag</i></a>
+                            <div class=""><a class="icon-button btn-small z-depth-0"
+                                    href="{{ url_for('delete_comment', comment_id=term_comment._id, term_id=term._id) }}"><i
+                                        class="material-icons">delete</i>
+                                </a></div>
                             {% endif %}
                         </div>
+                        <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
+                        {% if access_level == "administrator" %}
+                        {% elif access_level == "read and comment" %}
+                        <a class="flag-btn icon-button btn-small z-depth-0"
+                            href="{{ url_for('flag_comment', comment_id=term_comment._id, term_id=term._id, username=username) }}"><i
+                                class="material-icons">flag</i></a>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-
-                    <div class="card z-depth-0">
-                        <div class="card-content">
-                            <div class="input-field comment-width">
-                                <p class="comment-username">Comment as {{ user.username|capitalize() }}</p>
-                                <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
-                                    <textarea name="comment" id="comment" cols="30" rows="10" type="text"
-                                        class="materialize-textarea"></textarea>
-                                        <div class="button-flex-wrap central">
-                                    
-                                    <button type="submit" class="btn-small z-depth-0 search-mng-btn">Add comment</button>
+                </div>
+                {% endfor %}
+                <div class="card z-depth-0">
+                    <div class="card-content">
+                        <div class="input-field comment-width">
+                            <p class="comment-username">Comment as {{ user.username|capitalize() }}</p>
+                            <form method="POST" action="{{ url_for('add_comment', term_id=term._id) }}" class="">
+                                <textarea name="comment" id="comment" cols="30" rows="10" type="text"
+                                    class="materialize-textarea"></textarea>
+                                <div class="button-flex-wrap central">
+                                    <button type="submit" class="btn-small z-depth-0 search-mng-btn">Add
+                                        comment</button>
                                     {% if access_level == 'administrator' %}
                                     <div class="">
                                         <a href="{{ url_for('manage_term', term_id=term._id)  }}"
                                             class="btn-small z-depth-0 search-mng-btn">Manage term</a></div>
                                     {% endif %}
-                                    </div>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
-
-
-    {% endblock %}
+</div>
+{% endblock %}

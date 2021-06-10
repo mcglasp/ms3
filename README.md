@@ -281,19 +281,102 @@ All buttons and links should perform correctly in all views and at all access le
 Improving the search function
 
 MongoDB includes an accurate text search, available natively by creating an index on your chosen field. This works well and it can be set to search multiple fields. 
-For example, I had good results applying it to the Term Name, Incorrect Usage and Alternative Usage fields. The drawback to using this approach alone is that it can only find what is there.
-In other words, if I were to look up 'Plug in', for which the correct term was 'plug-in', it would return the correct result so long as I had included my incorrect search term in the 'Incorrect terms' field.
+For example, I had good results applying it to the Term Name, Incorrect Usage and Alternative Usage fields. The drawback to using this approach alone is that it can 
+only find what is there, and only when the user types an accurate and full query and finds and accurately typed and full record.
+
+In other words, if I were to look up 'Plug in', for which the correct term was 'plug-in', it would return the correct result so long as I had included my incorrect 
+search term in the 'Incorrect terms' field when entering the term in the database.
 If I hadn't included that when adding the term to the database, however, I'd probably be served an empty result.
 
-To improve matters I have written a more comprehensive text search function, which takes the user's search query through several iterations, testing to see if it can finding any matches along the way. 
-Key inclusions in this function are punctuation-stripping, a regex pattern, string-to-digit number replacement (and vice versa) and the ability to ignore 'Pending: true' results and continue the search after discounting them.
+To improve matters I have written a more comprehensive text search function, which takes the user's search query through several iterations, testing to see if it can 
+finding any matches along the way. It also sorts the results into a set, which automatically removes duplicates, and moves the more accurate results to the front of the set. 
+If, however, this search function delivers an empty result, the standard search function is performed, and then, finally, the user query is updated by stripping out punctuation 
+and the extended and standard searches are performed once more. A future development of this feature would be to reformat the code considerably to perform these 
+functions more efficiently and more quickly, and also identify a preferred hierarchy to the order in which the various types of searches are performed.
+
+I am currently working on a regex pattern, string-to-digit number replacement (and vice versa).
+
+## Security issues
+
+Once the project was 90% complete I met with my mentor to look over the app. He was able to circumvent site security in a couple of crucial ways:
+
+Expected behaviour: A user should only be able to make changes to their own account.
+Found behaviour: My mentor was able to change the password of another user via the change password form on his own account. He simply typed in the other user's username and 
+used his own account's credentials to validate it, then changed the password of the inputted account to one of his choosing. This meant that, as a read-only user, 
+for example, he was able to take control of the Administrator's account.
+Solution: Though this appeared to be a major flaw, the easy fix was simply to remove the username field on the form, thereby removing the possibility of linking the change of password to the wrong account.
+
+Expected behaviour: A logged-out user should not be able to access pages available only to logged-in users.
+Found behaviour: My mentor was able to access parts of the site that should have been inaccessible to him by manually guessing at the correct url. 
+In 90% of cases this would result in an error being thrown, but it leaves open the possibility that a user could access an account without an account.
+Solution: With the help of my mentor I added a function to check for the presence of a user session cookie. If none is found, the site redirects to the login page. 
+This was added to all pages of the site that require a user to be logged in.
 
 Future development & Existing Bugs
 
-The most useful feature for future development would be a bulk-upload tool accessible from the front-end. This would likely require some kind of CSV-to-JSON conversion. This is one reason I have deliberately left most of the term fields as optional; this increases flexibility and allows users to input their existing data as quickly as possible, without having to fill it out first with fields they may not previously have needed.
+The most useful feature for future development would be a bulk-upload tool accessible from the front-end. This would likely require some kind of CSV-to-JSON conversion. 
+This is one reason I have deliberately left most of the term fields as optional; this increases flexibility and allows users to 
+input their existing data as quickly as possible, without having to fill it out first with fields they may not previously have needed.
 
 Flash messages behaviour across different browsers.
 
-    Deployment
-    Resources and credits
+The flash messages work well throughout the site where a user is logged in. However, I have encountered a bug when attempting to invoke flash messages on the 
+Register and Login pages, and when logging out. In Chrome these behave as expected: for example, trying to register an 
+already-existing username results in a flash message on the Register page. In Firefox and Safari, however, they do not always show up until a user has logged in. 
+For example, if a user were to enter incorrect login details, they should receive a notification of this. In some cases in the aforementioned browsers, 
+however, I have found that these messages do not appear until after the user has logged in successfully. I have been unable to reliably recreate this behaviour up until this point,
+so it therefore remains a known issue.
+
+Deployment
+Heroku Deployment
+I used Heroku to deploy this project. To do so it was necessary to go through the following procedure:
+
+- In the terminal type the following: 
+ - pip3 freeze --local > requirements.txt
+ *Press return to complete the command*
+ - echo web: python run.py > Procfile
+ *Press return to complete the command*
+
+The above steps are critical to successful deployment through Heroku as they convey essential information to Heroku.
+
+- 'Create New App' from the Heroku dashboard
+- Connect the app to GitHub via the Deploy tab, selecting 'GitHub' from the Deployment method section and selecting the relevant repository
+- From Settings, select 'Reveal Config Vars' and fill in the following information:
+    * IP, MONGO_DBNAME, MONGO_URI, PORT, SECRET_KEY
+- From the Deploy tab, select 'Enable Automatic Deployment'
+
+Forking the GitHub Repository
+
+Log in to GitHub and locate the GitHub Repository
+At the top of the Repository, locate and click the Fork button.
+After a moment the forked repository should appear in your GitHub account
+Making a Local Clone
+
+Log in to GitHub and locate the GitHub Repository
+Under the repository name, click 'Clone or download'
+To clone the repository using https, copy the link under 'Clone with https'
+Open Git Bash
+Change the current working directory to the location where you want the cloned directory to be made
+Type git clone, and then paste the copied URL
+Press Enter
+
+
+Resources
+
+I used the online resources below for general guidance and solutions to specific problems. Coding solutions are also signposted in the code.
+
+- Code Institute Full Stack Development course material, mentor and tutors.
+- Slack community (general guidance and peer review)
+- Stack Overflow website (specific solutions to coding problems)
+- CSS-tricks (specific solutions to coding problems)
+- W3 Schools (specific code examples and tutorials)
+- The Responsinator (check responsiveness)
+- AmIResponsive (check responsiveness)
+- Autoprefixer CSS online (increase compatibility across browsers)
+- Jigsaw and W3 Schools (code validators)
+- JShint (Javascript code quality checker)
+- Google Chrome (developer tools)
+- Webaim.org (accessibility guidance)
+- favicon.io (favicon generator)
+
     Acknowledgments

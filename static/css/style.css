@@ -342,10 +342,6 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     padding-left: 7px;
 }
 
-.search-input-box {
-    
-}
-
 
 
 #search-label {
@@ -528,6 +524,8 @@ font-family: 'Nanum Gothic', sans-serif;
     -webkit-box-shadow: none;
             box-shadow: none;
 }
+
+
 
 /* Headers */
 
@@ -792,12 +790,10 @@ background: radial-gradient(to top right, #FFEC28, #FFF98F);
 }
 #change-pword {
 text-align: center;
+line-height: 2.3;
 }
 
-#change-pword a {
-font-weight: 900;
 
-}
 
 #logout-modal h4, #delete-modal h4, #delete-user-modal h4 {
     font-family: 'Nanum Myeongjo', serif;
@@ -1034,3 +1030,10 @@ main>div:first-of-type .col:nth-child(2) {
     .sidenav-wrap {
         height: 100vh;
     }
+
+    .btn:hover, .btn-small:hover, .icon-button:hover, button:hover {
+    opacity: 0.6;
+  transition: 0.2s;
+}
+
+  

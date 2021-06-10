@@ -23,7 +23,6 @@
                             <a href="{{ url_for('manage_users') }}" class="search-mng-btn btn-small z-depth-0">Reset</a>
                             <a href="{{ url_for('show_all_users') }}" class="search-mng-btn btn-small z-depth-0">Show
                                 All</a>
-
                         </div>
                     </form>
                 </div>
@@ -55,14 +54,14 @@
                                 <p>
                                     <label for="{{ access_level.level_name }}_add">
                                         <input id="{{ access_level.level_name }}_add" name="access_level_add"
-                                            value="{{ access_level.level_name }}" type="radio" required/>
+                                            value="{{ access_level.level_name }}" type="radio" required />
                                         <span>{{ access_level.level_name }}</span>
                                     </label>
                                 </p>
                                 {% endfor %}
                             </div>
                             <div class="input-field col s4 m4">
-                                <button type="submit" class="search-mng-btn btn-small">Add user</button>
+                                <button type="submit" class="z-depth-0 search-mng-btn btn-small">Add user</button>
                             </div>
                         </div>
                     </form>
@@ -137,8 +136,9 @@
                         <div class="col m4">
                             <div class="user-buttons row">
                                 {% if each_user._id == user._id %}
-                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped" data-position="bottom"
-                                    data-tooltip="You cannot change your own access level">Update</div>
+                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped"
+                                    data-position="bottom" data-tooltip="You cannot change your own access level">Update
+                                </div>
                                 {% else %}
                                 <button class="search-mng-btn btn-small z-depth-0" type="submit">Update</button>
                                 {% endif %}
@@ -159,11 +159,8 @@
                 </form>
             </div>
         </div>
-
         {% endfor %}
         {% endif %}
     </div>
 </div>
-
-
 {% endblock %}

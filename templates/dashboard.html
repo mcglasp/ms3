@@ -1,83 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
-
-
 {% if session.user %}
-
-
 <div id="result-row" class="col s12 m12 l8">
-
     <div id="terms" class="row">
         <div class="col s12 m8 l8 offset-m2">
             {% if terms == None %}
                 {% if user.to_change_pword != True %}
-            <div class="card z-depth-1 mb0 show-on-medium-and-down">
-                <div class="card-content card-surround gradient-light">
-       
-    
-                <p class="center-align"><strong>Welcome to myHouse.</strong></p>
-
-                <p class="show-on-medium-and-down hide-on-large-only">Click on the menu button above to check on your pinned terms and updates.</p>            
-                <p class="search-info show-on-large-only">Search for a term or browse the style guide</p>
-          
-            </div>
-            </div>
-              {% endif %}
+                <div class="card z-depth-1 mb0 show-on-medium-and-down">
+                    <div class="card-content card-surround gradient-light">
+                        <p class="center-align"><strong>Welcome to myHouse.</strong></p>
+                        <p class="show-on-medium-and-down hide-on-large-only">Click on the menu button above to check on
+                            your pinned terms and updates.</p>
+                        <p class="search-info show-on-large-only">Search for a term or browse the style guide</p>
+                    </div>
+                </div>
+                {% endif %}
             {% elif terms|length == 0 %}
             <p>Your search returned no results</p>
             {% elif (terms|length == 1) and (terms[0].pending == True) %}
             <p>Your search returned no results</p>
             {% else %}
-            {% for term in terms %}
-            {% if term.pending != True %}
-
-            <div class="card card-radius z-depth-1">
-                <div class="card-content term-card-content">
-                    <span class="card-title term grey-text text-darken-4">
-                        <p id="principle-term"><a href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
-                                class="card-subhead">{{ term.type_name }}</em></p>
-                    </span><a class="fab btn-floating halfway-fab btn-small waves-effect waves-light z-depth-0"
-                        href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
-                            class="material-icons">add</i></a>
-                    <div class="card-info-container">
-                            {% if term.alt_terms|length > 0 %}
-                    <strong>Also: </strong>
-                    {% for alt_term in term.alt_terms %}
-                    <span>
-                        {% if not loop.first and loop.last %}
-                        and
-                        {% endif %}
-                        {{ alt_term }}
-                    </span>
-                    {% endfor %}
+                {% for term in terms %}
+                    {% if term.pending != True %}
+                    <div class="card card-radius z-depth-1">
+                        <div class="card-content term-card-content">
+                            <span class="card-title term grey-text text-darken-4">
+                                <p id="principle-term"><a
+                                        href="{{ url_for('view_term', term_id=term._id) }}">{{ term.term_name }}</a><em
+                                        class="card-subhead">{{ term.type_name }}</em></p>
+                            </span><a class="fab btn-floating halfway-fab btn-small waves-effect waves-light z-depth-0"
+                                href="{{ url_for('pin_term', term_id=term._id, origin='dash') }}"><i
+                                    class="material-icons">add</i></a>
+                            <div class="card-info-container">
+                                {% if term.alt_terms|length > 0 %}
+                                <strong>Also: </strong>
+                                    {% for alt_term in term.alt_terms %}
+                                    <span>
+                                        {% if not loop.first and loop.last %}
+                                        and
+                                        {% endif %}
+                                        {{ alt_term }}
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="card-buttons-container row mb0">
+                                <a class="search-mng-btn btn-small z-depth-0"
+                                    href="{{ url_for('view_term', term_id=term._id) }}">
+                                    View
+                                </a>
+                                {% if access_level == "administrator" %}
+                                <a class="search-mng-btn btn-small z-depth-0"
+                                    href="{{ url_for('manage_term', term_id=term._id) }}">
+                                    Manage
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
-                    </div>
-                    <div class="card-buttons-container row mb0">
-
-                        <a class="search-mng-btn btn-small z-depth-0" href="{{ url_for('view_term', term_id=term._id) }}">
-                            View
-                        </a>
-
-                        {% if access_level == "administrator" %}
-
-                        <a class="search-mng-btn btn-small z-depth-0"
-                            href="{{ url_for('manage_term', term_id=term._id) }}">
-                            Manage
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            {% endfor %}
+                {% endfor %}
             {% endif %}
         </div>
     </div>
-
-
 </div>
-
-
 {% endif %}
-
 {% endblock %}
