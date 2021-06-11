@@ -151,9 +151,6 @@ def slice_search(user_query):
         term = mongo.db.terms.find_one({'term_name': name})
         terms.append(term)
 
-    for t in terms:
-        print(t['term_name'])  
-
     return terms
 
 
@@ -327,7 +324,7 @@ def view_term(term_id):
     if check_user_login() is True:
 
         term = get_record('terms', '_id', ObjectId(term_id))
-        creator_id = term['created_by']        
+        creator_id = term['created_by']
         term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
 
         def find_commenter(term_comment):
@@ -342,7 +339,8 @@ def view_term(term_id):
             return commenter
 
         try:
-            term_creator_user = get_record('users', '_id', ObjectId(creator_id))
+            term_creator_user = get_record(
+                'users', '_id', ObjectId(creator_id))
             term['created_by'] = term_creator_user['username']
             created_by = term['created_by']
 
@@ -362,10 +360,10 @@ def view_term(term_id):
             last_updated_by = ""
 
         return render_template("view_term.html", term=term,
-                            term_comments=term_comments,
-                            find_commenter=find_commenter,
-                            created_by=created_by,
-                            last_updated_by=last_updated_by)
+                               term_comments=term_comments,
+                               find_commenter=find_commenter,
+                               created_by=created_by,
+                               last_updated_by=last_updated_by)
 
     return redirect(url_for("login"))
 
@@ -625,8 +623,6 @@ def add_term():
         user_id = user_record['user']['_id']
         access_level = user_record['access_level']
 
-        print(user_id)
-
         if request.method == "POST":
             now = datetime.now()
             alternatives = get_fields("alt_terms")
@@ -640,15 +636,11 @@ def add_term():
                 "alt_terms": alternatives,
                 "incorrect_terms": incorrect,
                 "usage_notes": request.form.get("usage_notes"),
-                "type_name": type_name if type_name != None else type_suggest,
+                "type_name": type_name if type_name is not None else type_suggest,
                 "pending": False if access_level == 'administrator' else True,
                 "created_by": ObjectId(user_id),
                 "last_updated": now.strftime("%d/%m/%Y")
                 }
-
-            print(term['created_by'])
-
-
 
             mongo.db.terms.insert_one(term)
             if access_level == 'administrator':
@@ -691,16 +683,12 @@ def update_term(term_id):
                 "alt_terms": alternatives,
                 "incorrect_terms": incorrect,
                 "usage_notes": request.form.get("usage_notes"),
-                "type_name": type_name if type_name != None else type_suggest,
+                "type_name": type_name if type_name is not None else type_suggest,
                 "pending": False if access_level == 'administrator' else True,
                 "created_by": created_by,
                 "last_updated_by": ObjectId(user_id),
                 "last_updated": now.strftime("%d/%m/%Y")
                 }
-
-            print(update_term['last_updated_by'])
-            print(update_term['last_updated'])
-            print(update_term['created_by'])
 
             mongo.db.terms.update({"_id": ObjectId(term_id)}, update_term)
 
@@ -719,27 +707,21 @@ def search_terms():
 
         try:
             terms = slice_search(query)
-            print(terms, 1)
 
             if terms == []:
                 terms = standard_search(query)
-                print(terms, 2)
-                
 
                 if terms == []:
-                    print(terms, 3)
 
                     new_query = strip_punctuation(query)
                     terms = slice_search(new_query)
 
                     if terms == []:
-                        print(terms, 4)
 
                         terms = standard_search(new_query)
-        
+
         except Exception:
             terms = ""
-
 
         return render_template("dashboard.html",
                                terms=terms, categories=categories)
@@ -830,11 +812,9 @@ def add_user():
             if existing_user:
                 flash("Username already exists! Please try a different one.")
                 return redirect(url_for("manage_users"))
-            
+
             get_access_level = request.form.get("access_level_add")
             access_level = format_access_level(get_access_level, "to_val")
-
-            print(get_access_level)
 
             new_user = {
                 "username": request.form.get("username").lower(),
@@ -916,7 +896,7 @@ def page_not_found(e):
         session_user = inject_user()
 
         return render_template('404.html', session_user=session_user), 404
-    
+
     return redirect(url_for("login"))
 
 
