@@ -3,9 +3,9 @@
 ### Milestone 3 Project
 
 
-<img src="/static/readme-assets/desktop_view.png" alt="Desktop view" width="100%">
-<img src="/static/readme-assets/ipad_view.png" alt="iPad view" width="49%">
-<img src="/static/readme-assets/mobile_view.png" alt="Mobile view" width="35%">
+<img src="/static/readme-assets/responsive_views.png" alt="Mobile view" width="100%">
+<img src="/static/readme-assets/desktop_view.png" alt="Desktop view" width="50%">
+<img src="/static/readme-assets/mobile_view.png" alt="Mobile view" width="20%">
 
 View this project at: https://ms3-myhouse.herokuapp.com/
 
