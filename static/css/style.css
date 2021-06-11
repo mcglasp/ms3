@@ -689,16 +689,12 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     margin-left: 10px;
 }
 
-#error-no-user, #login, #register {
+#login, #register {
     color: black;
     position: relative;
     top: 70px;
     z-index: 0;
     margin-top: 2.2rem;
-}
-
-#error-no-user {
-    line-height: 2;
 }
 
 /* Term comments */
