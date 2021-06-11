@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-
-    <div id="error-no-user" class="col s8 offset-s2 m6 offset-m3 l6 offset-l3">
-        <div class="row">
-            <div id="error-card" class="card z-depth-1">
-                <div class="gradient-light card-header card-title">
-                    404! Looks like there's a problem...
-                </div>
-                <div class="card-content p10 mt0 mb0">
-                    <p>It looks like the page you're looking for no longer exists. Make sure you're logged in or double
-                        check that the URL is correct. If the problem continues, contact your administrator.</p>
-                </div>
+<div class="row">
+    <div id="error-no-user" class="col s12 m6 offset-m4 l6 offset-l4">
+        <div id="error-card" class="card z-depth-1">
+            <div class="gradient-light card-header card-title">
+                404! Looks like there's a problem...
+            </div>
+            <div class="card-content p10 mt0 mb0">
+                <p>It looks like the page you're looking for no longer exists. Make sure you're logged in or double
+                    check that the URL is correct. If the problem continues, contact your administrator.</p>
             </div>
         </div>
     </div>
+</div>
    
     {% endblock %}
