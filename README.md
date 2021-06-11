@@ -4,8 +4,8 @@
 
 
 <img src="/static/readme-assets/responsive_views.png" alt="Mobile view" width="100%">
-<img src="/static/readme-assets/desktop_view.png" align="left" alt="Desktop view" width="50%" height="100%">
-<img src="/static/readme-assets/mobile_view.png" align="right" alt="Mobile view" width="50%" height="100%">
+<img src="/static/readme-assets/desktop_view.png" alt="Desktop view" width="50%" height="100%">
+<img src="/static/readme-assets/mobile_view.png" alt="Mobile view" width="50%" height="100%">
 
 
 #### View this project at: https://ms3-myhouse.herokuapp.com/
