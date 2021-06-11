@@ -68,6 +68,8 @@
             {% if access_level != 'read only' %}
             {% for term_comment in term_comments %}
             <div class="container comment-width">
+                <!-- Subtle background colour change to 
+                    differentiate between different comments -->
                 <div class="card z-depth-0 
                 {% if loop.index % 2 == 0 %}
                 comment-wrap-light
@@ -79,6 +81,7 @@
                             <div>
                                 <p class="timestamp">{{ term_comment.timestamp }}</p>
                                 <p class="comment-user">
+                                    <!-- If username cannot be found, Anon is displayed -->
                                     {{ find_commenter(term_comment)|capitalize() }}
                                     {% if find_commenter(term_comment) != "" %} said:
                                     {% else %}
@@ -94,6 +97,7 @@
                             {% endif %}
                     </div>
                     <div>
+                        <!-- Flag comment button, not shown to Admin users -->
                         <p class="comment"><strong>{{ term_comment.comment }}</strong></p>
                         {% if access_level == "administrator" %}
                         {% elif access_level == "read and comment" %}
@@ -105,6 +109,7 @@
                 </div>
             </div>
                 {% endfor %}
+                <!-- Comment text input field -->
                 <div class="card z-depth-0">
                     <div class="card-content">
                         <div class="input-field comment-width">
@@ -118,7 +123,7 @@
                                     {% if access_level == 'administrator' %}
                                     <div class="">
                                         <a href="{{ url_for('manage_term', term_id=term._id)  }}"
-                                            class="btn-small z-depth-0 search-mng-btn">Manage term</a>
+                                            class="btn-small z-depth-0 search-mng-btn">Manage</a>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -127,7 +132,6 @@
                     </div>
                 </div>
                 {% endif %}
-           
         </div>
     </div>
 </div>

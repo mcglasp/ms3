@@ -31,12 +31,12 @@ def check_user_login():
     except:
         return False
 
-
+# Sets the page title
 def page_h3(h3):
 
     return h3
 
-
+# Finds flagged comments
 def return_flags():
     records = mongo.db.comments.find({'flagged': True})
     flagged = list(records)
@@ -65,7 +65,8 @@ def lets_nums():
 
     return categories
 
-
+# Fetches the fields added to 
+# add and update term via Javascript
 def get_fields(find):
 
     class Field_name:
@@ -91,25 +92,7 @@ def get_fields(find):
 
     return return_list
 
-
-def format_access_level(level, direction):
-    level_names = {
-        "administrator": "administrator",
-        "read_and_comment": "read and comment",
-        "read_only": "read only"
-    }
-
-    if direction == "to_val":
-        for key, val in level_names.items():
-            if key == level:
-                return val
-
-    if direction == "to_key":
-        for key, val in level_names.items():
-            if val == level:
-                return key
-
-
+# First text search
 def slice_search(user_query):
 
     letters = user_query
@@ -153,13 +136,13 @@ def slice_search(user_query):
 
     return terms
 
-
+# Second text search
 def standard_search(user_query):
     terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
 
     return terms
 
-
+# Third text search
 def strip_punctuation(user_query):
     user_query = re.sub("[\s'&/\-.]", '', user_query)
 
@@ -570,31 +553,37 @@ def change_password(user_id):
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        # check if username exists in db
-        existing_user = mongo.db.users.find_one(
-            {"username": request.form.get("username").lower()})
-        if existing_user:
-            # ensure hashed password matches user input
-            if check_password_hash(existing_user["password"],
-                                   request.form.get("password")):
-                session["user"] = request.form.get("username").lower()
-                return redirect(url_for(
-                    "dashboard", user=session['user']))
+    # If user attempts to go back to login while signed in, it will
+    # redirect to dashboard to prevent breaking the page.
+
+    if check_user_login() is not True:
+        if request.method == "POST":
+            # check if username exists in db
+            existing_user = mongo.db.users.find_one(
+                {"username": request.form.get("username").lower()})
+            if existing_user:
+                # ensure hashed password matches user input
+                if check_password_hash(existing_user["password"],
+                                    request.form.get("password")):
+                    session["user"] = request.form.get("username").lower()
+                    return redirect(url_for(
+                        "dashboard", user=session['user']))
+
+                else:
+                    # invalid password match
+
+                    flash("Incorrect Username and/or Password")
+                    return redirect(url_for("login"))
 
             else:
-                # invalid password match
+                # username doesn't exist
 
                 flash("Incorrect Username and/or Password")
-                return redirect(url_for("login"))
+                return redirect(url_for('login'))
 
-        else:
-            # username doesn't exist
-
-            flash("Incorrect Username and/or Password")
-            return redirect(url_for('login'))
-
-    return render_template("login.html")
+        return render_template("login.html")
+    
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/profile/<user>", methods=["GET", "POST"])
@@ -903,4 +892,4 @@ def page_not_found(e):
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
-            debug=True)
+            debug=False)

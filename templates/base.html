@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +16,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>myHouse | A house style manager for publishers</title>
 </head>
-
 <body>
     <!-- Desktop navigation -->
     <nav id="nav-closed" class="z-depth-0 gradient white-text">
@@ -25,6 +23,7 @@
             <div class="logo-alert">
                 <h1 class="brand-logo logo white-text"><a
                         href="{{ url_for('dashboard', user=session['user']) }}">myHouse</a></h1>
+                <!-- Notification alert and toast -->
                 {% if (g.notifications > 0) and (g.user != None) and (g.access_level == 'administrator') %}
                 <data id="alert" class="alert" onclick="alert()" value="You have {{ g.notifications }}
                 notification{% if g.notifications > 1 %}s{% endif %}">!</data>
@@ -55,9 +54,8 @@
                 <li><a class="white-text" href="{{ url_for('login') }}">Log in</a></li>
             </ul>
             {% endif %}
-
+        <!-- Mobile/tablet navigation -->
             {% if session.user %}
-            <!-- Mobile/tablet navigation -->
             <ul class="sidenav" id="sidenav-mobile">
                 {% if (access_level == "administrator") and (user.to_change_pword != True) %}
                 <li><a class="sidenav-item" href="{{ url_for('add_term') }}">Add terms</a><a class="material-icons"
@@ -214,6 +212,7 @@
             {% endif %}
         </div>
     </nav>
+    <!-- Message given to users needing to change password (after account was manually created by admin) -->
     {% if user.to_change_pword == True %}
     <div id="change-pword" class="row">
         <div class="col s12 m8 l8 offset-m2 offset-l2">
@@ -227,13 +226,15 @@
         </div>
     </div>
     {% endif %}
+
     {% if session.user %}
-    <!-- Title (desktop), flash messages (desktop) and search bar -->
+    <!-- Title (desktop), flash messages and search bar -->
     <div id="subheader" class="row valign-wrapper">
         {% if user.access_level == 'requested' %}
         <p id="awaiting-approval">Account awaiting admin approval</p>
         {% endif %}
         {% if user.to_change_pword != true %}
+        <!-- Flash messages now diverted to a toast via Javascript -->
         <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
             <span class="page-title">{{- this_h3 -}}</span>
             {% with messages = get_flashed_messages() %}
@@ -244,6 +245,7 @@
             {% endif %}
             {% endwith %}
         </div>
+        <!-- Search bar, present across the site -->
         <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
             <div class="search-row">
                 <div id="search-input" class="input-field right-align">
@@ -266,6 +268,7 @@
                     <a href="javascript:void(0)" class="btn-small z-depth-0 search-mng-btn" id="browse-toggle">A-Z</a>
                 </div>
             </div>
+            <!-- Browse toggle -->
             <div class="letters row hide-on-large-only" id="letters-mobile">
                 <div class="col s12">
                     {% for category in categories %}
@@ -281,6 +284,7 @@
     {% endif %}
     {% if user.access_level != 'requested' %}
     <main id="main-content" class="sidenav-close sidenav-wrap">
+        <!-- Notifications appear as first column on desktop -->
         <div id="notifications-desktop" class="row">
             {% if user.to_change_pword != true %}
                 {% if session.user %}
@@ -334,10 +338,8 @@
                                     <button class="icon-button btn-small z-depth-0" type="submit"><i
                                             class="small material-icons center-align">keyboard_arrow_up</i></button>
                                 </div>
-                            </form>
-                            
+                            </form>                         
                             {% endfor %}
-                            
                             {% else %}
                             <p>No new registrations</p>
                             {% endif %}
@@ -457,9 +459,7 @@
     </main>
     {% endif %}
 
-    
-
-    <!-- Modal Structure -->
+    <!-- Logout Modal -->
     <div id="logout-modal" class="modal">
         <div class="modal-content">
             <h4>Log out</h4>

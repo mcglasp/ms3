@@ -33,6 +33,8 @@
         </div>
     </div>
     {% endif %}
+    <!-- Flash message function added below to inform
+    user that registration request has been sent -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <span class="count-notifications">

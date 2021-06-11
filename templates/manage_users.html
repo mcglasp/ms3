@@ -4,6 +4,7 @@
 <div id="user-row-col" class="row">
     <div id="mng-users" class="col s12 m6 l4">
         <div class="row">
+            <!-- Search users bar -->
             <div id="search-users-card" class="card z-depth-1 mb0">
                 <div class="card-title card-header gradient-light">Search users</div>
                 <div class="mb0 mt0 p10">
@@ -90,7 +91,7 @@
         {% else %}
         {% for each_user in users_list %}
         {% set counter = loop.index %}
-        <!-- Modal Structure -->
+        <!-- Delete user modal -->
         <div id="delete-user-modal_{{ each_user._id }}" class="modal">
             <div class="modal-content">
                 <h4>Delete user?</h4>
@@ -104,6 +105,7 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
             </div>
         </div>
+        <!-- User cards -->
         <div class="card card-radius z-depth-1">
             <div class="card-content term-card-content">
                 <div class="row">
@@ -142,6 +144,7 @@
                         </div>
                         <div class="col s4 m4 offset-s2">
                             <div class="user-buttons row">
+                                <!-- Buttons for the logged-in user's card are disabled -->
                                 {% if each_user._id == user._id %}
                                 <div class="disabled-btn search-mng-btn btn-small z-depth-0 tooltipped"
                                     data-position="bottom" data-tooltip="You cannot change your own access level">Update

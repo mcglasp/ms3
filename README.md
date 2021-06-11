@@ -2,6 +2,11 @@
 ## A House Style Guide Management Tool for Publishers
 ### Milestone 3 Project
 
+
+<img src="/static/readme-assets/desktop_view.png" alt="Desktop view" width="100%">
+<img src="/static/readme-assets/ipad_view.png" alt="iPad view" width="49%">
+<img src="/static/readme-assets/mobile_view.png" alt="Mobile view" width="35%">
+
 View this project at: https://ms3-myhouse.herokuapp.com/
 
 The view site at every access level, three user accounts have been set up:
@@ -98,7 +103,7 @@ Space to search and view results is the absolute priority for this tool and ther
 
 'Pinned' terms will be available alongside notifications, whether in mobile or desktop view. These terms will be selected by the individual user depending on which terms they most regularly search for. The user will be able to click through to the full term usage from the 'pin'.
 
-Administrators will be able to access a user-management page, from which they can search for a user, change that user's access level, or delete the user account entirely. They will also be able to create a new user from here. There is a slight structural compromise with this section of the tool, as described later in the Readme.
+Administrators will be able to access a user-management page, from which they can search for a user, change that user's access level, or delete the user account entirely. They will also be able to create a new user from here.
 
 From the main navigation Administrators will be able to add a term, while for Read & Comment users this will change to 'Suggest term'. Neither functionality will be available to Read-only users.
 
@@ -312,14 +317,13 @@ Solution: An if statement was added using a Jinja template to identify whether a
 If it is, only the Log out and Profile options will be available to them and a message will appear on the dashboard asking them to change their password, with a link through to the Profile page in order to do so. 
 Once their password is changed all access-level-appropriate content becomes available.
 
-
 - Update password
 
 Worked as expected. However, see 'future development' section for more detail.
 
 - Display and navigate through notifications
 
-**Expected behviour**: Recent comments should display in the correct order.
+**Expected behaviour**: Recent comments should display in the correct order.
 
 Found behaviour: Recent comments are not displaying correctly.
 
@@ -349,8 +353,6 @@ If, however, this search function delivers an empty result, the standard search 
 and the extended and standard searches are performed once more. A future development of this feature would be to reformat the code considerably to perform these 
 functions more efficiently and more quickly, and also identify a preferred hierarchy to the order in which the various types of searches are performed.
 
-I am currently working on a regex pattern, string-to-digit number replacement (and vice versa).
-
 ## Security issues
 
 Once the project was 90% complete I met with my mentor to look over the app. He was able to circumvent site security in a couple of crucial ways:
@@ -377,6 +379,9 @@ The most useful feature for future development would be a bulk-upload tool acces
 This is one reason I have deliberately left most of the term fields as optional; this increases flexibility and allows users to 
 input their existing data as quickly as possible, without having to fill it out first with fields they may not previously have needed.
 
+The Safari browser appears not to correctly display a few small elements. Namely the pins, the browse button and the alert icon. They appear to be jumping out of their containers.
+This is a minor UI issue and does not impact on usability.
+
 #### Flash messages behaviour across different browsers
 
 The flash messages work well throughout the site where a user is logged in. However, I have encountered a bug when attempting to invoke flash messages on the 
@@ -386,12 +391,16 @@ For example, if a user were to enter incorrect login details, they should receiv
 however, I have found that these messages do not appear until after the user has logged in successfully. I have been unable to reliably recreate this behaviour up until this point,
 so it therefore remains a known issue.
 
-### The Joy of Checks
+### The Joy of Checks; Validating the Code
 
 The HTML validator found at validator.w3.org is usually a five-minute visit. Not so on this occassion. I validated each page of my website at each access level by direct input, taking the code from the source code available via dev tools.
 it passed in every instance. However, one issue plagued me, my tutors and the good folks on Slack for a full two days. A stray div tag would rear its ugly head from time to time only to disappear just as 
 quickly. The first occassion alerted me to an issue surrounding how I had placed a grid row around the block content and endblock tags. Some painstaking work fixed each of these until it was once again fixed.
 However, depending on the method of validation, who was attempting validation and the temperature outside, there was no telling whether it would pass.
+
+What I can say, however, is that at 7.24pm on Friday 11th June 2021, there were **no validation errors on any page, at any access level**.
+
+I can also confirm that at this point it passes through CSS validators, JS linters and PEP8 compliance checkers without issue.
 
 ### Accessibility testing
 
@@ -423,7 +432,7 @@ The above steps are critical to successful deployment through Heroku as they con
 
 - Log in to GitHub and locate the GitHub Repository
 - At the top of the Repository, locate and click the Fork button.
-After a moment the forked repository should appear in your GitHub account
+- After a moment the forked repository should appear in your GitHub account
 
 #### Making a Local Clone
 

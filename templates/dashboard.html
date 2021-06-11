@@ -4,6 +4,7 @@
 <div id="result-row" class="col s12 m12 l8">
     <div id="terms" class="row">
         <div class="col s12 m8 l8 offset-m2">
+                    <!-- Search not yet performed -->
             {% if terms == None %}
                 {% if user.to_change_pword != True %}
                 <div class="card z-depth-1 mb0 show-on-medium-and-down">
@@ -17,11 +18,14 @@
                 {% endif %}
             {% elif terms|length == 0 %}
             <p>Your search returned no results</p>
+                    <!-- No results from term search -->
             {% elif (terms|length == 1) and (terms[0].pending == True) %}
             <p>Your search returned no results</p>
             {% else %}
+            <!-- Search results list -->
                 {% for term in terms %}
                     {% if term.pending != True %}
+                    <!-- Individual search result card -->
                     <div class="card card-radius z-depth-1">
                         <div class="card-content term-card-content">
                             <div class="card-title term grey-text text-darken-4">
@@ -58,6 +62,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- end of individual term card -->
                     {% endif %}
                 {% endfor %}
             {% endif %}
