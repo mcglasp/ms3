@@ -894,7 +894,7 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
         width: 40px;
     }
 
-    #disabled-btn {
+    .disabled-btn {
         cursor: none;
         pointer-events: none;
     }

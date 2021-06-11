@@ -323,19 +323,21 @@
                                 action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
                                 <div class="valign-wrapper button-flex-wrap">
                                     <p>{{ new_reg.username|capitalize() }}:</p>
-                                    <select id="access_level_{{ counter }}" name="access_level">
+                                    <select id="access_level_{{ loop.index }}" name="access_level">
                                         <option selected>
                                             Set access level
                                         </option>
                                         <option value="Read only">Read only</option>
-                                        <option value="Read only">Read and comment</option>
-                                        <option value="Read only">Administrator</option>
+                                        <option value="Read and comment">Read and comment</option>
+                                        <option value="Administrator">Administrator</option>
                                     </select>
                                     <button class="icon-button btn-small z-depth-0" type="submit"><i
                                             class="small material-icons center-align">keyboard_arrow_up</i></button>
                                 </div>
                             </form>
+                            
                             {% endfor %}
+                            
                             {% else %}
                             <p>No new registrations</p>
                             {% endif %}

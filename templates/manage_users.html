@@ -89,7 +89,6 @@
         <p class="search-info">Your search returned no results</p>
         {% else %}
         {% for each_user in users_list %}
-
         {% set counter = loop.index %}
         <!-- Modal Structure -->
         <div id="delete-user-modal_{{ each_user._id }}" class="modal">
@@ -144,7 +143,7 @@
                         <div class="col s4 m4 offset-s2">
                             <div class="user-buttons row">
                                 {% if each_user._id == user._id %}
-                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped"
+                                <div class="disabled-btn search-mng-btn btn-small z-depth-0 tooltipped"
                                     data-position="bottom" data-tooltip="You cannot change your own access level">Update
                                 </div>
                                 {% else %}
@@ -153,7 +152,7 @@
                             </div>
                             <div class="user-buttons row">
                                 {% if each_user._id == user._id %}
-                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped"
+                                <div class="disabled-btn search-mng-btn btn-small z-depth-0 tooltipped"
                                     data-position="bottom" data-tooltip="You cannot delete your own account">Delete
                                 </div>
                                 {% else %}

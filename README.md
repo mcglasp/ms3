@@ -386,6 +386,13 @@ For example, if a user were to enter incorrect login details, they should receiv
 however, I have found that these messages do not appear until after the user has logged in successfully. I have been unable to reliably recreate this behaviour up until this point,
 so it therefore remains a known issue.
 
+### The Joy of Checks
+
+The HTML validator found at validator.w3.org is usually a five-minute visit. Not so on this occassion. I validated each page of my website at each access level by direct input, taking the code from the source code available via dev tools.
+it passed in every instance. However, one issue plagued me, my tutors and the good folks on Slack for a full two days. A stray div tag would rear its ugly head from time to time only to disappear just as 
+quickly. The first occassion alerted me to an issue surrounding how I had placed a grid row around the block content and endblock tags. Some painstaking work fixed each of these until it was once again fixed.
+However, depending on the method of validation, who was attempting validation and the temperature outside, there was no telling whether it would pass.
+
 ### Accessibility testing
 
 I tested the accibility of the site using the tool on webaim.org. I've used this several times before without issue, but on this occassion 
