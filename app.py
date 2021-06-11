@@ -91,6 +91,7 @@ def get_fields(find):
 
     return return_list
 
+
 def format_access_level(level, direction):
     level_names = {
         "administrator": "administrator",
@@ -166,7 +167,6 @@ def strip_punctuation(user_query):
     user_query = re.sub("[\s'&/\-.]", '', user_query)
 
     return user_query
-
 
 
 @app.context_processor
@@ -325,6 +325,7 @@ def delete_flag(comment_id):
 @app.route("/view_term/<term_id>")
 def view_term(term_id):
     if check_user_login() is True:
+
         term = get_record('terms', '_id', ObjectId(term_id))
         creator_id = term['created_by']        
         term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
@@ -348,21 +349,23 @@ def view_term(term_id):
         except TypeError:
             created_by = ""
 
+        except KeyError:
+            created_by = ""
+
         try:
             term_updated_by = get_record(
                 'users', '_id', term['last_updated_by'])
             term['last_updated_by'] = term_updated_by['username']
             last_updated_by = term['last_updated_by']
 
-
         except Exception:
             last_updated_by = ""
 
         return render_template("view_term.html", term=term,
-                               term_comments=term_comments,
-                               find_commenter=find_commenter,
-                               created_by=created_by,
-                               last_updated_by=last_updated_by)
+                            term_comments=term_comments,
+                            find_commenter=find_commenter,
+                            created_by=created_by,
+                            last_updated_by=last_updated_by)
 
     return redirect(url_for("login"))
 
@@ -909,9 +912,12 @@ def delete_user(each_user_id):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    session_user = inject_user()
+    if check_user_login() is True:
+        session_user = inject_user()
 
-    return render_template('404.html', session_user=session_user), 404
+        return render_template('404.html', session_user=session_user), 404
+    
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":

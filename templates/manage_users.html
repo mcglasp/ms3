@@ -49,18 +49,22 @@
                             </div>
                         </div>
                         <div class="row valign-wrapper">
-                            <div class="input-field col s8 m8">
+                            <div class="input-field col s12 m8">
                                 <p>
                                     <label for="read_only_add">
                                         <input id="read_only_add" name="access_level_add"
                                             value="read only" type="radio" required />
                                         <span>Read only</span>
                                     </label>
+                                    </p>
+                                    <p>
                                     <label for="read_and_comment_add">
                                         <input id="read_and_comment_add" name="access_level_add"
                                             value="read and comment" type="radio" required />
                                         <span>Read & Comment</span>
                                     </label>
+                                    </p>
+                                    <p>
                                     <label for="administrator_add">
                                         <input id="administrator_add" name="access_level_add"
                                             value="administrator" type="radio" required />
@@ -69,7 +73,7 @@
                                 </p>
                             </div>
                             <div class="input-field col s4 m4">
-                                <button type="submit" class="z-depth-0 search-mng-btn btn-small">Add user</button>
+                                <button type="submit" class="z-depth-0 search-mng-btn btn-small">Add</button>
                             </div>
                         </div>
                     </form>
@@ -114,34 +118,30 @@
                 <form method="POST"
                     action="{{ url_for('update_user', each_user_id=each_user._id, origin='manage_users') }}">
                     <div class="row access-select">
-                        <div class="col m8">
-
+                        <div class="col s4 m8">
                              <p>
                                     <label for="read_only_{{ counter }}">
                                         <input id="read_only_{{ counter }}" name="access_level"
-                                            value="read only" type="radio" class="blue-radio"/>
+                                            value="read only" type="radio" class="blue-radio" required/>
                                         <span class="blue-radio">Read only</span>
                                     </label>
+                                    </p>
+                                    <p>
                                     <label for="read_and_comment_{{ counter }}">
                                         <input id="read_and_comment_{{ counter }}" name="access_level"
-                                            value="read and comment" type="radio" class="blue-radio"/>
+                                            value="read and comment" type="radio" class="blue-radio" required/>
                                         <span class="blue-radio">Read & Comment</span>
                                     </label>
+                                    </p>
+                                    <p>
                                     <label for="administrator_{{ counter }}">
                                         <input id="administrator_{{ counter }}" name="access_level"
-                                            value="administrator" type="radio" class="blue-radio"/>
+                                            value="administrator" type="radio" class="blue-radio" required/>
                                         <span class="blue-radio">Administrator</span>
                                     </label>
                              </p>
-
-
-                            
-
-
-                    
                         </div>
-
-                        <div class="col m4">
+                        <div class="col s4 m4 offset-s2">
                             <div class="user-buttons row">
                                 {% if each_user._id == user._id %}
                                 <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped"
@@ -153,10 +153,11 @@
                             </div>
                             <div class="user-buttons row">
                                 {% if each_user._id == user._id %}
-                                <a class="search-mng-btn btn-small z-depth-0 modal-trigger"
-                                    data-target="delete-user-modal_{{ each_user._id }}" href="javascript:void(0)"
-                                    disabled>Delete</a>
+                                <div id="disabled-btn" class="search-mng-btn btn-small z-depth-0 tooltipped"
+                                    data-position="bottom" data-tooltip="You cannot delete your own account">Delete
+                                </div>
                                 {% else %}
+                                <!-- CREDIT Stackoverflow user Adrianapolis. Addin data-target ID to pass the user_id variable through to the modal. -->
                                 <a class="search-mng-btn btn-small z-depth-0 modal-trigger"
                                     data-target="delete-user-modal_{{ each_user._id }}"
                                     href="javascript:void(0)">Delete</a>

@@ -5,7 +5,7 @@ $(document).ready(function(){
     $("#delete-user-modal").on("show.bs.modal", function(event){
         var button = $(event.relatedTarget);
         var url = button.data("url");
-        $(this).find('#confirm-delete').attr('href', url)
+        $(this).find('#confirm-delete').attr('href', url);
     });
 
     $('.modal').modal({
@@ -19,13 +19,9 @@ $(document).ready(function(){
 
 document.addEventListener("DOMContentLoaded", function() {
   var elems = document.querySelectorAll(".sidenav");
-  var options = {};
-  var instances = M.Sidenav.init(elems, options);
+  var instances = M.Sidenav.init(elems);
 
-  document
-    .querySelector(".sidenav-close")
-   
-    .addEventListener("click", function() {
+  document.querySelector(".sidenav-close").addEventListener("click", function() {
       var elem = document.querySelector(".sidenav");
       var instance = M.Sidenav.getInstance(elem);
 
@@ -49,21 +45,21 @@ $(document).ready(function(){
 // Function to read flash message value and display it in Materialise toast
 
 function alert(){
-    let toastAlert = document.getElementById('alert').getAttribute('value')
-    M.toast({html: toastAlert})
+    let toastAlert = document.getElementById('alert').getAttribute('value');
+    M.toast({html: toastAlert});
 }
 
-let toastInfo = document.getElementById('message').getAttribute('value')
-M.toast({html: toastInfo})
+let toastInfo = document.getElementById('message').getAttribute('value');
+M.toast({html: toastInfo});
 
 
 // Function to add fields for incorrect and alternative term usage
 
   function add_field(what, parent_id, add_class) {
-    field_name = what
-    to_add = document.createElement('div')
-    to_add.innerHTML = `<input name="${what}" class="${add_class}">`
-    add_to = document.getElementById(parent_id)
-    add_to.appendChild(to_add)
+    let field_name = what;
+    let to_add = document.createElement('div');
+    to_add.innerHTML = `<input name="${what}" class="${add_class}">`;
+    let add_to = document.getElementById(parent_id);
+    add_to.appendChild(to_add);
   }
 
