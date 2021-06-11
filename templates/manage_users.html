@@ -50,15 +50,23 @@
                         </div>
                         <div class="row valign-wrapper">
                             <div class="input-field col s8 m8">
-                                {% for access_level in levels %}
                                 <p>
-                                    <label for="{{ access_level.level_name }}_add">
-                                        <input id="{{ access_level.level_name }}_add" name="access_level_add"
-                                            value="{{ access_level.level_name }}" type="radio" required />
-                                        <span>{{ access_level.level_name }}</span>
+                                    <label for="read_only_add">
+                                        <input id="read_only_add" name="access_level_add"
+                                            value="read only" type="radio" required />
+                                        <span>Read only</span>
+                                    </label>
+                                    <label for="read_and_comment_add">
+                                        <input id="read_and_comment_add" name="access_level_add"
+                                            value="read and comment" type="radio" required />
+                                        <span>Read & Comment</span>
+                                    </label>
+                                    <label for="administrator_add">
+                                        <input id="administrator_add" name="access_level_add"
+                                            value="administrator" type="radio" required />
+                                        <span>Administrator</span>
                                     </label>
                                 </p>
-                                {% endfor %}
                             </div>
                             <div class="input-field col s4 m4">
                                 <button type="submit" class="z-depth-0 search-mng-btn btn-small">Add user</button>
@@ -97,40 +105,40 @@
             <div class="card-content term-card-content">
                 <div class="row">
                     <div class="col s12">
-                        <p
-                            class="card-title grey-text text-darken-4"><strong>{{ each_user.username|capitalize() }}:</strong>
+                        <p class="card-title grey-text text-darken-4">
+                            <strong>{{ each_user.username|capitalize() }}:</strong>
                             <span class="subtitle">{{ each_user.access_level|capitalize() }}</span>
-                    </p>
+                        </p>
                     </div>
                 </div>
                 <form method="POST"
                     action="{{ url_for('update_user', each_user_id=each_user._id, origin='manage_users') }}">
                     <div class="row access-select">
                         <div class="col m8">
-                            {% for access_level in levels %}
 
-                            <p>
-                                <label for="{{ access_level.level_name }}_{{ counter }}">
-                                    {% if access_level.level_name == each_user.access_level %}
-                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
-                                        name="access_level" value="{{ access_level.level_name }}" type="radio"
-                                        checked />
-                                    {% elif each_user._id == user._id %}
+                             <p>
+                                    <label for="read_only_{{ counter }}">
+                                        <input id="read_only_{{ counter }}" name="access_level"
+                                            value="read only" type="radio" class="blue-radio"/>
+                                        <span class="blue-radio">Read only</span>
+                                    </label>
+                                    <label for="read_and_comment_{{ counter }}">
+                                        <input id="read_and_comment_{{ counter }}" name="access_level"
+                                            value="read and comment" type="radio" class="blue-radio"/>
+                                        <span class="blue-radio">Read & Comment</span>
+                                    </label>
+                                    <label for="administrator_{{ counter }}">
+                                        <input id="administrator_{{ counter }}" name="access_level"
+                                            value="administrator" type="radio" class="blue-radio"/>
+                                        <span class="blue-radio">Administrator</span>
+                                    </label>
+                             </p>
 
-                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
-                                        name="access_level" value="{{ access_level.level_name }}" type="radio"
-                                        disabled />
 
-                                    {% else %}
-                                    <input id="{{ access_level.level_name }}_{{ counter }}" class="blue-radio"
-                                        name="access_level" value="{{ access_level.level_name }}" type="radio" />
-                                    {% endif %}
+                            
 
-                                    <span class="blue-radio">{{ access_level.level_name }}</span>
-                                </label>
-                            </p>
 
-                            {% endfor %}
+                    
                         </div>
 
                         <div class="col m4">

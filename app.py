@@ -91,6 +91,23 @@ def get_fields(find):
 
     return return_list
 
+def format_access_level(level, direction):
+    level_names = {
+        "administrator": "administrator",
+        "read_and_comment": "read and comment",
+        "read_only": "read only"
+    }
+
+    if direction == "to_val":
+        for key, val in level_names.items():
+            if key == level:
+                return val
+
+    if direction == "to_key":
+        for key, val in level_names.items():
+            if val == level:
+                return key
+
 
 def slice_search(user_query):
 
@@ -810,6 +827,11 @@ def add_user():
             if existing_user:
                 flash("Username already exists! Please try a different one.")
                 return redirect(url_for("manage_users"))
+            
+            get_access_level = request.form.get("access_level_add")
+            access_level = format_access_level(get_access_level, "to_val")
+
+            print(get_access_level)
 
             new_user = {
                 "username": request.form.get("username").lower(),
