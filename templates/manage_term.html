@@ -63,18 +63,13 @@
                     <div class="input-field">
                         <div class="form-outline">
                             <select class="input-width-half validate" id="type_name" name="type_name">
-                                <option placeholder="Select an option" disabled></option>
+                                <option value="">Select an option</option>
                                 {% for type in types %}
-                                    
-                                    <option value="{{ type.type_name }}" 
                                     {% if term.type_name == type.type_name %}
-                                    selected>
-                                    {{ type.type_name }}
-                                    {% endif %}
-                                    </option>
-                                    <!-- {% else %}
+                                    <option value="{{ type.type_name }}" selected>{{ type.type_name }}</option>
+                                    {% else %}
                                     <option value="{{ type.type_name }}">{{ type.type_name }}</option>
-                                    {% endif %} -->
+                                    {% endif %}
                                 {% endfor %}
                             </select>
                         </div>

@@ -751,7 +751,7 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
     height: 32px;
     font-size: 13px;
     font-weight: 500;
-    color: rgba(0,0,0,0.6);
+    color: rgba(0,0,0);
     line-height: 32px;
     padding: 0 12px;
     border-radius: 16px;
@@ -761,6 +761,7 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
 }
 
 .pin {
+    color: black;
     background: #FFEC28;
     background: -o-radial-gradient(#FFEC28, #FFF98F);
     background: radial-gradient(#FFEC28, #FFF98F);

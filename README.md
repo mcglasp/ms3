@@ -386,6 +386,13 @@ For example, if a user were to enter incorrect login details, they should receiv
 however, I have found that these messages do not appear until after the user has logged in successfully. I have been unable to reliably recreate this behaviour up until this point,
 so it therefore remains a known issue.
 
+### Accessibility testing
+
+I tested the accibility of the site using the tool on webaim.org. I've used this several times before without issue, but on this occassion 
+I found it was unable to assess custom CSS that had been applied to Materialize element and instead assessed only the basic Materialize CSS styles before customisation. For example, the standard navbar
+element is a light pink colour and I had changed the site heading text colour to white. This resulted in a very poor accessibility assessment due to the low contrast difference between the two colours.
+In reality, of course, the navbar is a dark blue, giving very high contrast, well within accessibility standards.
+
 ----
 ## Deployment
 
