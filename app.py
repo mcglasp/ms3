@@ -31,10 +31,12 @@ def check_user_login():
     except:
         return False
 
+
 # Sets the page title
 def page_h3(h3):
 
     return h3
+
 
 # Finds flagged comments
 def return_flags():
@@ -65,7 +67,8 @@ def lets_nums():
 
     return categories
 
-# Fetches the fields added to 
+
+# Fetches the fields added to
 # add and update term via Javascript
 def get_fields(find):
 
@@ -91,6 +94,7 @@ def get_fields(find):
     return_list = get_list.make_list()
 
     return return_list
+
 
 # First text search
 def slice_search(user_query):
@@ -136,11 +140,13 @@ def slice_search(user_query):
 
     return terms
 
+
 # Second text search
 def standard_search(user_query):
     terms = list(mongo.db.terms.find({"$text": {"$search": user_query}}))
 
     return terms
+
 
 # Third text search
 def strip_punctuation(user_query):
@@ -564,7 +570,7 @@ def login():
             if existing_user:
                 # ensure hashed password matches user input
                 if check_password_hash(existing_user["password"],
-                                    request.form.get("password")):
+                                       request.form.get("password")):
                     session["user"] = request.form.get("username").lower()
                     return redirect(url_for(
                         "dashboard", user=session['user']))
@@ -582,7 +588,7 @@ def login():
                 return redirect(url_for('login'))
 
         return render_template("login.html")
-    
+
     return redirect(url_for("dashboard"))
 
 
@@ -625,7 +631,8 @@ def add_term():
                 "alt_terms": alternatives,
                 "incorrect_terms": incorrect,
                 "usage_notes": request.form.get("usage_notes"),
-                "type_name": type_name if type_name is not None else type_suggest,
+                "type_name": type_name if type_name is not None
+                else type_suggest,
                 "pending": False if access_level == 'administrator' else True,
                 "created_by": ObjectId(user_id),
                 "last_updated": now.strftime("%d/%m/%Y")
@@ -672,7 +679,8 @@ def update_term(term_id):
                 "alt_terms": alternatives,
                 "incorrect_terms": incorrect,
                 "usage_notes": request.form.get("usage_notes"),
-                "type_name": type_name if type_name is not None else type_suggest,
+                "type_name": type_name if type_name is not None
+                else type_suggest,
                 "pending": False if access_level == 'administrator' else True,
                 "created_by": created_by,
                 "last_updated_by": ObjectId(user_id),
