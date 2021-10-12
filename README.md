@@ -31,20 +31,21 @@ DISCLAIMER: This project was posted for peer review in the Code Institute's Peer
 myHouse is a tool for the storage and management of a text-use style guide. A house style guide is a reference document used by organisations to explain how language should be used in company publications. 
 It brings consistency to the spelling and grammar used on any publicly available or company-endorsed publication, be it a book, an article, a blog-post or marketing material. In particular it can offer clarity on less-commonly used words, such as those found in niche markets; technology, say, or any fast-moving industry, but there are also examples of this in everyday language. Consider 'co-ordinate', for example, which is also commonly written as 'coordinate'. As technology, in particular, moves forward it offers ever-more phrases now in common usage that are yet to settle into an accepted spelling. For example, 'web site', 'website' or web-site'; 'internet' or 'Internet'. And, recently, 'Covid-19' or 'COVID-19'?
 
-Sound On Sound magazine is a leading music-technology magazine for which I have been Production Editor for a number of years. In that role I find numerous examples of spelling and grammar inconsistencies which should have been dealt with by the editor who commissioned a particular article. When exploring why this was I discovered that each editor was using a different version of the style guide, which they had converted into a PDF and saved on their desktop, thereby totally undermining the purpose of having a style guide. 
-For want of a more appropriate tool I converted this into a searchable, shared, document using Google Sheets. However, I found that my colleagues were reluctant to use Google Drive and would also frequently break the tool when attempting to update it. Time was that the Editorial office shared their working space and a physical printed copy was kept on the shelf, but time has moved on, and with home working now standard, a better solution was needed.
+*I have anonymised the real-life target magazine in this repository in order to respect the confidentiality of company documentation, so have changed names throughout this readme.*
 
-myHouse is web-hosted, and therefore easily accessible and understandable to even the most Luddite of editorial staff. Content is controlled by one or more administrators, with staff members able to make term-use suggestions (for administrative approval) and discuss specific language use below individual terms. Read-only access is made available to freelance authors external to the organisation, so that they are able to check directly how Sound On Sound use a term without either bothering their editor or simply taking a guess. 
+TechCheck magazine is a leading technology magazine, which commonly uses the kind of troublesome new and niche words as described above. The needed a dynamic, searchable replacement for their currentstyle guide solution, which amounted to individually held copies of PDFs that were generated at different times in the guide's development.
+
+myHouse is web-hosted, and therefore easily accessible and understandable. Content is controlled by one or more administrators, with staff members able to make term-use suggestions (for administrative approval) and discuss specific language use below individual terms. Read-only access is made available to freelancers external to the organisation, so that they are able to check directly how TechCheck use a term without either bothering their editor or simply taking a guess. 
 This should considerably reduce editing time, which should in turn reduce proof-reading time.
 
 ### User Stories
 
-Sam Inglis is the Editor of Sound On Sound magazine. I discussed the requirements, as he sees it, of an online style-guide tool. He said:
+I discussed the requirements of an online style-guide tool with the Editor of TechCheck magazine. He said:
 > "Our house style guide needs to be comprehensive, accurate, easy to use and responsive to the needs of individual editors. It should be 
 searchable and return useful results even when incomplete or mis-spelled terms are entered. It should be possible to ‘pin’ commonly needed or frequently mistaken terms to a dashboard. 
-It should be easy for administrators to add to and update." <div style="text-align: right">- *Sam Inglis, SOS Editor In Chief, 2021*</div>
+It should be easy for administrators to add to and update."
 
-In discussion with other editors and external authors, and based on my own experience of the needs of the SOS editorial process, the following are the key user stories for this tool, broken down into three user categories:
+In discussion with other editors and external authors, I have developed the following key user stories for this tool, broken down into three user categories:
 
 - Administrators: Key staff members such as myself and the Editor In Chief, who manage and curate the house style guide.
 - Staff Editors: Daily users and stakeholders of the style guide.
@@ -60,7 +61,7 @@ In discussion with other editors and external authors, and based on my own exper
 - As an administrator I want to be able to create, update and delete terms and user accounts from within two clicks of the dashboard
 - As an administrator I want activity notifications to appear on my dashboard
 - As an administrator I want to be able to access and deal with relevant activity directly from the notification
-- The Sound On Sound style guide is a confidential document, as an Administrator I want it to be password protected and only available to approved users
+- The TechCheck style guide is a confidential document, as an Administrator I want it to be password protected and only available to approved users
 
 #### Staff
 - As a staff member I want to be able to view recently updated terms from my dashboard [also applicable to external authors]
@@ -70,7 +71,7 @@ In discussion with other editors and external authors, and based on my own exper
 
 
 ### Competitors
-In my role as Production Editor for Sound On Sound magazine I have been unable to find an existing tool that does what we require, even in a more basic form. I have tried using Wiki software with varying results, and have found nothing with the advanced levels of functionality as listed above.
+I have been unable to find an existing tool that does precisely what is required, even in a more basic form. I have tried using Wiki software with varying results, and have found nothing with the advanced levels of functionality as listed above.
 
 At its most basic, however, our simple text document was a worthy competitor for many years and as such there has been a reluctance to move away from this. However, as working practices have changed beyond recognition, house style management has suffered and it is no longer sufficient to update users via email or phone of every single change.
 
@@ -86,7 +87,7 @@ At its most basic, however, our simple text document was a worthy competitor for
 ### What is realistic for a minimum viable product?
 
 Looking at the Importance/Feasibility matrix show here, we can see a cluster of essential features, mainly related to basic CRUD (Create, Read, Update, Delete) functionaility, as you'd expect. 
-Other features of high importance for inclusion relate to essential management of such an application. Namely, the ability to control who is able to register and view content, which in many cases (and in the case of Sound On Sound) is confidential. 
+Other features of high importance for inclusion relate to essential management of such an application. Namely, the ability to control who is able to register and view content, which in many cases (and in the case of TechCheck) is confidential. 
 Also of high importance is the capacity for non-admin users to suggest terms for inclusion, or to comment on existing usage.
 
 ----
@@ -187,7 +188,7 @@ Administrators can click straight through to the relevant data from the notifica
 
 <img src="/static/readme-assets/admin_updates.png" alt="Admin updates" width="100%" height="100%">
 
-- The Sound On Sound style guide is a confidential document, as an Administrator I want it to be password protected and only available to approved users
+- The TechCheck style guide is a confidential document, as an Administrator I want it to be password protected and only available to approved users
 
 <img src="/static/readme-assets/login.png" alt="Login page" width="100%" height="100%">
 <img src="/static/readme-assets/locked_out_alert.png" alt="Locked-out alert" width="100%" height="100%">
@@ -466,7 +467,5 @@ I used the online resources below for general guidance and solutions to specific
 ### Acknowledgments
 
 I would like to thank my mentor Antonio Rodriguez for his time and patience in guiding me through this project.
-
-I would also like to thank Sam Inglis and the rest of the staff at Sound On Sound magazine for their help in shaping the core features included in this project.
 
 The Stackexchange and Stackoverflow community remain an essential resource and I have learnt much from them during the course of completing this milestone project.
