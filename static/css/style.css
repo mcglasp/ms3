@@ -498,6 +498,14 @@ input.input-box, .alts-incs>input.input-box, input, .input-box {
             justify-content: center;
 }
 
+.button-flex-wrap p {
+    width: 50px;
+}
+
+.button-flex-wrap .select-wrapper {
+    margin-left: 10px;
+}
+
 .button-override {
     font-family: 'Nanum Gothic', sans-serif;
     background-image: -o-linear-gradient(top, #BDBBBE 0%, #9D9EA3 100%), -o-radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), -o-radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);

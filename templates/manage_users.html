@@ -123,21 +123,24 @@
                              <p>
                                     <label for="read_only_{{ counter }}">
                                         <input id="read_only_{{ counter }}" name="access_level"
-                                            value="read only" type="radio" class="blue-radio" required/>
+                                            value="read only" type="radio" class="blue-radio" required 
+                                            {% if each_user.access_level|lower() == 'read only' %} checked {% endif %}/>
                                         <span class="blue-radio">Read only</span>
                                     </label>
                                     </p>
                                     <p>
                                     <label for="read_and_comment_{{ counter }}">
                                         <input id="read_and_comment_{{ counter }}" name="access_level"
-                                            value="read and comment" type="radio" class="blue-radio" required/>
+                                            value="read and comment" type="radio" class="blue-radio" required 
+                                            {% if each_user.access_level|lower() == "read and comment" %} checked {% endif %}/>
                                         <span class="blue-radio">Read & Comment</span>
                                     </label>
                                     </p>
                                     <p>
                                     <label for="administrator_{{ counter }}">
                                         <input id="administrator_{{ counter }}" name="access_level"
-                                            value="administrator" type="radio" class="blue-radio" required/>
+                                            value="administrator" type="radio" class="blue-radio" required 
+                                            {% if each_user.access_level|lower() == "administrator" %} checked {% endif %}/>
                                         <span class="blue-radio">Administrator</span>
                                     </label>
                              </p>

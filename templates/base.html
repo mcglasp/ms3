@@ -194,7 +194,7 @@
                                 <div class="col s12">
                                     <p class="updates valign-wrapper"><strong
                                             class="truncate">{{ term_comment(comment)[0] }}</strong>
-                                        <span class="truncate">{{ comment.comment }}"</span>
+                                        <span class="truncate">{{ comment.comment }}</span>
                                         <a class="btn-small icon-button z-depth-0"
                                             href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
                                                 class="small material-icons">keyboard_arrow_right</i></a>
@@ -323,12 +323,12 @@
                             {% if new_registrations|length > 0 %}
                             <p class="minor-text">New registrations</p>
                             {% for new_reg in new_registrations %}
-                            <form class="" method="POST"
+                            <form id="new-reg-form" method="POST"
                                 action="{{ url_for('update_user', each_user_id=new_reg._id, origin='dash') }}">
                                 <div class="valign-wrapper button-flex-wrap">
                                     <p>{{ new_reg.username|capitalize() }}:</p>
                                     <select id="access_level_{{ loop.index }}" name="access_level">
-                                        <option selected>
+                                        <option value="" selected disabled>
                                             Set access level
                                         </option>
                                         <option value="Read only">Read only</option>
@@ -431,7 +431,7 @@
                             <div class="row mb0 mt0">
                                 <div class="col s12">
                                     <p class="updates valign-wrapper"><strong>{{ term_comment(comment)[0] }}</strong>
-                                        <span class="truncate">{{ comment.comment }}"</span>
+                                        <span class="truncate">{{ comment.comment }}</span>
                                         <a class="btn-small icon-button z-depth-0"
                                             href="{{ url_for('view_term', term_id=term_comment(comment)[1]) }}"><i
                                                 class="small material-icons">keyboard_arrow_right</i></a>

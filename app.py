@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-app.secret_key = os.environ.get("SECRET_KEY")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 
 mongo = PyMongo(app)
 
@@ -810,9 +810,6 @@ def add_user():
                 flash("Username already exists! Please try a different one.")
                 return redirect(url_for("manage_users"))
 
-            get_access_level = request.form.get("access_level_add")
-            access_level = format_access_level(get_access_level, "to_val")
-
             new_user = {
                 "username": request.form.get("username").lower(),
                 "password": generate_password_hash(
@@ -842,16 +839,21 @@ def update_user(each_user_id):
         if request.method == "POST":
             user_to_update = get_record('users', '_id', ObjectId(each_user_id))
             acc_level = request.form.get("access_level")
-            mongo.db.users.update_one({"_id": user_to_update["_id"]}, {
-                "$set": {"access_level": acc_level}})
-
-            flash("User's access level updated")
-
-            if origin == 'dash':
+            if acc_level == None:
+                flash("Please select an access level")
+                print(acc_level)
                 return redirect(url_for("dashboard"))
             else:
-                return redirect(url_for("manage_users",
-                                user_to_update=user_to_update))
+                mongo.db.users.update_one({"_id": user_to_update["_id"]}, {
+                    "$set": {"access_level": acc_level}})
+
+                flash("User's access level updated")
+
+                if origin == 'dash':
+                    return redirect(url_for("dashboard"))
+                else:
+                    return redirect(url_for("manage_users",
+                                    user_to_update=user_to_update))
 
         flash("Sorry, looks like there's been an error updating this user")
 
@@ -900,4 +902,4 @@ def page_not_found(e):
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
-            debug=False)
+            debug=True)
