@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
-if FLASK_DEV in os.env:
+if "FLASK_DEV" in os.environ:
     app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 else:
     app.secret_key = os.environ.get("SECRET_KEY")
