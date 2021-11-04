@@ -316,7 +316,6 @@ def delete_flag(comment_id):
 @app.route("/view_term/<term_id>")
 def view_term(term_id):
     if check_user_login() is True:
-
         term = get_record('terms', '_id', ObjectId(term_id))
         creator_id = term['created_by']
         term_comments = list(mongo.db.comments.find({'rel_term_id': term_id}))
@@ -846,7 +845,6 @@ def update_user(each_user_id):
             acc_level = request.form.get("access_level")
             if acc_level == None:
                 flash("Please select an access level")
-                print(acc_level)
                 return redirect(url_for("dashboard"))
             else:
                 mongo.db.users.update_one({"_id": user_to_update["_id"]}, {

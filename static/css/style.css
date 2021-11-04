@@ -85,7 +85,7 @@ h2 {
 
 #awaiting-approval {
     display: block;
-    margin: 10px auto;
+    margin: 20px auto 10px auto;
 }
 
 .drag-target {

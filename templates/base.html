@@ -230,13 +230,12 @@
     {% if session.user %}
     <!-- Title (desktop), flash messages and search bar -->
     <div id="subheader" class="row valign-wrapper">
-        {% if user.access_level == 'requested' %}
-        <p id="awaiting-approval">Account awaiting admin approval</p>
-        {% endif %}
-        {% if user.to_change_pword != true %}
+        {% if user.to_change_pword != True %}
         <!-- Flash messages now diverted to a toast via Javascript -->
         <div id="flash-h3-con" class="hide-on-med-and-down show-on-large">
-            <span class="page-title">{{- this_h3 -}}</span>
+            <span class="page-title">{{- this_h3 -}}
+                {% if user.access_level == 'requested' %} <small> Awaiting approval</small> {% endif %}
+            </span>
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             {% for message in messages %}
@@ -245,8 +244,11 @@
             {% endif %}
             {% endwith %}
         </div>
+ 
         <!-- Search bar, present across the site -->
+
         <form id="search-bar" method="POST" action="{{ url_for('search_terms') }}">
+            {% if user.access_level != 'requested' %}
             <div class="search-row">
                 <div id="search-input" class="input-field right-align">
                     <input class="search-input-box" type="text" name="query" id="query" minlength="2" required>
@@ -278,6 +280,7 @@
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </form>
         {% endif %}
     </div>
@@ -286,7 +289,7 @@
     <main id="main-content" class="sidenav-close sidenav-wrap">
         <!-- Notifications appear as first column on desktop -->
         <div id="notifications-desktop" class="row">
-            {% if user.to_change_pword != true %}
+            {% if user.to_change_pword != True %}
                 {% if session.user %}
                 <div id="notifications" class="col l4 hide-on-med-and-down">
                     <!-- PINNED TERMS card -->
@@ -328,7 +331,7 @@
                                 <div class="valign-wrapper button-flex-wrap">
                                     <p>{{ new_reg.username|capitalize() }}:</p>
                                     <select id="access_level_{{ loop.index }}" name="access_level">
-                                        <option value="" selected disabled>
+                                        <option value="" selected>
                                             Set access level
                                         </option>
                                         <option value="Read only">Read only</option>
