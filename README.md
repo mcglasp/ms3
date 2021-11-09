@@ -11,15 +11,12 @@
 #### View this project at: https://ms3-myhouse.herokuapp.com/
 
 To view the site at every access level, three user accounts have been set up:
-- Administrator level
-> - username: CIadmin
-> - password: ciadmin
-- Read & Comment level
-> - username: CIcomment
-> - password: cicomment
+
 - Read-only level
 > - username: CIread
 > - password: CIread
+
+Please contact me for higher access level credentials.
 
 View the GitHub repository at: https://github.com/mcglasp/ms3 
 
